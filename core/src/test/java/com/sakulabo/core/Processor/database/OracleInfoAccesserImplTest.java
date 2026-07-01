@@ -1,0 +1,545 @@
+package com.sakulabo.core.Processor.database;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+
+import java.math.BigInteger;
+import java.time.Instant;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.sakulabo.BaseTest;
+import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowDataType;
+import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowVirtualFileObject.BasicFileObject;
+import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowVirtualFileObject.SecureFileObject;
+import com.sakulabo.core.Processor.database.impl.OracleInfoAccesserImpl;
+
+/**
+ * データベースオブジェクト実行情報生成テストです
+ */
+@SuppressWarnings("javadoc")
+public class OracleInfoAccesserImplTest extends BaseTest<OracleInfoAccesserImpl> {
+
+	/**
+	 * デフォルトコンストラクタ
+	 */
+	protected OracleInfoAccesserImplTest() {
+		super(OracleInfoAccesserImplTest.class);
+	}
+
+	@BeforeEach
+	void initService() {
+	}
+
+	@AfterEach
+	void closeService() throws Exception {
+	}
+
+	/**
+	 * [試験観点]      : Oracleモード
+	 * [期待される結果] : 生のSQL生成が期待通り動作すること、通常データオブジェクト
+	 */
+	@Test
+	public void Test001() throws Throwable {
+
+		// テスト対象生成
+		AppDBInfoAccesser testTarget = new OracleInfoAccesserImpl();
+
+		// 引数準備
+		BasicFileObject fileObject = new BasicFileObject(
+				Instant.now(),
+				new String[] { "col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8" },
+				new KagerowDataType[] {
+						KagerowDataType.NULL,
+						KagerowDataType.BOOLEAN,
+						KagerowDataType.NUMBER,
+						KagerowDataType.DECIMAL,
+						KagerowDataType.DATE,
+						KagerowDataType.TIMESTAMP,
+						KagerowDataType.VARCHAR,
+						KagerowDataType.VARCHAR
+				},
+				new long[] { 0, 1, 10, 10, 3, 3, 500, 501 },
+				"datAddr",
+				BigInteger.ZERO,
+				"idxAddr",
+				BigInteger.ZERO,
+				"binaryName",
+				"synonym",
+				"test",
+				new AtomicReference<>());
+
+		// 期待値準備
+		String expStr = """
+				CREATE TABLE IF NOT EXISTS test."KDB_BINARYNAME" (\
+				KDB_PK_NO NUMBER DEFAULT test.SEQ.NEXTVAL PRIMARY KEY,\
+				col1 CHAR(1) DEFAULT NULL,\
+				col2 NUMBER(1) DEFAULT 0,\
+				col3 NUMBER,\
+				col4 NUMBER,\
+				col5 DATE DEFAULT SYSDATE,\
+				col6 TIMESTAMP DEFAULT LOCALTIMESTAMP,\
+				col7 VARCHAR2(500),\
+				col8 CLOB\
+				);\
+				""";
+
+		// テスト実行
+		String rawDDL = testTarget.toRawDDL(fileObject);
+		// 結果検証
+		assertThat(rawDDL, is(expStr));
+	}
+
+	/**
+	 * [試験観点]      : Oracleモード
+	 * [期待される結果] : 整形済みSQL生成が期待通り動作すること、通常データオブジェクト
+	 */
+	@Test
+	public void Test002() throws Throwable {
+
+		// テスト対象生成
+		AppDBInfoAccesser testTarget = new OracleInfoAccesserImpl();
+
+		// 引数準備
+		BasicFileObject fileObject = new BasicFileObject(
+				Instant.now(),
+				new String[] { "col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8" },
+				new KagerowDataType[] {
+						KagerowDataType.NULL,
+						KagerowDataType.BOOLEAN,
+						KagerowDataType.NUMBER,
+						KagerowDataType.DECIMAL,
+						KagerowDataType.DATE,
+						KagerowDataType.TIMESTAMP,
+						KagerowDataType.VARCHAR,
+						KagerowDataType.VARCHAR
+				},
+				new long[] { 0, 1, 10, 10, 3, 3, 500, 501 },
+				"datAddr",
+				BigInteger.ZERO,
+				"idxAddr",
+				BigInteger.ZERO,
+				"binaryName",
+				"synonym",
+				"test",
+				new AtomicReference<>());
+
+		// 期待値準備
+		String expStr = """
+				CREATE TABLE IF NOT EXISTS test."KDB_BINARYNAME" (
+					KDB_PK_NO NUMBER DEFAULT test.SEQ.NEXTVAL PRIMARY KEY,
+					col1 CHAR(1) DEFAULT NULL,
+					col2 NUMBER(1) DEFAULT 0,
+					col3 NUMBER,
+					col4 NUMBER,
+					col5 DATE DEFAULT SYSDATE,
+					col6 TIMESTAMP DEFAULT LOCALTIMESTAMP,
+					col7 VARCHAR2(500),
+					col8 CLOB
+				);""";
+
+		// テスト実行
+		String rawDDL = testTarget.toDDL(fileObject);
+		// 結果検証
+		assertThat(rawDDL, is(expStr));
+	}
+
+	/**
+	 * [試験観点]      : Oracleモード
+	 * [期待される結果] : 変更可能タイプが期待値と一致すること、通常データオブジェクト
+	 */
+	@Test
+	public void Test003() throws Throwable {
+
+		// テスト対象生成
+		AppDBInfoAccesser testTarget = new OracleInfoAccesserImpl();
+
+		// 引数準備
+		BasicFileObject fileObject = new BasicFileObject(
+				Instant.now(),
+				new String[] { "col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8" },
+				new KagerowDataType[] {
+						KagerowDataType.NULL,
+						KagerowDataType.BOOLEAN,
+						KagerowDataType.NUMBER,
+						KagerowDataType.DECIMAL,
+						KagerowDataType.DATE,
+						KagerowDataType.TIMESTAMP,
+						KagerowDataType.VARCHAR,
+						KagerowDataType.VARCHAR
+				},
+				new long[] { 0, 1, 10, 10, 3, 3, 500, 501 },
+				"datAddr",
+				BigInteger.ZERO,
+				"idxAddr",
+				BigInteger.ZERO,
+				"binaryName",
+				"synonym",
+				"test",
+				new AtomicReference<>());
+
+		// テスト実行
+		String rawDDL = testTarget.toStandardExpression(fileObject, "col1");
+		assertThat(rawDDL, is("CHAR(1)"));
+		rawDDL = testTarget.toStandardExpression(fileObject, "col2");
+		assertThat(rawDDL, is("NUMBER(1)"));
+		rawDDL = testTarget.toStandardExpression(fileObject, "col3");
+		assertThat(rawDDL, is("NUMBER"));
+		rawDDL = testTarget.toStandardExpression(fileObject, "col4");
+		assertThat(rawDDL, is("NUMBER"));
+		rawDDL = testTarget.toStandardExpression(fileObject, "col5");
+		assertThat(rawDDL, is("DATE"));
+		rawDDL = testTarget.toStandardExpression(fileObject, "col6");
+		assertThat(rawDDL, is("TIMESTAMP"));
+		rawDDL = testTarget.toStandardExpression(fileObject, "col7");
+		assertThat(rawDDL, is("VARCHAR2(500)"));
+		rawDDL = testTarget.toStandardExpression(fileObject, "col8");
+		assertThat(rawDDL, is("CLOB"));
+	}
+
+	/**
+	 * [試験観点]      : Oracleモード
+	 * [期待される結果] : 変更可能タイプ一覧が期待値と一致すること、通常データオブジェクト
+	 */
+	@Test
+	public void Test004() throws Throwable {
+
+		// テスト対象生成
+		AppDBInfoAccesser testTarget = new OracleInfoAccesserImpl();
+
+		// 引数準備
+		BasicFileObject fileObject = new BasicFileObject(
+				Instant.now(),
+				new String[] { "col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8" },
+				new KagerowDataType[] {
+						KagerowDataType.NULL,
+						KagerowDataType.BOOLEAN,
+						KagerowDataType.NUMBER,
+						KagerowDataType.DECIMAL,
+						KagerowDataType.DATE,
+						KagerowDataType.TIMESTAMP,
+						KagerowDataType.VARCHAR,
+						KagerowDataType.VARCHAR
+				},
+				new long[] { 0, 1, 10, 10, 3, 3, 500, 501 },
+				"datAddr",
+				BigInteger.ZERO,
+				"idxAddr",
+				BigInteger.ZERO,
+				"binaryName",
+				"synonym",
+				"test",
+				new AtomicReference<>());
+
+		// テスト実行
+		KagerowDataType[] list = testTarget.toConvertibleList(fileObject, "col1");
+		assertThat(list, is(new KagerowDataType[] {
+				KagerowDataType.NULL,
+				KagerowDataType.BOOLEAN,
+				KagerowDataType.NUMBER,
+				KagerowDataType.DECIMAL,
+				KagerowDataType.DATE,
+				KagerowDataType.TIMESTAMP,
+				KagerowDataType.VARCHAR,
+		}));
+		list = testTarget.toConvertibleList(fileObject, "col2");
+		assertThat(list, is(new KagerowDataType[] {
+				KagerowDataType.BOOLEAN,
+				KagerowDataType.NUMBER,
+				KagerowDataType.DECIMAL,
+				KagerowDataType.DATE,
+				KagerowDataType.TIMESTAMP,
+				KagerowDataType.VARCHAR,
+		}));
+		list = testTarget.toConvertibleList(fileObject, "col3");
+		assertThat(list, is(new KagerowDataType[] {
+				KagerowDataType.NUMBER,
+				KagerowDataType.DECIMAL,
+				KagerowDataType.DATE,
+				KagerowDataType.TIMESTAMP,
+				KagerowDataType.VARCHAR,
+		}));
+		list = testTarget.toConvertibleList(fileObject, "col4");
+		assertThat(list, is(new KagerowDataType[] {
+				KagerowDataType.DECIMAL,
+				KagerowDataType.DATE,
+				KagerowDataType.TIMESTAMP,
+				KagerowDataType.VARCHAR,
+		}));
+		list = testTarget.toConvertibleList(fileObject, "col5");
+		assertThat(list, is(new KagerowDataType[] {
+				KagerowDataType.DATE,
+				KagerowDataType.TIMESTAMP,
+				KagerowDataType.VARCHAR,
+		}));
+		list = testTarget.toConvertibleList(fileObject, "col6");
+		assertThat(list, is(new KagerowDataType[] {
+				KagerowDataType.TIMESTAMP,
+				KagerowDataType.VARCHAR,
+		}));
+		list = testTarget.toConvertibleList(fileObject, "col7");
+		assertThat(list, is(new KagerowDataType[] { KagerowDataType.VARCHAR }));
+		list = testTarget.toConvertibleList(fileObject, "col8");
+		assertThat(list, is(new KagerowDataType[] { KagerowDataType.VARCHAR }));
+	}
+
+	/**
+	 * [試験観点]      : Oracleモード
+	 * [期待される結果] : 生のSQL生成が期待通り動作すること、セキュアデータオブジェクト
+	 */
+	@Test
+	public void Test005() throws Throwable {
+
+		// テスト対象生成
+		AppDBInfoAccesser testTarget = new OracleInfoAccesserImpl();
+
+		// 引数準備
+		SecureFileObject fileObject = new SecureFileObject(
+				Instant.now(),
+				new String[] { "col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8" },
+				new KagerowDataType[] {
+						KagerowDataType.NULL,
+						KagerowDataType.BOOLEAN,
+						KagerowDataType.NUMBER,
+						KagerowDataType.DECIMAL,
+						KagerowDataType.DATE,
+						KagerowDataType.TIMESTAMP,
+						KagerowDataType.VARCHAR,
+						KagerowDataType.VARCHAR
+				},
+				new long[] { 0, 1, 10, 10, 3, 3, 500, 501 },
+				"datAddr",
+				BigInteger.ZERO,
+				"idxAddr",
+				BigInteger.ZERO,
+				"binaryName",
+				"synonym",
+				"test",
+				"password",
+				"alias",
+				new AtomicReference<>());
+
+		// 期待値準備
+		String expStr = """
+				CREATE TABLE IF NOT EXISTS test."KDB_BINARYNAME" (\
+				KDB_PK_NO NUMBER DEFAULT test.SEQ.NEXTVAL PRIMARY KEY,\
+				col1 CHAR(1) DEFAULT NULL,\
+				col2 NUMBER(1) DEFAULT 0,\
+				col3 NUMBER,\
+				col4 NUMBER,\
+				col5 DATE DEFAULT SYSDATE,\
+				col6 TIMESTAMP DEFAULT LOCALTIMESTAMP,\
+				col7 VARCHAR2(500),\
+				col8 CLOB\
+				);\
+				""";
+
+		// テスト実行
+		String rawDDL = testTarget.toRawDDL(fileObject);
+		// 結果検証
+		assertThat(rawDDL, is(expStr));
+	}
+
+	/**
+	 * [試験観点]      : Oracleモード
+	 * [期待される結果] : 整形済みSQL生成が期待通り動作すること、セキュアデータオブジェクト
+	 */
+	@Test
+	public void Test006() throws Throwable {
+
+		// テスト対象生成
+		AppDBInfoAccesser testTarget = new OracleInfoAccesserImpl();
+
+		// 引数準備
+		SecureFileObject fileObject = new SecureFileObject(
+				Instant.now(),
+				new String[] { "col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8" },
+				new KagerowDataType[] {
+						KagerowDataType.NULL,
+						KagerowDataType.BOOLEAN,
+						KagerowDataType.NUMBER,
+						KagerowDataType.DECIMAL,
+						KagerowDataType.DATE,
+						KagerowDataType.TIMESTAMP,
+						KagerowDataType.VARCHAR,
+						KagerowDataType.VARCHAR
+				},
+				new long[] { 0, 1, 10, 10, 3, 3, 500, 501 },
+				"datAddr",
+				BigInteger.ZERO,
+				"idxAddr",
+				BigInteger.ZERO,
+				"binaryName",
+				"synonym",
+				"test",
+				"password",
+				"alias",
+				new AtomicReference<>());
+
+		// 期待値準備
+		String expStr = """
+				CREATE TABLE IF NOT EXISTS test."KDB_BINARYNAME" (
+					KDB_PK_NO NUMBER DEFAULT test.SEQ.NEXTVAL PRIMARY KEY,
+					col1 CHAR(1) DEFAULT NULL,
+					col2 NUMBER(1) DEFAULT 0,
+					col3 NUMBER,
+					col4 NUMBER,
+					col5 DATE DEFAULT SYSDATE,
+					col6 TIMESTAMP DEFAULT LOCALTIMESTAMP,
+					col7 VARCHAR2(500),
+					col8 CLOB
+				);""";
+
+		// テスト実行
+		String rawDDL = testTarget.toDDL(fileObject);
+		// 結果検証
+		assertThat(rawDDL, is(expStr));
+	}
+
+	/**
+	 * [試験観点]      : Oracleモード
+	 * [期待される結果] : 変更可能タイプが期待値と一致すること、セキュアデータオブジェクト
+	 */
+	@Test
+	public void Test007() throws Throwable {
+
+		// テスト対象生成
+		AppDBInfoAccesser testTarget = new OracleInfoAccesserImpl();
+
+		// 引数準備
+		SecureFileObject fileObject = new SecureFileObject(
+				Instant.now(),
+				new String[] { "col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8" },
+				new KagerowDataType[] {
+						KagerowDataType.NULL,
+						KagerowDataType.BOOLEAN,
+						KagerowDataType.NUMBER,
+						KagerowDataType.DECIMAL,
+						KagerowDataType.DATE,
+						KagerowDataType.TIMESTAMP,
+						KagerowDataType.VARCHAR,
+						KagerowDataType.VARCHAR
+				},
+				new long[] { 0, 1, 10, 10, 3, 3, 500, 501 },
+				"datAddr",
+				BigInteger.ZERO,
+				"idxAddr",
+				BigInteger.ZERO,
+				"binaryName",
+				"synonym",
+				"test",
+				"password",
+				"alias",
+				new AtomicReference<>());
+
+		// テスト実行
+		String rawDDL = testTarget.toStandardExpression(fileObject, "col1");
+		assertThat(rawDDL, is("CHAR(1)"));
+		rawDDL = testTarget.toStandardExpression(fileObject, "col2");
+		assertThat(rawDDL, is("NUMBER(1)"));
+		rawDDL = testTarget.toStandardExpression(fileObject, "col3");
+		assertThat(rawDDL, is("NUMBER"));
+		rawDDL = testTarget.toStandardExpression(fileObject, "col4");
+		assertThat(rawDDL, is("NUMBER"));
+		rawDDL = testTarget.toStandardExpression(fileObject, "col5");
+		assertThat(rawDDL, is("DATE"));
+		rawDDL = testTarget.toStandardExpression(fileObject, "col6");
+		assertThat(rawDDL, is("TIMESTAMP"));
+		rawDDL = testTarget.toStandardExpression(fileObject, "col7");
+		assertThat(rawDDL, is("VARCHAR2(500)"));
+		rawDDL = testTarget.toStandardExpression(fileObject, "col8");
+		assertThat(rawDDL, is("CLOB"));
+	}
+
+	/**
+	 * [試験観点]      : Oracleモード
+	 * [期待される結果] : 変更可能タイプ一覧が期待値と一致すること、セキュアデータオブジェクト
+	 */
+	@Test
+	public void Test008() throws Throwable {
+
+		// テスト対象生成
+		AppDBInfoAccesser testTarget = new OracleInfoAccesserImpl();
+
+		// 引数準備
+		SecureFileObject fileObject = new SecureFileObject(
+				Instant.now(),
+				new String[] { "col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8" },
+				new KagerowDataType[] {
+						KagerowDataType.NULL,
+						KagerowDataType.BOOLEAN,
+						KagerowDataType.NUMBER,
+						KagerowDataType.DECIMAL,
+						KagerowDataType.DATE,
+						KagerowDataType.TIMESTAMP,
+						KagerowDataType.VARCHAR,
+						KagerowDataType.VARCHAR
+				},
+				new long[] { 0, 1, 10, 10, 3, 3, 500, 501 },
+				"datAddr",
+				BigInteger.ZERO,
+				"idxAddr",
+				BigInteger.ZERO,
+				"binaryName",
+				"synonym",
+				"test",
+				"password",
+				"alias",
+				new AtomicReference<>());
+
+		// テスト実行
+		KagerowDataType[] list = testTarget.toConvertibleList(fileObject, "col1");
+		assertThat(list, is(new KagerowDataType[] {
+				KagerowDataType.NULL,
+				KagerowDataType.BOOLEAN,
+				KagerowDataType.NUMBER,
+				KagerowDataType.DECIMAL,
+				KagerowDataType.DATE,
+				KagerowDataType.TIMESTAMP,
+				KagerowDataType.VARCHAR,
+		}));
+		list = testTarget.toConvertibleList(fileObject, "col2");
+		assertThat(list, is(new KagerowDataType[] {
+				KagerowDataType.BOOLEAN,
+				KagerowDataType.NUMBER,
+				KagerowDataType.DECIMAL,
+				KagerowDataType.DATE,
+				KagerowDataType.TIMESTAMP,
+				KagerowDataType.VARCHAR,
+		}));
+		list = testTarget.toConvertibleList(fileObject, "col3");
+		assertThat(list, is(new KagerowDataType[] {
+				KagerowDataType.NUMBER,
+				KagerowDataType.DECIMAL,
+				KagerowDataType.DATE,
+				KagerowDataType.TIMESTAMP,
+				KagerowDataType.VARCHAR,
+		}));
+		list = testTarget.toConvertibleList(fileObject, "col4");
+		assertThat(list, is(new KagerowDataType[] {
+				KagerowDataType.DECIMAL,
+				KagerowDataType.DATE,
+				KagerowDataType.TIMESTAMP,
+				KagerowDataType.VARCHAR,
+		}));
+		list = testTarget.toConvertibleList(fileObject, "col5");
+		assertThat(list, is(new KagerowDataType[] {
+				KagerowDataType.DATE,
+				KagerowDataType.TIMESTAMP,
+				KagerowDataType.VARCHAR,
+		}));
+		list = testTarget.toConvertibleList(fileObject, "col6");
+		assertThat(list, is(new KagerowDataType[] {
+				KagerowDataType.TIMESTAMP,
+				KagerowDataType.VARCHAR,
+		}));
+		list = testTarget.toConvertibleList(fileObject, "col7");
+		assertThat(list, is(new KagerowDataType[] { KagerowDataType.VARCHAR }));
+		list = testTarget.toConvertibleList(fileObject, "col8");
+		assertThat(list, is(new KagerowDataType[] { KagerowDataType.VARCHAR }));
+	}
+
+}

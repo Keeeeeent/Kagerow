@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kagerow-script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="KsqlSchema.xsd">
+
+	<!-- スクリプト共通設定宣言部 -->
+	<configuration>
+		<name>テスト</name>
+		<summary>テスト向けのKSQLです</summary>
+		<mode>Oracle</mode>
+		<schema>test</schema>
+	</configuration>
+	
+	<!-- プラグイン宣言部 -->
+	
+	<!-- KSQL宣言部 -->
+	<ksqls>
+		<ksql id="zzz001" name="sqlno1" next="zzz002">
+			<variable-declaration>
+				<variable name="PARAM_01" value="DUAL1"/>
+				<variable name="PARAM_02" value="DUAL2"/>
+				<variable name="PARAM_03" value="DUAL3"/>
+			</variable-declaration>
+			<sql>
+				SELECT * FROM @{PARAM_01}
+					WHERE X = @{PARAM_02}
+				ORDER BY 1 , @{PARAM_03};
+			</sql>
+		</ksql>
+		<ksql id="zzz002" name="sqlno2">
+			<variable-declaration />
+			<sql>
+				SELECT * FROM DUAL;
+			</sql>
+		</ksql>
+	</ksqls>
+	
+	<!-- コマンド宣言部 -->
+	
+</kagerow-script>

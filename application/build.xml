@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="KagerowBuilder" default="build">
+	
+	<!-- ===================================================== -->
+	<!-- 変数宣言 -->
+	<!-- ===================================================== -->
+	
+	<property name="vmoption_01" value="-client "/>
+	<property name="vmoption_02" value="-XX:+UseG1GC"/>
+	<property name="vmoption_03" value="-XX:+CrashOnOutOfMemoryError"/>
+	<property name="vmoption_04" value="-Dapp.launcher.config=Launcher.properties"/>
+    <property name="vmoption_05" value="-javaagent:$APPDIR/mods/application-core.jar=GUI_INIT" />
+    <property name="vmoption_06" value="-XX:VMOptionsFile=$APPDIR/config/VMOptions.properties" />
+    <property name="vmoption_07" value="-XX:CompileCommandFile=$APPDIR/config/JITCompileOptions.properties" />
+    <property name="vmoption_08" value="-Dagentjar=mods/application-core.jar" />
+	
+	<property name="gui_launcher_file" value="${project.build.directory}/launcher/GUILauncher.properties"/>
+	<property name="cli_launcher_file" value="${project.build.directory}/launcher/CLILauncher.properties"/>
+	
+	<property name="nl" value="${line.separator}"/>
+	
+    <!-- ===================================================== -->
+    <!-- OS判定 -->
+    <!-- ===================================================== -->
+
+    <condition property="isWindows">
+        <os family="windows"/>
+    </condition>
+
+    <condition property="isMac">
+        <os family="mac"/>
+    </condition>
+
+    <condition property="isLinux">
+        <and>
+            <os family="unix"/>
+            <not>
+                <os family="mac"/>
+            </not>
+        </and>
+    </condition>
+
+    <condition property="isUnix">
+        <os family="unix"/>
+    </condition>
+	
+	<condition property="isRunApp">
+		<and>
+	        <isset property="runApp"/>
+	        <equals arg1="${runApp}" arg2="true"/>
+	    </and>
+	</condition>
+
+    <!-- ===================================================== -->
+    <!-- UUID生成 -->
+    <!-- ===================================================== -->
+
+    <tstamp>
+        <format property="build.uuid" pattern="yyyyMMddHHmmss"/>
+    </tstamp>
+
+    <!-- ===================================================== -->
+    <!-- メイン -->
+    <!-- ===================================================== -->
+
+    <target name="build"
+            depends="
+                init,
+                launcher,
+                runtime,
+                dist,
+                package,
+                archive,
+    			staging">
+
+    	<echo message="[------- アプリケーション構築完了 -------]"/>
+
+    </target>
+
+    <!-- ===================================================== -->
+    <!-- 初期化 -->
+    <!-- ===================================================== -->
+
+    <target name="init">
+
+    	<echo message="[------- 初期化開始 -------]"/>
+
+        <mkdir dir="${project.build.directory}/launcher"/>
+        <mkdir dir="${project.build.directory}/dist/config"/>
+        <mkdir dir="${project.build.directory}/release"/>
+        <mkdir dir="${project.build.directory}/temp"/>
+
+    </target>
+
+    <!-- ===================================================== -->
+    <!-- ランチャー -->
+    <!-- ===================================================== -->
+
+    <target name="launcher"
+            depends="
+                launcher-windows,
+                launcher-mac,
+                launcher-linux">
+
+        <echo message="[------- ランチャーファイル構築完了 -------]"/>
+    </target>
+
+    <!-- ===================================================== -->
+    <!-- Windows -->
+    <!-- ===================================================== -->
+
+    <target name="launcher-windows" if="isWindows">
+
+        <!-- CLI -->
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_01}${nl}</echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_02}${nl}</echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_03}${nl}</echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_04}${nl}</echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=-Dapp.init.mode=CLI${nl}</echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=-Dinstance=${build.uuid}${nl}</echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=-Dapp.version=${project.version}${nl}</echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">icon=${basedir}/config/icon.ico${nl}</echo>
+
+    </target>
+
+    <target name="package-windows" if="isWindows">
+
+        <exec executable="${java.home}/bin/jpackage">
+        	<arg value="--name"/>
+        	<arg value="Kagerow"/>
+            <arg value="--app-version"/>
+            <arg value="${project.version}"/>
+            <arg value="--type"/>
+            <arg value="app-image"/>
+            <arg value="--vendor"/>
+            <arg value="sakulabo.com"/>
+            <arg value="--module"/>
+            <arg value="com.sakulabo.application/com.sakulabo.application.Main"/>
+            <arg value="--input"/>
+            <arg value="${project.build.directory}/dist"/>
+            <arg value="--dest"/>
+            <arg value="${project.build.directory}/release"/>
+            <arg value="--temp"/>
+            <arg value="${project.build.directory}/temp"/>
+            <arg value="--module-path"/>
+            <arg value="${project.build.directory}/library"/>
+            <arg value="--runtime-image"/>
+            <arg value="${project.build.directory}/jre"/>
+        	<arg value="--add-launcher"/>
+        	<arg value="Kagerow-cli=${cli_launcher_file}"/>
+            <arg value="--icon"/>
+        	<arg value="${basedir}/config/icon.ico"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_01}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_02}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_03}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_04}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_05}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_06}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_07}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_08}"/>
+            <arg value="--java-options"/>
+            <arg value="-Dapp.init.mode=GUI"/>
+            <arg value="--java-options"/>
+            <arg value="-Dinstance=${build.uuid}"/>
+            <arg value="--java-options"/>
+            <arg value="-Dapp.version=${project.version}"/>
+            <arg value="--java-options"/>
+            <arg value="-Dapp.home=$APPDIR" />
+        </exec>
+
+    </target>
+
+    <!-- ===================================================== -->
+    <!-- macOS -->
+    <!-- ===================================================== -->
+
+    <target name="launcher-mac" if="isMac">
+
+        <!-- CLI -->
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_01}${nl}</echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_02}${nl}</echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_03}${nl}</echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_04}${nl}</echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=-Dapp.init.mode=CLI${nl}</echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=-Dinstance=${build.uuid}${nl}</echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=-Dapp.version=${project.version}${nl}</echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">icon=${basedir}/config/icon.icns${nl}</echo>
+
+    </target>
+
+    <target name="package-mac" if="isMac">
+
+        <exec executable="${java.home}/bin/jpackage">
+        	<arg value="--name"/>
+        	<arg value="Kagerow"/>
+            <arg value="--app-version"/>
+            <arg value="${project.version}"/>
+            <arg value="--type"/>
+            <arg value="app-image"/>
+            <arg value="--vendor"/>
+            <arg value="sakulabo.com"/>
+            <arg value="--module"/>
+            <arg value="com.sakulabo.application/com.sakulabo.application.Main"/>
+            <arg value="--input"/>
+            <arg value="${project.build.directory}/dist"/>
+            <arg value="--dest"/>
+            <arg value="${project.build.directory}/release"/>
+            <arg value="--temp"/>
+            <arg value="${project.build.directory}/temp"/>
+            <arg value="--module-path"/>
+            <arg value="${project.build.directory}/library"/>
+            <arg value="--runtime-image"/>
+            <arg value="${project.build.directory}/jre"/>
+        	<arg value="--add-launcher"/>
+        	<arg value="Kagerow-cli=${cli_launcher_file}"/>
+            <arg value="--icon"/>
+        	<arg value="${basedir}/config/icon.icns"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_01}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_02}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_03}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_04}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_05}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_06}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_07}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_08}"/>
+            <arg value="--java-options"/>
+            <arg value="-Dapp.init.mode=GUI"/>
+            <arg value="--java-options"/>
+            <arg value="-Dinstance=${build.uuid}"/>
+            <arg value="--java-options"/>
+            <arg value="-Dapp.version=${project.version}"/>
+            <arg value="--java-options"/>
+            <arg value="-Xdock:name=Kagerow"/>
+            <arg value="--java-options"/>
+            <arg value="-Xdock:icon=$APPDIR/Resources/icon.png"/>
+            <arg value="--java-options"/>
+            <arg value="-Dapp.home=$APPDIR" />
+        </exec>
+
+    </target>
+
+    <!-- ===================================================== -->
+    <!-- Linux -->
+    <!-- ===================================================== -->
+
+    <target name="launcher-linux" if="isLinux">
+
+        <!-- CLI -->
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_01}${nl}</echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_02}${nl}</echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_03}${nl}</echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_04}${nl}</echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=-Dapp.init.mode=CLI${nl}</echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=-Dinstance=${build.uuid}${nl}</echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=-Dapp.version=${project.version}${nl}</echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">icon=${basedir}/config/icon.png${nl}</echo>
+
+    </target>
+
+    <target name="package-linux" if="isLinux">
+
+        <exec executable="${java.home}/bin/jpackage">
+        	<arg value="--name"/>
+        	<arg value="Kagerow"/>
+            <arg value="--app-version"/>
+            <arg value="${project.version}"/>
+            <arg value="--type"/>
+            <arg value="app-image"/>
+            <arg value="--vendor"/>
+            <arg value="sakulabo.com"/>
+            <arg value="--module"/>
+            <arg value="com.sakulabo.application/com.sakulabo.application.Main"/>
+            <arg value="--input"/>
+            <arg value="${project.build.directory}/dist"/>
+            <arg value="--dest"/>
+            <arg value="${project.build.directory}/release"/>
+            <arg value="--temp"/>
+            <arg value="${project.build.directory}/temp"/>
+            <arg value="--module-path"/>
+            <arg value="${project.build.directory}/library"/>
+            <arg value="--runtime-image"/>
+            <arg value="${project.build.directory}/jre"/>
+        	<arg value="--add-launcher"/>
+        	<arg value="Kagerow-cli=${cli_launcher_file}"/>
+            <arg value="--icon"/>
+        	<arg value="${basedir}/config/icon.png"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_01}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_02}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_03}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_04}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_05}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_06}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_07}"/>
+            <arg value="--java-options"/>
+            <arg value="${vmoption_08}"/>
+            <arg value="--java-options"/>
+            <arg value="-Dapp.init.mode=GUI"/>
+            <arg value="--java-options"/>
+            <arg value="-Dinstance=${build.uuid}"/>
+            <arg value="--java-options"/>
+            <arg value="-Dapp.version=${project.version}"/>
+            <arg value="--java-options"/>
+            <arg value="-Dapp.home=$APPDIR" />
+        </exec>
+
+    </target>
+
+    <!-- ===================================================== -->
+    <!-- JRE -->
+    <!-- ===================================================== -->
+
+    <target name="runtime">
+
+    	<echo message="[------- ランタイムモジュール構築開始 -------]"/>
+
+        <exec executable="${java.home}/bin/jlink">
+            <arg value="--module-path=${java.home}/jmods"/>
+            <arg value="--add-modules=ALL-MODULE-PATH"/>
+            <arg value="--output=${project.build.directory}/jre"/>
+        </exec>
+
+    </target>
+
+    <!-- ===================================================== -->
+    <!-- dist構築 -->
+    <!-- ===================================================== -->
+
+    <target name="dist">
+
+    	<echo message="[------- アプリケーション構造構築開始 -------]"/>
+
+        <!-- config -->
+        <copy todir="${project.build.directory}/dist/config">
+            <fileset dir="${basedir}/../manager">
+                <include name="JITCompileOptions.properties"/>
+            </fileset>
+            <fileset dir="${basedir}/config">
+                <include name="Launcher.properties"/>
+                <include name="VMOptions.properties"/>
+            </fileset>
+        </copy>
+
+        <!-- library -->
+        <copy todir="${project.build.directory}/library">
+            <fileset dir="${basedir}/../core/target">
+                <include name="application-core.jar"/>
+            </fileset>
+            <fileset dir="${basedir}/../core/target/library">
+                <include name="h2-2.3.232.jar"/>
+            </fileset>
+            <fileset dir="${project.build.directory}">
+                <include name="application.jar"/>
+            </fileset>
+        </copy>
+    	
+    	<!-- license -->
+        <copy todir="${project.build.directory}/dist/license">
+            <fileset dir="${basedir}/../">
+                <include name="ReleaseNotes.txt"/>
+                <include name="LICENSE"/>
+            	<include name="THIRD-PARTY-NOTICES.txt"/>
+            	<include name="licenses/*/LICENSE.txt"/>
+            </fileset>
+        </copy>
+
+    </target>
+
+    <!-- ===================================================== -->
+    <!-- jpackage -->
+    <!-- ===================================================== -->
+
+    <target name="package" depends="
+                package-windows,
+                package-mac,
+                package-linux,
+                execute">
+
+    	<echo message="[------- 配布パッケージ構築開始 -------]"/>
+
+    </target>
+
+    <target name="execute">
+        <chmod perm="755">
+            <fileset dir="${project.build.directory}/release"/>
+        </chmod>
+    </target>
+
+    <!-- ===================================================== -->
+    <!-- archive -->
+    <!-- ===================================================== -->
+
+    <!-- Windows -->
+    <target name="archive-windows" if="isWindows">
+        <zip destfile="${project.build.directory}/Kagerow.zip">
+            <fileset dir="${project.build.directory}/release"/>
+        </zip>
+    </target>
+
+    <!-- Unix -->
+    <target name="archive-unix" if="isUnix">
+        <tar destfile="${project.build.directory}/Kagerow.tar.gz" compression="gzip">
+            <tarfileset dir="${project.build.directory}/release" mode="755"/>
+        </tar>
+    </target>
+
+    <!-- 実行 -->
+    <target name="archive"
+            depends="
+                archive-windows,
+                archive-unix"/>
+	
+	<!-- ===================================================== -->
+    <!-- staging -->
+    <!-- ===================================================== -->
+	
+	<!-- Windows -->
+	<target name="staging-windows" if="isWindows">
+		<exec executable="${project.build.directory}/release/Kagerow.exe" failonerror="true"/>
+	</target>
+	
+	<!-- Linux -->
+	<target name="staging-linux" if="isLinux">
+		<exec executable="${project.build.directory}/release/Kagerow" failonerror="true"/>
+	</target>
+	
+	<!-- Mac -->
+	<target name="staging-mac" if="isMac">
+			<exec executable="${project.build.directory}/release/Kagerow.app/Contents/MacOS/Kagerow" failonerror="true"/>
+	</target>
+	
+	<!-- 実行 -->
+	<target name="staging" if="isRunApp">
+
+		<echo message="[------- アプリケーション起動 -------]"/>
+		
+		<antcall target="staging-windows"/>
+		<antcall target="staging-linux"/>
+		<antcall target="staging-mac"/>
+
+	</target>
+
+</project>

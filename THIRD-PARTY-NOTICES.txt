@@ -1,0 +1,15 @@
+This product, "Kagerow", includes third-party software components.
+
+------------------------------------------------------------
+Third-Party Components
+------------------------------------------------------------
+
+H2 Database Engine
+Copyright (c) H2 Group
+
+License:
+EPL 1.0 OR MPL 2.0
+
+https://h2database.com
+
+------------------------------------------------------------

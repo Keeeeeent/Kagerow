@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kagerow-script>
+
+	<!-- スクリプト共通設定宣言部 -->
+	<configuration>
+		<name>#{key5}</name>
+		<summary>#{key5}向けのKSQLです</summary>
+		<mode>#{key4}</mode>
+		<schema>#{key3}</schema>
+		<cache>test-test-test-#{key3}</cache>
+	</configuration>
+
+	<!-- 環境変数宣言部 -->
+	<environment>
+		<env name="key" value="1"/>
+		<env name="key2" value="2"/>
+		<env name="key3" value="test"/>
+		<env name="key4" value="Oracle"/>
+		<env name="key5" value="テスト"/>
+		<env name="key6" value="FROM"/>
+	</environment>
+	
+	<!-- プラグイン宣言部 -->
+	<plugins>
+		<input>
+			<plugin id="xxx00#{key}" package="#{key3}" name="#{key3}" next="xxx00#{key2}">
+				<param name="param#{key}">param#{key}</param>
+				<param name="param2">param2</param>
+				<param name="param3">param1</param>
+			</plugin>
+			<plugin id="xxx002" name="test" />
+		</input>
+		<output>
+			<plugin id="xxx00#{key}" package="#{key3}" name="#{key3}" next="xxx00#{key2}">
+				<param name="param#{key}">param1</param>
+				<param name="param2">param#{key2}</param>
+				<param name="param3">param1</param>
+			</plugin>
+			<plugin id="xxx002" name="test" />
+		</output>
+	</plugins>
+	
+	<!-- KSQL宣言部 -->
+	<ksqls>
+		<ksql id="zzz00#{key}" name="sqlno#{key}" next="zzz00#{key2}">
+			<variable-declaration>
+				<variable name="PARAM_0#{key}" value="DUAL#{key}"/>
+				<variable name="PARAM_02" value="DUAL2"/>
+				<variable name="PARAM_03" value="DUAL3"/>
+			</variable-declaration>
+			<sql>
+				SELECT * FROM @{PARAM_01}
+					WHERE X = @{PARAM_02}
+				ORDER BY #{key} , @{PARAM_03};
+			</sql>
+		</ksql>
+		<ksql id="zzz00#{key2}" name="sqlno#{key2}">
+			<variable-declaration />
+			<sql>
+				SELECT * #{key6} DUAL;
+			</sql>
+		</ksql>
+	</ksqls>
+	
+	<!-- コマンド宣言部 -->
+	<command>
+		<environmental-variables>
+			<variable name="PARAM_0#{key}" value="test#{key}"/>
+			<variable name="PARAM_02" value="test2"/>
+		</environmental-variables>
+		<cmd mode="sh">
+			sh test.sh ${PARAM_0#{key}} ${PARAM_02}
+		</cmd>
+	</command>
+	
+</kagerow-script>

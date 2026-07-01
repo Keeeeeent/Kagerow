@@ -1,0 +1,29 @@
+# common
+Servers
+RemoteSystemsTempFiles
+.metadata
+target
+.apt_generated
+.apt_generated_tests
+.kagerow
+developer-tools
+
+# manager
+manager/JITCompileOptions.properties
+
+# public
+/public/openjdk/*tar
+/public/openjdk/*zip
+/public/openjdk/inuse/*
+!/public/openjdk/inuse/.gitkeep
+
+/public/document/*
+!/public/document/.gitkeep
+
+# builder
+builder/evidence/*
+!builder/evidence/.gitkeep
+
+# core
+/core/logs/*
+!/core/logs/.gitkeep

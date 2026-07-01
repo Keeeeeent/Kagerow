@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+| Kagerowアプリケーションのコンエキスを設定するための設定ファイルです。
+| 設定内容によってはKagerowアプリケーションが起動しなくなる可能性があるので慎重に設定してください
+ -->
+<KagerowApplication>
+
+	<!-- アプリケーションロガー設定 -->
+	<Logger>
+		<Level>INFO</Level>
+		<Console>TRUE</Console>
+	</Logger>
+
+	<!-- DI設定 -->
+	<DIContext>
+		<Entry-Point>com.sakulabo.application.common.initializer.ApplicationInitializer</Entry-Point>
+		<Wait-Time>100</Wait-Time>
+	</DIContext>
+
+	<!-- コンテキスト設定 -->
+	<Contexts>
+		<Context type="KagerowSystem">
+			<Environment>
+				<Property key="" value=""/>
+			</Environment>
+		</Context>
+		<Context type="KagerowPluginPackage">
+			<Environment>
+				<Property key="" value=""/>
+			</Environment>
+		</Context>
+		<Context type="KagerowPlugin">
+			<Environment>
+				<Property key="CsvOutput" value="KagerowCSVPlugin"/>
+				<Property key="TsvOutput" value="KagerowTSVPlugin"/>
+			</Environment>
+		</Context>
+		<Context type="KagerowVirtualFile">
+			<Environment>
+				<Property key="" value=""/>
+			</Environment>
+		</Context>
+		<Context type="KagerowCache">
+			<Environment>
+				<Property key="" value=""/>
+			</Environment>
+		</Context>
+		<Context type="KagerowSetting">
+			<Environment>
+				<Property key="ScriptPanelMaxTabCount" value="10"/>
+			</Environment>
+		</Context>
+	</Contexts>
+
+	<!-- KDB設定 -->
+	<KDB>
+		<!-- 実行計画設定 -->
+		<Execution-Plan>
+			<Max-Task-Size>1000</Max-Task-Size>
+			<Max-Record-Size>10000</Max-Record-Size>
+			<Max-Fecth-Size>10000</Max-Fecth-Size>
+		</Execution-Plan>
+		<!-- チャンクロード設定 -->
+		<Chunk-Lorder>
+			<Bulk-Insert-Unit>1000</Bulk-Insert-Unit>
+			<Thread-Pool-Size>100</Thread-Pool-Size>
+		</Chunk-Lorder>
+		<!-- クエリクリエイター設定 -->
+		<Query-Uri-Creater>
+			<Cache-Size>131072</Cache-Size>
+			<Page-Size>32768</Page-Size>
+		</Query-Uri-Creater>
+		<!-- チャンク生成設定 -->
+		<Chunk-Creater>
+			<!-- 1チャンクあたりのデータサイズ -->
+			<Chunk-size>50</Chunk-size>
+			<!-- 日付フォーマット設定 -->
+			<DateFormat>
+				<!-- 共通フォーマット設定 -->
+				<Case format="yyyy-MM-dd'T'HH:mm:ss" />
+				<Case format="yyyy-MM-dd'T'HH:mm" />
+				<Case format="yyyy-MM-dd'T'HH" />
+				<Case format="yyyy-MM-dd" />
+				<Case format="yyyy-MM-dd HH:mm:ss" />
+				<Case format="yyyy-MM-dd HH:mm" />
+				<Case format="yyyy-MM-dd HH" />
+				<Case format="yyyy/MM/dd HH:mm:ss" />
+				<Case format="yyyy/MM/dd HH:mm" />
+				<Case format="yyyy/MM/dd HH" />
+				<Case format="yyyy/MM/dd" />
+				<Case format="yyyyMMdd HHmmss" />
+				<Case format="yyyyMMdd" />
+				<Case format="dd/MM/yyyy HH:mm:ss" />
+				<Case format="dd/MM/yyyy HH:mm" />
+				<Case format="dd/MM-yyyy HH" />
+				<Case format="dd/MM-yyyy" />
+				<Case format="dd-MM-yyyy HH:mm:ss" />
+				<Case format="dd-MM-yyyy HH:mm" />
+				<Case format="dd-MM-yyyy HH" />
+				<Case format="dd-MM-yyyy" />
+				<!-- 英語フォーマット設定 -->
+				<Case format="dd-MMM-yyyy HH:mm:ss" locale="en_US" />
+				<Case format="dd-MMM-yyyy HH:mm" locale="en_US" />
+				<Case format="dd-MMM-yyyy HH" locale="en_US" />
+				<Case format="dd-MMM-yyyy" locale="en_US" />
+				<Case format="EEE, dd MMM yyyy HH:mm:ss" locale="en_US" />
+				<Case format="EEE, dd MMM yyyy HH:mm" locale="en_US" />
+				<!-- 日本語フォーマット設定 -->
+				<Case format="yyyy'年'M'月'd'日' H'時'm'分's'秒'" locale="ja_JP" />
+				<Case format="yyyy'年'M'月'd'日' H'時'm'分'" locale="ja_JP" />
+				<Case format="yyyy'年'M'月'd'日'" locale="ja_JP" />
+				<Case format="M'月'd'日' H:mm:ss" locale="ja_JP" />
+				<Case format="M'月'd'日' H:mm" locale="ja_JP" />
+				<Case format="M'月'd'日'" locale="ja_JP" />
+				<Case format="yyyy'年'M'月'd'日'(E) H'時'mm'分'ss'秒'" locale="ja_JP" />
+				<Case format="yyyy'年'M'月'd'日'(E) H'時'mm'分'" locale="ja_JP" />
+				<Case format="yyyy'年'M'月'd'日'(E)" locale="ja_JP" />
+				<Case format="uuuu'年'MM'月'dd'日T'HH'時'mm'分'ss'秒'" locale="ja_JP" />
+			</DateFormat>
+		</Chunk-Creater>
+	</KDB>
+	
+	<!-- ObjectInputFilter設定 -->
+	<ObjectInputFilter>
+		<Max-Depth>1000</Max-Depth>
+		<Max-Array-Length>5000</Max-Array-Length>
+		<Allowed-Class-List></Allowed-Class-List>
+	</ObjectInputFilter>
+
+</KagerowApplication>

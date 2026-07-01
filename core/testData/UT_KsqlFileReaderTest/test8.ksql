@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kagerow-script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="KsqlSchema.xsd">
+
+	<!-- スクリプト共通設定宣言部 -->
+	<configuration>
+		<name>テスト</name>
+		<summary>テスト向けのKSQLです</summary>
+		<schema>test</schema>
+	</configuration>
+	
+	<!-- プラグイン宣言部 -->
+	
+	<!-- KSQL宣言部 -->
+	<ksqls>
+		<ksql id="zzz002" name="sqlno2">
+			<variable-declaration />
+			<sql>
+				SELECT * FROM DUAL;
+			</sql>
+		</ksql>
+	</ksqls>
+	
+	<!-- コマンド宣言部 -->
+	<command>
+		<environmental-variables />
+		<cmd mode="sh">
+			sh test.sh ${PARAM_01} ${PARAM_02}
+		</cmd>
+	</command>
+	
+</kagerow-script>

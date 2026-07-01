@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kagerow-script>
+
+	<!-- スクリプト共通設定宣言部 -->
+	<configuration>
+		<name>テスト</name>
+		<summary>テスト向けのKSQLです</summary>
+		<mode>Oracle</mode>
+		<schema>test</schema>
+	</configuration>
+	
+	<!-- プラグイン宣言部 -->
+	
+	<!-- KSQL宣言部 -->
+	<ksqls>
+		<ksql id="zzz001" name="sqlno1" next="zzz002">
+			<variable-declaration>
+				<variable name="PARAM_01" value="${Test002[0]}"/>
+			</variable-declaration>
+			<sql>
+				SELECT COLUMN_7 , NULL FROM @{PARAM_01}
+					CROSS JOIN DUAL;
+			</sql>
+		</ksql>
+	</ksqls>
+	
+		<!-- コマンド宣言部 -->
+	<command>
+		<cmd mode="sh">
+			pwd
+			java --version
+		</cmd>
+	</command>
+	
+</kagerow-script>

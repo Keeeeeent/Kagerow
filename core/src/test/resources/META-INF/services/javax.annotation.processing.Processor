@@ -1,0 +1,4 @@
+com.sakulabo.regulation.annotation.processor.AppComponentProcessor
+com.sakulabo.regulation.annotation.processor.AppLoggerProcessor
+com.sakulabo.regulation.annotation.processor.UseJITCompilerProcessor
+com.sakulabo.regulation.annotation.processor.AppPluginProcessor

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+
+  <!-- フォーマット定義 -->
+  <numFmts count="4">
+    <numFmt numFmtId="164" formatCode="yyyy-mm-dd"/>
+    <numFmt numFmtId="165" formatCode="yyyy-mm-dd hh:mm:ss"/>
+    <numFmt numFmtId="166" formatCode="0.###############"/>
+    <numFmt numFmtId="167" formatCode="0"/>
+  </numFmts>
+
+  <fonts count="2">
+    <font/>
+    <font>
+      <b/>
+    </font>
+  </fonts>
+
+  <fills count="2">
+    <fill><patternFill patternType="none"/></fill>
+    <fill>
+      <patternFill patternType="solid">
+        <fgColor rgb="FFD9E1F2"/>
+      </patternFill>
+    </fill>
+  </fills>
+
+  <borders count="2">
+    <border/>
+    <border>
+      <left style="thin"><color auto="1"/></left>
+      <right style="thin"><color auto="1"/></right>
+      <top style="thin"><color auto="1"/></top>
+      <bottom style="thin"><color auto="1"/></bottom>
+    </border>
+  </borders>
+
+  <cellStyleXfs count="1">
+    <xf/>
+  </cellStyleXfs>
+
+  <!-- スタイル定義 -->
+  <cellXfs count="7">
+
+    <!-- 0: 通常 -->
+    <xf fontId="0" fillId="0" borderId="1"/>
+
+    <!-- 1: ヘッダー -->
+    <xf fontId="1" fillId="1" borderId="1"
+        applyFont="1" applyFill="1"/>
+
+    <!-- 2: 枠線のみ -->
+    <xf fontId="0" fillId="0" borderId="1"/>
+
+    <!-- 3: 日付 -->
+    <xf fontId="0" fillId="0" borderId="1"
+        numFmtId="164"
+        applyNumberFormat="1"/>
+
+    <!-- 4: タイムスタンプ -->
+    <xf fontId="0" fillId="0" borderId="1"
+        numFmtId="165"
+        applyNumberFormat="1"/>
+
+    <!-- 5: 小数 -->
+    <xf fontId="0" fillId="0" borderId="1"
+        numFmtId="166"
+        applyNumberFormat="1"/>
+
+    <!-- 6: 整数 -->
+    <xf fontId="0" fillId="0" borderId="1"
+        numFmtId="167"
+        applyNumberFormat="1"/>
+
+  </cellXfs>
+
+</styleSheet>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<kagerow-script>
+    <configuration>
+        <name>テスト</name>
+        <summary>テスト向けのKSQLです（修正版）</summary>
+        <mode>Oracle</mode>
+        <schema>test</schema>
+        <cache>default</cache>
+    </configuration>
+    <environment>
+        <env name="test" value="sss"/>
+    </environment>
+    <ksqls>
+        <ksql id="zzz001" name="sqlno1" next="zzz002">
+            <variable-declaration>
+                <variable name="PARAM_01" value="${Test002[0]}"/>
+            </variable-declaration>
+            <sql>SELECT COLUMN_7 , NULL FROM @{PARAM_01}
+					CROSS JOIN DUAL;</sql>
+        </ksql>
+        <ksql id="zzz002" name="sqlno2" next="zzz003">
+            <variable-declaration>
+                <variable name="PARAM_01" value="${Test002[0]}"/>
+            </variable-declaration>
+            <sql>SELECT * , NULL FROM @{PARAM_01}
+					CROSS JOIN DUAL;</sql>
+        </ksql>
+        <ksql id="zzz003" name="sqlno3">
+            <sql>SELECT * FROM ${Test002[0]};</sql>
+        </ksql>
+    </ksqls>
+    <command>
+        <environmental-variables>
+            <variable name="test" value="sssss"/>
+        </environmental-variables>
+        <cmd mode="sh">pwd</cmd>
+    </command>
+</kagerow-script>

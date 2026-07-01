@@ -1,0 +1,349 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	
+	<groupId>com.sakulabo</groupId>
+	<artifactId>application-core</artifactId>
+	<version>1.0.0</version>
+	<description>アプリケーションの共通仕様を規定するモジュールです</description>
+
+	<packaging>jar</packaging>
+
+	<properties>
+		<build.file.name>${project.name}</build.file.name>
+		<core.version>1.0.0</core.version>
+		<maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+		<maven-dependency-plugin.version>3.6.0</maven-dependency-plugin.version>
+		<maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+
+		<!-- テストコードの記述に必要なライブラリを導入 -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.10.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest</artifactId>
+			<version>3.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<version>3.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-suite-api</artifactId>
+			<version>1.10.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-suite</artifactId>
+			<version>1.10.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>5.18.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- SpotBugs -->
+		<dependency>
+			<groupId>com.github.spotbugs</groupId>
+			<artifactId>spotbugs-annotations</artifactId>
+			<version>4.8.6</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- H2 -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>2.3.232</version>
+		</dependency>
+
+	</dependencies>
+
+	<!-- ビルド共通処理 -->
+	<build>
+		<finalName>application-core</finalName>
+		<resources>
+	        <!-- 通常resources -->
+	        <resource>
+	            <directory>src/main/resources</directory>
+	        </resource>
+	    </resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<executions>
+					<!-- Step 1: プロセッサーをコンパイル -->
+					<execution>
+						<id>custom-apt</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<configuration>
+							 <compilerArgs>
+								<arg>-proc:none</arg>
+							</compilerArgs>
+						</configuration>
+					</execution>
+					<!-- Step 2: 通常のソースを、上のプロセッサーで再コンパイル -->
+					<execution>
+						<id>default-compile</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<configuration>
+							<compilerArgs>
+								<!-- classesをプロセッサパスとして追加 -->
+								<arg>-processorpath</arg>
+								<arg>${project.build.directory}/classes</arg>
+							</compilerArgs>
+						</configuration>
+					</execution>
+					<!-- Step 3: テストコードも同様にプロセッサーパスを追加 -->
+					<execution>
+						<id>default-testCompile</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+						<configuration>
+							<fork>true</fork>
+							<compilerArgs>
+								<arg>-proc:none</arg>
+							</compilerArgs>
+						</configuration>
+					</execution>
+				</executions>
+				<configuration>
+					<source>25</source>
+					<target>25</target>
+				</configuration>
+			</plugin>
+			<!-- JUnit 5 でのテスト実行に必要なプラグインを導入 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M5</version>
+				<configuration>
+					<argLine>
+					 <![CDATA[
+						${argLine} 
+						--add-opens com.sakulabo.core/com.sakulabo.core.Processor.archive=ALL-UNNAMED
+						--add-opens com.sakulabo.core/com.sakulabo.core.Processor.database=ALL-UNNAMED
+						--add-opens com.sakulabo.core/com.sakulabo.core.Processor.migration=ALL-UNNAMED
+						--add-opens com.sakulabo.core/com.sakulabo.core.Processor.plan=ALL-UNNAMED
+						--add-opens com.sakulabo.core/com.sakulabo.core.Processor.plugin=ALL-UNNAMED
+						--add-opens com.sakulabo.core/com.sakulabo.core.Processor.script=ALL-UNNAMED
+						--add-opens com.sakulabo.core/com.sakulabo.core.Provides=ALL-UNNAMED
+						--add-opens com.sakulabo.core/com.sakulabo.library.csv=ALL-UNNAMED
+						--add-opens com.sakulabo.core/com.sakulabo.library.sql=ALL-UNNAMED
+						--add-opens com.sakulabo.core/com.sakulabo.library.text=ALL-UNNAMED
+						--add-opens com.sakulabo.core/com.sakulabo.library.tsv=ALL-UNNAMED
+						--add-opens com.sakulabo.core/com.sakulabo.library.xml=ALL-UNNAMED
+					]]>
+					</argLine>
+					<systemPropertyVariables>
+						<user.home>${project.basedir}/../</user.home>
+						<app.logs.dir>.kagerow/logs</app.logs.dir>
+						<app.io.archivedatadir>.kagerow/database</app.io.archivedatadir>
+						<app.io.tmpdir>.kagerow/tmp</app.io.tmpdir>
+						<java.io.tmpdir>.kagerow/tmp</java.io.tmpdir>
+						<app.class.pool.size>100</app.class.pool.size>
+					</systemPropertyVariables>
+					<!-- テストクラスごとに JVM を再起動 -->
+					<forkCount>1</forkCount>
+					<reuseForks>false</reuseForks>
+					<skipAfterFailureCount>1</skipAfterFailureCount>
+				</configuration>
+			</plugin>
+			<!-- Jacoco プラグインを導入 -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.14</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+				 <configuration>
+					<skip>false</skip>
+					 <includes>
+						 <include>com/sakulabo/**</include>
+					 </includes>
+				</configuration>
+			</plugin>
+			<!-- Javac実行向けの依存関係ファイル抽出（JCTree対応のアノテーションプロセッサコンパイル専用） -->
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>${maven-dependency-plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/library</outputDirectory>
+							<includeScope>compile</includeScope>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+							<excludeArtifactIds>
+								regulation
+							</excludeArtifactIds>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Javac実行（JCTree対応のアノテーションプロセッサコンパイル専用） -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<phase>process-classes</phase>
+						<configuration>
+							<mainClass>com.sakulabo.regulation.Main</mainClass>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- JavaAgent設定 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.3.0</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Premain-Class>com.sakulabo.launcher.Main</Premain-Class>
+							<Agent-Class>com.sakulabo.launcher.Main</Agent-Class>
+							<Can-Redefine-Classes>true</Can-Redefine-Classes>
+							<Can-Retransform-Classes>true</Can-Retransform-Classes>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>3.1.0</version>
+				<inherited>false</inherited>
+				<executions>
+					<!-- ライセンスファイル対応 -->
+					<execution>
+						<id>create-license</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<echo message="[------- ライセンスファイル格納 -------]"/>
+						        <!-- license -->
+						        <copy todir="${project.build.directory}/classes/META-INF/license">
+						            <fileset dir="${basedir}/../">
+						                <include name="THIRD-PARTY-NOTICES.txt"/>
+						                <include name="licenses/*"/>
+						            </fileset>
+						        </copy>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											exec-maven-plugin
+										</artifactId>
+										<versionRange>
+											[3.1.0,)
+										</versionRange>
+										<goals>
+											<goal>java</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-antrun-plugin
+										</artifactId>
+										<versionRange>
+											[3.1.0,)
+										</versionRange>
+										<goals>
+											<goal>run</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+</project>
