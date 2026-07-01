@@ -4,9 +4,11 @@ import java.util.Objects;
 
 import com.sakulabo.core.Kagerow.Utilities.KagerowFileState;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * ファイルマネージャ実装クラスです
- * 
+ *
  * @author keeeeeent
  */
 public final class StateManager implements Cloneable {
@@ -33,6 +35,7 @@ public final class StateManager implements Cloneable {
 	 * 現在のステートを取得します
 	 * @return ステート
 	 */
+	@SuppressFBWarnings("UG_SYNC_SET_UNSYNC_GET")
 	public KagerowFileState getState() {
 		return switch (state) {
 		case ReadyState _ -> KagerowFileState.Ready;
