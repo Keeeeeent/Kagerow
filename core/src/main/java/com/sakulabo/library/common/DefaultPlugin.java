@@ -10,9 +10,11 @@ import java.util.Objects;
 
 import com.sakulabo.regulation.spi.PluginAdapter.PluginValidationException;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * プラグイン共通処理バンドル抽象クラス
- * 
+ *
  * @author keeeeeent
  */
 public abstract class DefaultPlugin implements DataSelecter {
@@ -132,6 +134,7 @@ public abstract class DefaultPlugin implements DataSelecter {
 	 * @param name パラメーター名称
 	 * @throws PluginValidationException バリデーションエラー
 	 */
+	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	protected final void validParentPath(Map<String, String> params, String name) throws PluginValidationException {
 		Path result = getPath(params, name);
 		if (Objects.isNull(result)) {

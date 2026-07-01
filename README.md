@@ -50,7 +50,7 @@ GUI/CLIアプリケーション、ライブラリなど幅広い範囲で使用�
 - **その他**：JDBC(H2)
 
 ## 🔧 インストール  
-**インストール**は専用のインストーラーを実行することですぐに使用ができます。
+**インストール**は任意のパスでダウンロードファイルを解凍するだけです。
 
 ### 💿 ダウンロード 
 
@@ -66,15 +66,15 @@ GUI/CLIアプリケーション、ライブラリなど幅広い範囲で使用�
     <tbody>
       <tr>
         <td rowspan=1">Windous</td>
-        <td>-</td>
+        <td><a href="https://github.com/Keeeeeent/Kagerow/releases/download/v1.0.0-%CE%B1/Kagerow-windous.zip">取得</a></td>
         <td>zip</td>
-        <td>-</td>
+        <td>68.3</td>
       </tr>
        <tr>
         <td rowspan="1">Mac OS</td>
-        <td>-</td>
+        <td><a href="https://github.com/Keeeeeent/Kagerow/releases/download/v1.0.0-%CE%B1/Kagerow-macos.tar.gz">取得</a></td>
         <td>tar</td>
-        <td>-</td>
+        <td>70.9</td>
       </tr>
       <tr>
         <td rowspan="1">Linux</td>
@@ -84,9 +84,9 @@ GUI/CLIアプリケーション、ライブラリなど幅広い範囲で使用�
       </tr>
       <tr>
         <td>LibraryOnly</td>
-        <td>-</td>
+         <td><a href="https://github.com/Keeeeeent/Kagerow/releases/download/v1.0.0-%CE%B1/application-core.jar">取得</a></td>
         <td>jar</td>
-        <td>-</td>
+        <td>1</td>
       </tr>
     </tbody>
 </table>
