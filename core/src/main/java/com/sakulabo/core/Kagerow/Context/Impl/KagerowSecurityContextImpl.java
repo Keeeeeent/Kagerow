@@ -41,9 +41,11 @@ import com.sakulabo.core.Processor.security.AppAESPassEncrypter;
 import com.sakulabo.core.Processor.security.AppHashEncrypter;
 import com.sakulabo.core.Processor.security.PBEKeyEncrypter;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Kagerowが管理するセキュリティアクセスコンテンツです
- * 
+ *
  * @author keeeeeent
  */
 @AppJMX(name = "Context", options = { "type=KagerowSecurityContext" })
@@ -151,6 +153,7 @@ public final class KagerowSecurityContextImpl extends BaseKagerowContext<Kagerow
 	 * パスワードを再設定します
 	 * @param pass 再設定するパスワード
 	 */
+	@SuppressFBWarnings("SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA")
 	public synchronized void changePass(String pass) {
 		try {
 
@@ -288,7 +291,7 @@ public final class KagerowSecurityContextImpl extends BaseKagerowContext<Kagerow
 	 * Kagerowセキュリティーコンテキストの初期化を行います
 	 * @param uri エントリー直結URI(FileSystemの向き先が仮想FS)
 	 * @param name コンテキスト登録名称
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	static void initialize(URI uri, String name)
 			throws Exception {

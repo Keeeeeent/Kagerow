@@ -5,8 +5,9 @@ RemoteSystemsTempFiles
 target
 .apt_generated
 .apt_generated_tests
-.kagerow
 developer-tools
+/.kagerow/*/*
+!/.kagerow/*/.gitkeep
 
 # manager
 manager/JITCompileOptions.properties
