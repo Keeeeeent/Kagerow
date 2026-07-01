@@ -107,38 +107,38 @@ GUI/CLIアプリケーション、ライブラリなど幅広い範囲で使用�
 アプリケーションの起動は非常に簡単です。</br>
 アプリケーションアイコンをダブルクリック、または専用コマンドをプロンプトで入力することで起動できます。
 
-![](./public/manual/img/初期表示.png)
+![](public/manual/img/初期表示.png)
 
 ### スクリプト作成
 
 さて、初めてのスクリプトを作成してみましょう。</br>
 まずは画面左上のファイルをクリックし、スクリプト追加ボタンをクリックしてください。
 
-![](./public/manual/img/スクリプト追加メニュー選択.png)
+![](public/manual/img/スクリプト追加メニュー選択.png)
 
 スクリプト追加ボタン押下後、新規スクリプトのタブが追加されます。
 
-![](./public/manual/img/スクリプト追加メニュークリック.png)
+![](public/manual/img/スクリプト追加メニュークリック.png)
 
 追加されたスクリプトをあなたの目的にあった名称と概要に変更しましょう。
 
-![](./public/manual/img/名称と概要を修正.png)
+![](public/manual/img/名称と概要を修正.png)
 
 最後に実行するSQLを追加します。</br>
 画面上部のKSQLボタンを押下し、画面を切り替えてください。
 
-![](./public/manual/img/KSQLへ画面切り替え.png)
+![](public/manual/img/KSQLへ画面切り替え.png)
 
 画面の切り替えができたら追加ボタンをクリックし、実行するSQLを追加しましょう！
 
-![](./public/manual/img/KSQL追加.png)
+![](public/manual/img/KSQL追加.png)
 
 ### スクリプト保存
 
 スクリプトの保存は簡単です。</br>
 画面左上のファイルメニューからスクリプト保存ボタンを押下するか、Ctrl+Sで行えます。
 
-![](./public/manual/img/スクリプト保存メニュー選択.png)
+![](public/manual/img/スクリプト保存メニュー選択.png)
 
 ### データ取込
 
@@ -264,18 +264,18 @@ sequenceDiagram
 データの取り込みも非常に簡単です。</br>
 画面左上のファイルをクリックし、データ取込ボタンをクリックしてください。
 
-![](./public/manual/img/データ取込メニュー選択.png)
+![](public/manual/img/データ取込メニュー選択.png)
 
 続けて取込対象のファイルを選択し、オプションを選択しましょう！
 
-![](./public/manual/img/データ取込オプション選択.png)
+![](public/manual/img/データ取込オプション選択.png)
 
 オプションが選択できたら実行ボタンを押下しデータを取り込みます。</br>
 正常に取り込みができていればコンテキストが追加されているはずです。
 
-![](./public/manual/img/コンテキスト追加.png)
+![](public/manual/img/コンテキスト追加.png)
 
-![](./public/manual/img/コンテキスト詳細.png)
+![](public/manual/img/コンテキスト詳細.png)
 
 ### スクリプト編集
 
@@ -302,7 +302,7 @@ sequenceDiagram
 | スクリプト環境変数 | スクリプト実行時に使用できる環境変数を指定できます。 |
 | キャッシュ        | KDBをキャッシュします。 |
 
-![](./public/manual/img/共通設定.png)
+![](public/manual/img/共通設定.png)
 
 ##### 選択可能な実行モード
 
@@ -354,7 +354,7 @@ sequenceDiagram
 | SQL             | SQLを記述します |
 | 置換変数         | SQLで使用する変数宣言を行います |
 
-![](./public/manual/img/KSQL編集.png)
+![](public/manual/img/KSQL編集.png)
 
 ##### 追加・削除
 
@@ -374,7 +374,7 @@ KSQLはKDB構築後であれば個別実行を行うことが可能です。</br
 基本的によく使用する機能に関しては`デフォルトプラグイン`として用意してありますが、</br>
 必要に応じてカスタムプラグインをご自身で作成・追加することも可能です。
 
-![](./public/manual/img/プラグインへ画面切り替え.png)
+![](public/manual/img/プラグインへ画面切り替え.png)
 
 ##### デフォルトプラグイン一覧
 
@@ -397,7 +397,7 @@ KSQLはKDB構築後であれば個別実行を行うことが可能です。</br
 プラグインにはパラメータ設定が必要となる場合があります。</br>
 パラメータの設定は該当プラグインの編集ボタンを押下してください。
 
-![](./public/manual/img/プラグインパラメータ設定.png)
+![](public/manual/img/プラグインパラメータ設定.png)
 
 #### 外部コマンド設定（Command）
 
@@ -418,14 +418,14 @@ KSQLはKDB構築後であれば個別実行を行うことが可能です。</br
 - sh
 - bash
 
-![](./public/manual/img/コマンドへ画面切り替え.png)
+![](public/manual/img/コマンドへ画面切り替え.png)
 
 ### スクリプト実行
 
 スクリプトの実行は`スクリプト実行`ボタンを押下するか、Ctrl+Entryで可能です。</br>
 実行が完了すると結果が表示されます。
 
-![](./public/manual/img/スクリプト実行.png)
+![](public/manual/img/スクリプト実行.png)
 
 ## ☕️ developer
 開発者向けのページは[こちら](./public/design/index-README.md)です。
