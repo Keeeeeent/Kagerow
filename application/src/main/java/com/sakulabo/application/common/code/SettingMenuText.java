@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 
 /**
  * SettingMenuで表示するテキストを管理するコード値クラスです
- * 
+ *
  * @author keeeeeent
  */
 public enum SettingMenuText {
@@ -41,6 +41,7 @@ public enum SettingMenuText {
 	INFO_010,
 	/** パスワードの変更が完了しました */
 	INFO_011,
+
 	;
 
 	/** リソースバンドル */
@@ -66,6 +67,7 @@ public enum SettingMenuText {
 
 	/**
 	 * 指定されたパラメータを埋込文字として利用した文字列を生成します
+	 *
 	 * @param params 埋込文字リスト
 	 * @return 生成文字列
 	 */

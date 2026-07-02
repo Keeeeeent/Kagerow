@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
 
 /**
  * GUIで表示するテキストを管理するコード値クラスです
- * 
+ *
  * @author keeeeeent
  */
 public enum GUIText {
@@ -70,7 +70,7 @@ public enum GUIText {
 	SettingMenu_002(ApplicationConstProperty.DEFAULT_MNEMONIC),
 	/** SettingMenu(パスワード再設定) */
 	SettingMenu_003(ApplicationConstProperty.DEFAULT_MNEMONIC),
-	/** SettingMenu(パスワードリセット) */
+	/** SettingMenu(データリセット) */
 	SettingMenu_004(ApplicationConstProperty.DEFAULT_MNEMONIC),
 	/** SettingMenu(バックアップ作成) */
 	SettingMenu_005(ApplicationConstProperty.DEFAULT_MNEMONIC),
@@ -359,7 +359,7 @@ public enum GUIText {
 
 	/** CommonSettingPanel_001 適用 */
 	CommonSettingPanel_001(ApplicationConstProperty.DEFAULT_MNEMONIC),
-	
+
 	/** CacheSubContextPanelText_001 操作ボタン */
 	CacheSubContextPanelText_001(ApplicationConstProperty.DEFAULT_MNEMONIC),
 	/** CacheSubContextPanelText_002 削除ボタン */

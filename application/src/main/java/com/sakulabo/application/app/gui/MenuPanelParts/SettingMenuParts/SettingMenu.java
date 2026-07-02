@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import com.sakulabo.application.app.gui.MainFrame;
+import com.sakulabo.application.app.gui.ResetPassDialog;
 import com.sakulabo.application.app.gui.MenuPanelParts.AppMenu;
 import com.sakulabo.application.app.gui.MenuPanelParts.HelpMenuParts.HelpMenu;
 import com.sakulabo.application.common.code.GUIText;
@@ -36,14 +37,14 @@ import com.sakulabo.regulation.annotation.UseJITCompiler.JITCompilerOption;
 
 /**
  * 設定メニュー実装クラスです
- * 
+ *
  * @author keeeeeent
  */
 @KagerowComponent
 @GraphicComponent
 @JMenuItemMixin.Setting(title = GUIText.SettingMenu_002, actionCommand = SettingMenu.SECURE_BOOT)
 @JMenuItemMixin.Setting(title = GUIText.SettingMenu_003, actionCommand = SettingMenu.CHANGE_PASS)
-//@JMenuItemMixin.Setting(title = GUIText.SettingMenu_004, actionCommand = SettingMenu.RESET_PASS)
+@JMenuItemMixin.Setting(title = GUIText.SettingMenu_004, actionCommand = SettingMenu.RESET_PASS)
 @JMenuItemMixin.Setting(title = GUIText.SettingMenu_005, actionCommand = SettingMenu.EXPORT_BACKUP)
 @JMenuItemMixin.Setting(title = GUIText.SettingMenu_006, actionCommand = SettingMenu.IMPORT_BACKUP)
 @JMenuItemMixin.Setting(title = GUIText.SettingMenu_007, actionCommand = SettingMenu.MORE_SETTING)
@@ -74,6 +75,9 @@ public class SettingMenu extends AppMenu implements JMenuItemMixin {
 	/** 詳細設定パネル */
 	@KagerowInject
 	private AdvancedSettingsPanel advancedSettingsPanel;
+	/** パスワードリセットダイアログ */
+	@KagerowInject
+	private ResetPassDialog resetPassDialog;
 
 	/**
 	 * セキュアブートダイアログ
@@ -82,12 +86,12 @@ public class SettingMenu extends AppMenu implements JMenuItemMixin {
 
 		/**
 		 * パスワードを取得します
+		 *
 		 * @throws NamingException セキュアブートに切り替え失敗
 		 */
 		void setPass() throws NamingException {
 			// パスワード入力1回目
-			String pass = dialogHelper.showPasswordDialog(
-					SettingMenuText.INFO_003.toString(),
+			String pass = dialogHelper.showPasswordDialog(SettingMenuText.INFO_003.toString(),
 					SettingMenuText.INFO_004.toString());
 			if (Objects.isNull(pass) || pass.isEmpty()) {
 				// パスワードが未入力の場合、通知を行い処理を終了
@@ -95,8 +99,7 @@ public class SettingMenu extends AppMenu implements JMenuItemMixin {
 				return;
 			}
 			// パスワード入力2回目
-			String nextPass = dialogHelper.showPasswordDialog(
-					SettingMenuText.INFO_005.toString(),
+			String nextPass = dialogHelper.showPasswordDialog(SettingMenuText.INFO_005.toString(),
 					SettingMenuText.INFO_006.toString());
 			if (pass.equals(nextPass)) {
 				// パスワードが同じ場合セキュアブートに使用するパスワードとして設定
@@ -120,12 +123,12 @@ public class SettingMenu extends AppMenu implements JMenuItemMixin {
 
 		/**
 		 * パスワードを取得します
+		 *
 		 * @throws NamingException セキュアブートに切り替え失敗
 		 */
 		void setPass() throws NamingException {
 			// パスワード入力1回目
-			String pass = dialogHelper.showPasswordDialog(
-					SettingMenuText.INFO_003.toString(),
+			String pass = dialogHelper.showPasswordDialog(SettingMenuText.INFO_003.toString(),
 					SettingMenuText.INFO_004.toString());
 			if (Objects.isNull(pass) || pass.isEmpty()) {
 				// パスワードが未入力の場合、通知を行い処理を終了
@@ -133,8 +136,7 @@ public class SettingMenu extends AppMenu implements JMenuItemMixin {
 				return;
 			}
 			// パスワード入力2回目
-			String nextPass = dialogHelper.showPasswordDialog(
-					SettingMenuText.INFO_005.toString(),
+			String nextPass = dialogHelper.showPasswordDialog(SettingMenuText.INFO_005.toString(),
 					SettingMenuText.INFO_006.toString());
 			if (pass.equals(nextPass)) {
 				// セキュアブートに移行
@@ -145,38 +147,6 @@ public class SettingMenu extends AppMenu implements JMenuItemMixin {
 				// パスワードが異なる場合ユーザ通知実施
 				dialogHelper.showSystemWarning(SettingMenuText.INFO_009.toString());
 			}
-		}
-
-	}
-
-	/**
-	 * パスワードリセットダイアログ
-	 */
-	private class ResetPassDialog implements JDialogMixin {
-
-		/** {@inheritDoc} */
-		@Override
-		public Frame getParentFrame() {
-			return dialogHelper.getParent();
-		}
-
-		/**
-		 * JDialogMixin向けパネル生成メソッド
-		 * @param dialog 生成されたダイアログ
-		 * @return 生成パネル
-		 */
-		@JDialogMixin.Setting(HelpMenu.DISCLAIMER)
-		private JPanel createPanel(JDialog dialog) {
-			return new JPanel();
-		}
-
-		/**
-		 * JDialogMixinバイパスメソッド
-		 * @return ダイアログインスタンス
-		 * @throws Throwable ダイアログ生成失敗
-		 */
-		public JDialog createJDialog() throws Throwable {
-			return JDialogMixin.super.createJDialog(HelpMenu.DISCLAIMER, GUIText.EMPTY);
 		}
 
 	}
@@ -238,6 +208,7 @@ public class SettingMenu extends AppMenu implements JMenuItemMixin {
 
 		/**
 		 * JDialogMixin向けパネル生成メソッド
+		 *
 		 * @param dialog 生成されたダイアログ
 		 * @return 生成パネル
 		 */
@@ -248,6 +219,7 @@ public class SettingMenu extends AppMenu implements JMenuItemMixin {
 
 		/**
 		 * JDialogMixinバイパスメソッド
+		 *
 		 * @return ダイアログインスタンス
 		 * @throws Throwable ダイアログ生成失敗
 		 */
@@ -259,8 +231,9 @@ public class SettingMenu extends AppMenu implements JMenuItemMixin {
 
 	/**
 	 * デフォルトコンストラクタ
+	 *
 	 * @throws IllegalAccessException ハンドラーアクセスエラー
-	 * @throws NoSuchMethodException メソッド不明
+	 * @throws NoSuchMethodException  メソッド不明
 	 */
 	public SettingMenu() throws IllegalAccessException, NoSuchMethodException {
 		// メニューの設定
@@ -275,6 +248,7 @@ public class SettingMenu extends AppMenu implements JMenuItemMixin {
 
 	/**
 	 * メニューアイテムの活性制御を行います
+	 *
 	 * @param isSecure セキュアフラグ
 	 */
 	private void setMenu(boolean isSecure) {
@@ -313,6 +287,7 @@ public class SettingMenu extends AppMenu implements JMenuItemMixin {
 
 	/**
 	 * セキュアブートボタン押下時の処理を実行します
+	 *
 	 * @param e イベント
 	 */
 	@JMenuItemMixin.ActionCommand(SettingMenu.SECURE_BOOT)
@@ -337,6 +312,7 @@ public class SettingMenu extends AppMenu implements JMenuItemMixin {
 
 	/**
 	 * パスワード再設定ボタン押下時の処理を実行します
+	 *
 	 * @param e イベント
 	 */
 	@JMenuItemMixin.ActionCommand(SettingMenu.CHANGE_PASS)
@@ -356,15 +332,14 @@ public class SettingMenu extends AppMenu implements JMenuItemMixin {
 
 	/**
 	 * パスワードリセットボタン押下時の処理を実行します
+	 *
 	 * @param e イベント
 	 */
 	@JMenuItemMixin.ActionCommand(SettingMenu.RESET_PASS)
 	public synchronized void resetPass(ActionEvent e) {
 		try {
-			// ダイアログ生成
-			JDialog dialog = new ResetPassDialog().createJDialog();
-			// モデル設定ダイアログ表示&インポート処理実行
-			dialog.setVisible(true);
+			// リセットダイアログ表示&処理実行
+			resetPassDialog.resetPass();
 		} catch (Throwable exception) {
 			// ログ出力
 			KagerowLogger.newAppLogger().err(exception);
@@ -375,6 +350,7 @@ public class SettingMenu extends AppMenu implements JMenuItemMixin {
 
 	/**
 	 * バックアップ作成ボタン押下時の処理を実行します
+	 *
 	 * @param e イベント
 	 */
 	@JMenuItemMixin.ActionCommand(SettingMenu.EXPORT_BACKUP)
@@ -408,6 +384,7 @@ public class SettingMenu extends AppMenu implements JMenuItemMixin {
 
 	/**
 	 * バックアップ取込ボタン押下時の処理を実行します
+	 *
 	 * @param e イベント
 	 */
 	@JMenuItemMixin.ActionCommand(SettingMenu.IMPORT_BACKUP)
@@ -439,6 +416,7 @@ public class SettingMenu extends AppMenu implements JMenuItemMixin {
 
 	/**
 	 * 詳細設定ボタン押下時の処理を実行します
+	 *
 	 * @param e イベント
 	 */
 	@JMenuItemMixin.ActionCommand(SettingMenu.MORE_SETTING)
