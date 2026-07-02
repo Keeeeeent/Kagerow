@@ -3,9 +3,9 @@ import com.sakulabo.regulation.annotation.KagerowSpiModule;
 
 /**
  * GUIアプリケーションモジュールです
- * 
+ *
  * @provides com.sakulabo.core.Kagerow.Spi.KagerowAutomaticStarter
- * 
+ *
  * @author keeeeeent
  */
 
@@ -13,14 +13,17 @@ import com.sakulabo.regulation.annotation.KagerowSpiModule;
 
 	// KagerowGUIパッケージ（エントリ）
 	exports com.sakulabo.application;
-	
-	// KagerowGUI更改パッケージ
+
+	// KagerowGUI公開パッケージ
 	exports com.sakulabo.application.common.spi;
 
 	// KagerowGUI依存パッケージ
 	requires com.sakulabo.core;
 	requires java.management;
 	requires jdk.management;
+
+	// KagerowRPC依存パッケージ
+	requires jdk.httpserver;
 
 	// KagerowSPI
 	provides com.sakulabo.core.Kagerow.Spi.KagerowAutomaticStarter
