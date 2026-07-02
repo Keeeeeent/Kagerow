@@ -26,7 +26,7 @@ import com.sakulabo.core.Processor.log.AppLogMessage;
 
 /**
  * Kagerowアプリケーション専用データ移行基底クラスです
- * 
+ *
  * @author keeeeeent
  */
 abstract class AppDataDump {
@@ -34,11 +34,7 @@ abstract class AppDataDump {
 	/** Kagerow管理ディレクトリパス */
 	protected static final Path KAGEROW_HOME = AppPathUtils.createKagerowHomePath();
 	/** バックアップ対象ディレクトリ名称リスト */
-	protected static final List<String> BACKUP_TARGET_LIST = List.of(
-			"cache",
-			"database",
-			"plugin",
-			"runtime",
+	protected static final List<String> BACKUP_TARGET_LIST = List.of("cache", "database", "plugin", "runtime",
 			"setting");
 
 	/** バックアップ圧縮レベル（50%） */
@@ -47,7 +43,7 @@ abstract class AppDataDump {
 	protected static final int BUFFER_ZISE = 1024;
 
 	/**
-	 * データダンプ実装f内部クラス
+	 * データダンプ実装内部クラス
 	 */
 	private static class Dumper implements FileVisitor<Path> {
 
@@ -56,6 +52,7 @@ abstract class AppDataDump {
 
 		/**
 		 * デフォルトコンストラクタ
+		 *
 		 * @param zoutput 出力先
 		 */
 		Dumper(ZipOutputStream zoutput) {
@@ -152,15 +149,14 @@ abstract class AppDataDump {
 
 	/**
 	 * ダンプデータのエクスポートを実行します
+	 *
 	 * @param path エクスポート先ファイルパス
 	 * @throws IOException ダンプデータ出力失敗
 	 */
 	public final void exportDump(Path path) throws IOException {
 
 		// データバックアップ先初期化
-		try (
-				OutputStream output = createOutputStream(path);
-				ZipOutputStream zoutput = new ZipOutputStream(output)) {
+		try (OutputStream output = createOutputStream(path); ZipOutputStream zoutput = new ZipOutputStream(output)) {
 			// 圧縮率設定
 			zoutput.setLevel(COMPRESSION_LEVEL);
 			// バックアップ対象取得
@@ -178,6 +174,7 @@ abstract class AppDataDump {
 
 	/**
 	 * バックアップ対象のディレクトリか判定します
+	 *
 	 * @param path 対象パス
 	 * @return 判定結果
 	 */
@@ -191,6 +188,7 @@ abstract class AppDataDump {
 
 	/**
 	 * データエクスポート時の出力ストリームを生成します
+	 *
 	 * @param path 出力先パス
 	 * @return 出力ストリーム
 	 * @throws Exception 出力ストリーム生成失敗
@@ -199,13 +197,13 @@ abstract class AppDataDump {
 
 	/**
 	 * ダンプデータのインポートを実行します
+	 *
 	 * @param dump ダンプデータファイルパス
 	 * @throws IOException ダンプデータ取り込み失敗
 	 */
 	public final void importDump(Path dump) throws IOException {
 		// バックアップ展開
-		try (InputStream input = createInputStream(dump);
-				ZipInputStream zinput = new ZipInputStream(input)) {
+		try (InputStream input = createInputStream(dump); ZipInputStream zinput = new ZipInputStream(input)) {
 			// エントリーを1つづつ取得
 			ZipEntry entry;
 			while ((entry = zinput.getNextEntry()) != null) {
@@ -236,6 +234,7 @@ abstract class AppDataDump {
 
 	/**
 	 * 復元対象のエントリか判定します
+	 *
 	 * @param entry エントリー
 	 * @return 判定結果
 	 */
@@ -246,6 +245,7 @@ abstract class AppDataDump {
 
 	/**
 	 * データエクスポート時の出力ストリームを生成します
+	 *
 	 * @param path 出力先パス
 	 * @return 出力ストリーム
 	 * @throws Exception 出力ストリーム生成失敗

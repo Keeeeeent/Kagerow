@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 
 /**
  * GDialogHelperで表示するテキストを管理するコード値クラスです
- * 
+ *
  * @author keeeeeent
  */
 public enum DialogHelperText {
@@ -33,6 +33,10 @@ public enum DialogHelperText {
 	DialogHelper_SQL_ERROR_MSG,
 	/** コマンド実行エラー */
 	DialogHelper_CMD_ERROR_MSG,
+	/** アプリ初期化 */
+	DialogHelper_RESET_APP_TITLE,
+	/** アプリケーションの初期化を行いますか? */
+	DialogHelper_RESET_APP_MSG,
 	;
 
 	/** リソースバンドル */

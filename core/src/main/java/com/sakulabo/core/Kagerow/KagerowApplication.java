@@ -1,5 +1,6 @@
 package com.sakulabo.core.Kagerow;
 
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Objects;
 import java.util.Optional;
@@ -28,13 +29,14 @@ import com.sakulabo.core.Processor.config.AppConfigurationLorder;
 import com.sakulabo.core.Processor.config.AppObjectInputFilter;
 import com.sakulabo.core.Processor.jmx.AppJMXInitializer;
 import com.sakulabo.core.Processor.log.AppLogger;
+import com.sakulabo.core.Processor.migration.AppDataReset;
 import com.sakulabo.core.Provides.LoardDIBeansProvider;
 import com.sakulabo.launcher.Inject.LoardDIBeans;
 import com.sakulabo.regulation.spi.LoardDIBeansAdapter;
 
 /**
  * Kagerowアプリケーションの基幹クラスです
- * 
+ *
  * @author keeeeeent
  */
 public final class KagerowApplication {
@@ -58,6 +60,7 @@ public final class KagerowApplication {
 
 		/**
 		 * デフォルトコンストラクタ
+		 *
 		 * @param name 起動モード文字列表現
 		 */
 		private Mode(String name) {
@@ -92,7 +95,7 @@ public final class KagerowApplication {
 	/**
 	 * デフォルトコンストラクタ<br/>
 	 * ※外部からの実行は禁止
-	 * 
+	 *
 	 * @param password アプリケーション暗号化解除パスワード
 	 */
 	private KagerowApplication(String... password) {
@@ -130,6 +133,7 @@ public final class KagerowApplication {
 
 	/**
 	 * アプリケーションコンフィグの取得
+	 *
 	 * @return アプリケーションコンフィグ
 	 */
 	public static KagerowConfiguration getConfig() {
@@ -138,6 +142,7 @@ public final class KagerowApplication {
 
 	/**
 	 * アプリケーションコンテキストの取得
+	 *
 	 * @return アプリケーションコンテキスト
 	 */
 	public Context getContext() {
@@ -146,6 +151,7 @@ public final class KagerowApplication {
 
 	/**
 	 * DIコンテキストの取得
+	 *
 	 * @return DIコンテキスト
 	 */
 	public LoardDIBeansAdapter<Binding> getDIContext() {
@@ -154,6 +160,7 @@ public final class KagerowApplication {
 
 	/**
 	 * アプリケーションロガーの取得
+	 *
 	 * @return アプリケーションロガーインスタンス
 	 */
 	public KagerowLogger getLogger() {
@@ -163,6 +170,7 @@ public final class KagerowApplication {
 	/**
 	 * アプリケーション監視インスタンスの取得<br/>
 	 * アプリケーション初期化前に呼び出しを行うとnullを返却します
+	 *
 	 * @return アプリケーション監視インスタンス
 	 */
 	public synchronized static KagerowJMX getJMX() {
@@ -172,6 +180,7 @@ public final class KagerowApplication {
 
 	/**
 	 * アプリケーションのバージョン情報を取得します
+	 *
 	 * @return バージョン情報
 	 */
 	public static String getVersion() {
@@ -184,6 +193,7 @@ public final class KagerowApplication {
 
 	/**
 	 * Kagerowインスタンスを取得します
+	 *
 	 * @param password アプリケーション暗号化解除パスワード
 	 * @return Kagerowインスタンス
 	 */
@@ -193,7 +203,8 @@ public final class KagerowApplication {
 
 	/**
 	 * Kagerowインスタンスを取得します
-	 * @param adapter Beanロード判定機能アダプター
+	 *
+	 * @param adapter  Beanロード判定機能アダプター
 	 * @param password アプリケーション暗号化解除パスワード
 	 * @return Kagerowインスタンス
 	 */
@@ -256,18 +267,30 @@ public final class KagerowApplication {
 					try {
 						// パスワードの入力が正常に行われた場合、初期化実施
 						KagerowApplication.getInstance(automaticStarter.getAdapter(), pass);
-					} catch (ApplicationError e) {
-						// パスワード失敗で発生した例外か確認
-						Object flug = e.getFlug();
-						if (KagerowSecurityContentImpl.PASSWORD_MISS.equals(flug)) {
-							// パスワードミスの場合
-							automaticStarter.mistake();
-						} else {
-							// 想定外のエラー
-							automaticStarter.unexpected(e);
+						// パスワード検証成功
+						automaticStarter.success();
+					} catch (Throwable e) {
+						try {
+							if (e instanceof ApplicationError appError) {
+								// パスワード失敗で発生した例外か確認
+								Object flug = appError.getFlug();
+								if (KagerowSecurityContentImpl.PASSWORD_MISS.equals(flug)) {
+									// パスワードミスの場合
+									automaticStarter.mistake();
+								} else {
+									// 想定外のエラー
+									automaticStarter.unexpected(e);
+								}
+							} else {
+								// // 想定外の例外が発生した場合、ログ書き込み
+								AppLogger.getLogger().err(e);
+							}
+							// アプリケーション終了
+							throw new ApplicationError(e);
+						} finally {
+							// JMX監視停止
+							KagerowApplication.getJMX().stop();
 						}
-						// JMX監視停止
-						KagerowApplication.getJMX().stop();
 					}
 				}
 			} else {
@@ -286,6 +309,7 @@ public final class KagerowApplication {
 
 	/**
 	 * セキュアブートに変更します
+	 *
 	 * @param password パスワード
 	 * @throws NamingException コンテキスト生成失敗
 	 */
@@ -297,6 +321,7 @@ public final class KagerowApplication {
 
 	/**
 	 * アプリケーションで設定されているパスワードを変更します
+	 *
 	 * @param password 変更後パスワード
 	 * @throws NamingException セキュアブート未設定
 	 */
@@ -308,7 +333,18 @@ public final class KagerowApplication {
 	}
 
 	/**
+	 * アプリケーションのデータをリセットします
+	 *
+	 * @throws IOException データリセット失敗
+	 */
+	public static void resetApplication() throws IOException {
+		AppDataReset appDataReset = new AppDataReset();
+		appDataReset.resetApplication();
+	}
+
+	/**
 	 * アプリケーション起動モードを取得します
+	 *
 	 * @return アプリケーション起動モード列挙クラス
 	 */
 	public static Mode getApplicationMode() {
