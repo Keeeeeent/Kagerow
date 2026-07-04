@@ -4,8 +4,10 @@ import com.sakulabo.regulation.annotation.KagerowSpiModule;
 /**
  * GUIアプリケーションモジュールです
  *
+ * @uses com.sakulabo.application.common.spi.RpcTarget;
+ * @uses com.sakulabo.application.common.spi.ViewRunner;
  * @provides com.sakulabo.core.Kagerow.Spi.KagerowAutomaticStarter
- *
+ * @provides com.sakulabo.application.common.spi.RpcTarget
  * @author keeeeeent
  */
 
@@ -24,6 +26,14 @@ import com.sakulabo.regulation.annotation.KagerowSpiModule;
 
 	// KagerowRPC依存パッケージ
 	requires jdk.httpserver;
+	requires java.xml;
+
+	// KagerowRPC
+	uses com.sakulabo.application.common.spi.RpcTarget;
+	uses com.sakulabo.application.common.spi.ViewRunner;
+
+	provides com.sakulabo.application.common.spi.RpcTarget
+			with com.sakulabo.application.controller.Rpc.Impl.DataImportControllerImpl;
 
 	// KagerowSPI
 	provides com.sakulabo.core.Kagerow.Spi.KagerowAutomaticStarter

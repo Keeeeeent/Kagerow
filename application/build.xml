@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="KagerowBuilder" default="build">
-	
+
 	<!-- ===================================================== -->
 	<!-- 変数宣言 -->
 	<!-- ===================================================== -->
-	
+
 	<property name="vmoption_01" value="-client "/>
 	<property name="vmoption_02" value="-XX:+UseG1GC"/>
 	<property name="vmoption_03" value="-XX:+CrashOnOutOfMemoryError"/>
@@ -14,12 +14,12 @@
     <property name="vmoption_06" value="-XX:VMOptionsFile=$APPDIR/config/VMOptions.properties" />
     <property name="vmoption_07" value="-XX:CompileCommandFile=$APPDIR/config/JITCompileOptions.properties" />
     <property name="vmoption_08" value="-Dagentjar=mods/application-core.jar" />
-	
+
 	<property name="gui_launcher_file" value="${project.build.directory}/launcher/GUILauncher.properties"/>
 	<property name="cli_launcher_file" value="${project.build.directory}/launcher/CLILauncher.properties"/>
-	
+
 	<property name="nl" value="${line.separator}"/>
-	
+
     <!-- ===================================================== -->
     <!-- OS判定 -->
     <!-- ===================================================== -->
@@ -44,7 +44,7 @@
     <condition property="isUnix">
         <os family="unix"/>
     </condition>
-	
+
 	<condition property="isRunApp">
 		<and>
 	        <isset property="runApp"/>
@@ -376,7 +376,7 @@
                 <include name="application.jar"/>
             </fileset>
         </copy>
-    	
+
     	<!-- license -->
         <copy todir="${project.build.directory}/dist/license">
             <fileset dir="${basedir}/../">
@@ -386,6 +386,43 @@
             	<include name="licenses/*/LICENSE.txt"/>
             </fileset>
         </copy>
+
+    	<!-- certificate -->
+    	<exec executable="${java.home}/bin/keytool">
+    		<arg value="-genkeypair"/>
+	    	<arg value="-alias"/>
+    		<arg value="kagerow"/>
+    		<arg value="-keyalg"/>
+			<arg value="RSA"/>
+			<arg value="-keysize"/>
+    		<arg value="2048"/>
+    		<arg value="-validity"/>
+    		<arg value="36500"/>
+    		<arg value="-storetype"/>
+    		<arg value="PKCS12"/>
+    		<arg value="-keystore"/>
+    		<arg value="${project.build.directory}/dist/config/server.p12"/>
+    		<arg value="-storepass"/>
+    		<arg value="${build.uuid}"/>
+    		<arg value="-dname"/>
+    		<arg value="CN=Kagerow"/>
+    	</exec>
+
+    	<!-- crt -->
+    	<exec executable="${java.home}/bin/keytool">
+    		<arg value="-exportcert"/>
+	    	<arg value="-alias"/>
+    		<arg value="kagerow"/>
+    		<arg value="-storetype"/>
+    		<arg value="PKCS12"/>
+    		<arg value="-keystore"/>
+    		<arg value="${project.build.directory}/dist/config/server.p12"/>
+    		<arg value="-storepass"/>
+    		<arg value="${build.uuid}"/>
+    		<arg value="-rfc"/>
+    		<arg value="-file"/>
+    		<arg value="${project.build.directory}/dist/config/server.crt"/>
+    	</exec>
 
     </target>
 
@@ -432,31 +469,31 @@
             depends="
                 archive-windows,
                 archive-unix"/>
-	
+
 	<!-- ===================================================== -->
     <!-- staging -->
     <!-- ===================================================== -->
-	
+
 	<!-- Windows -->
 	<target name="staging-windows" if="isWindows">
 		<exec executable="${project.build.directory}/release/Kagerow.exe" failonerror="true"/>
 	</target>
-	
+
 	<!-- Linux -->
 	<target name="staging-linux" if="isLinux">
 		<exec executable="${project.build.directory}/release/Kagerow" failonerror="true"/>
 	</target>
-	
+
 	<!-- Mac -->
 	<target name="staging-mac" if="isMac">
 			<exec executable="${project.build.directory}/release/Kagerow.app/Contents/MacOS/Kagerow" failonerror="true"/>
 	</target>
-	
+
 	<!-- 実行 -->
 	<target name="staging" if="isRunApp">
 
 		<echo message="[------- アプリケーション起動 -------]"/>
-		
+
 		<antcall target="staging-windows"/>
 		<antcall target="staging-linux"/>
 		<antcall target="staging-mac"/>
