@@ -38,4 +38,10 @@ public enum RpcDataTypes {
 		this.typeStr = List.of(typeStr);
 	}
 
+	/** {@inheritDoc} */
+	@Override
+	public String toString() {
+		return typeStr.getFirst();
+	}
+
 }
