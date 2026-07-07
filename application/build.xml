@@ -387,43 +387,6 @@
             </fileset>
         </copy>
 
-    	<!-- certificate -->
-    	<exec executable="${java.home}/bin/keytool">
-    		<arg value="-genkeypair"/>
-	    	<arg value="-alias"/>
-    		<arg value="kagerow"/>
-    		<arg value="-keyalg"/>
-			<arg value="RSA"/>
-			<arg value="-keysize"/>
-    		<arg value="2048"/>
-    		<arg value="-validity"/>
-    		<arg value="36500"/>
-    		<arg value="-storetype"/>
-    		<arg value="PKCS12"/>
-    		<arg value="-keystore"/>
-    		<arg value="${project.build.directory}/dist/config/server.p12"/>
-    		<arg value="-storepass"/>
-    		<arg value="${build.uuid}"/>
-    		<arg value="-dname"/>
-    		<arg value="CN=Kagerow"/>
-    	</exec>
-
-    	<!-- crt -->
-    	<exec executable="${java.home}/bin/keytool">
-    		<arg value="-exportcert"/>
-	    	<arg value="-alias"/>
-    		<arg value="kagerow"/>
-    		<arg value="-storetype"/>
-    		<arg value="PKCS12"/>
-    		<arg value="-keystore"/>
-    		<arg value="${project.build.directory}/dist/config/server.p12"/>
-    		<arg value="-storepass"/>
-    		<arg value="${build.uuid}"/>
-    		<arg value="-rfc"/>
-    		<arg value="-file"/>
-    		<arg value="${project.build.directory}/dist/config/server.crt"/>
-    	</exec>
-
     </target>
 
     <!-- ===================================================== -->

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified">
+
+    <!-- 構造体定義 -->
+    <xs:complexType name="StructType">
+        <xs:element name="struct">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+    </xs:complexType>
+
+    <xs:complexType name="RpcParamType">
+        <xs:element name="param">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="value" type="StructType" minOccurs="1" maxOccurs="1"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+    </xs:complexType>
+
+	<!-- ルート要素 -->
+	<xs:element name="methodCall">
+		<xs:complexType>
+			<xs:sequence>
+                <xs:element name="methodName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="params" type="RpcParamType" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+				
+</xs:schema>

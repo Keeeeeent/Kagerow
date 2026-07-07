@@ -39,7 +39,7 @@ public class DataImportControllerImpl implements DataImportController {
 	 * @throws NameAlreadyBoundException            既に同等の仮想DB物理ファイルが生成されている場合
 	 * @throws VirtualFileConstructionFailException 仮想DB物理ファイル生成失敗
 	 */
-	@RpcMethod(methodName = "import", xsd = "data-import.xsd")
+	@RpcMethod("import")
 	public void dataImport(@RpcMethodParam(value = "mode", required = true) StringReceiveDataType paramMode,
 			@RpcMethodParam(value = "schema", required = true) StringReceiveDataType paramSchema,
 			@RpcMethodParam(value = "path", required = true) PathReceiveDataType paramPath,

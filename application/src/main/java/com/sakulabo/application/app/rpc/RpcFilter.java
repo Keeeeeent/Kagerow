@@ -15,7 +15,7 @@ import com.sun.net.httpserver.Filter;
  * @author keeeeeent
  */
 @Documented
-@Target(ElementType.METHOD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(RpcFilter.List.class)
 public @interface RpcFilter {
@@ -23,7 +23,7 @@ public @interface RpcFilter {
 	/**
 	 * 追加するフィルタ
 	 */
-	Class<? extends Filter> value();
+	Class<? extends Filter> filter();
 
 	/**
 	 * 必須フラグ
@@ -36,7 +36,7 @@ public @interface RpcFilter {
 	 * @author keeeeeent
 	 */
 	@Documented
-	@Target(ElementType.METHOD)
+	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface List {
 

@@ -7,18 +7,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * RPCメソッドマッピングアノテーションです
+ * アプリケーション共通で使用されるRPCエラーハンドリング定義実装です
  *
  * @author keeeeeent
  */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RpcMethod {
+public @interface RpcException {
 
 	/**
-	 * RPC呼び出し時名称
+	 * 処理対象例外
 	 */
-	String value();
+	Class<? extends Throwable> value();
 
 }

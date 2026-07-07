@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  * @author keeeeeent
  */
 @Documented
-@Target(ElementType.PARAMETER)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(RpcSendParam.List.class)
 public @interface RpcSendParam {
@@ -34,7 +34,7 @@ public @interface RpcSendParam {
 	 * @author keeeeeent
 	 */
 	@Documented
-	@Target(ElementType.PARAMETER)
+	@Target(ElementType.FIELD)
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface List {
 

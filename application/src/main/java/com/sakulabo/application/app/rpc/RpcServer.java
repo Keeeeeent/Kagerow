@@ -2,11 +2,11 @@ package com.sakulabo.application.app.rpc;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -18,7 +18,9 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 
 import com.sun.net.httpserver.HttpsServer;
+import com.sakulabo.application.app.rpc.filters.ExceptionFilter;
 import com.sakulabo.application.app.rpc.filters.LoggerFilter;
+import com.sakulabo.application.app.rpc.filters.RpcMethodFilter;
 import com.sakulabo.application.common.spi.RpcTarget;
 import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
@@ -34,15 +36,57 @@ import com.sun.net.httpserver.HttpsParameters;
  */
 public final class RpcServer extends HttpsConfigurator {
 
+	/** キーストア物理ファイルパス生成 */
+	public static final Path SERVER_P12 = KagerowUtilities.createAppDirPath().resolve("config", "server.p12");
+	/** サーバ証明書物理パス */
+	public static final Path SERVER_CRT = KagerowUtilities.createAppDirPath().resolve("config", "server.crt");
+
 	/** 暗号化方式規定 */
 	private final static SSLContext TLS;
 	static {
 		try {
+
+			// JAVA_HOME生成
+			Path JAVA_HOME = Paths.get(System.getProperty("java.home")).normalize().toAbsolutePath();
+
+			// 初回起動の場合キーファイル生成
+			if (Files.notExists(SERVER_P12)) {
+
+				{
+					// サーバキーペア作成
+					ProcessBuilder createServerP12 = new ProcessBuilder();
+					// 実行コマンド設定
+					createServerP12.command(JAVA_HOME.resolve("bin", "keytool").toString(), "-genkeypair", "-alias",
+							"kagerow", "-keyalg", "RSA", "-keysize", "2048", "-validity", "36500", "-storetype",
+							"PKCS12", "-keystore", SERVER_P12.toString(), "-storepass", System.getProperty("instance"),
+							"-dname", "CN=Kagerow");
+					// ビルダー設定調整（入出力継承）
+					createServerP12.inheritIO();
+					// コマンド実行
+					Process serverP12Cmd = createServerP12.start();
+					serverP12Cmd.waitFor();
+				}
+
+				{
+					// サーバ証明書生成
+					ProcessBuilder createServerCrt = new ProcessBuilder();
+					// 実行コマンド設定
+					createServerCrt.command(JAVA_HOME.resolve("bin", "keytool").toString(), "-exportcert", "-alias",
+							"kagerow", "-storetype", "PKCS12", "-keystore", SERVER_P12.toString(), "-storepass",
+							System.getProperty("instance"), "-rfc", "-file", SERVER_CRT.toString());
+					// ビルダー設定調整（入出力継承）
+					createServerCrt.inheritIO();
+					// コマンド実行
+					Process serverCrtCmd = createServerCrt.start();
+					serverCrtCmd.waitFor();
+				}
+
+			}
+
 			// キーストア生成
 			KeyStore ks = KeyStore.getInstance("PKCS12");
 			// サーバSSL取込
-			Path path = KagerowUtilities.createAppDirPath().resolve("config", "server.p12");
-			try (InputStream input = Files.newInputStream(path)) {
+			try (InputStream input = Files.newInputStream(SERVER_P12)) {
 				ks.load(input, System.getProperty("instance", "").toCharArray());
 			}
 			// キーマネージャー生成
@@ -58,6 +102,7 @@ public final class RpcServer extends HttpsConfigurator {
 		} catch (Exception e) {
 			throw new Error(e);
 		}
+
 	}
 
 	/** Httpサーバインスタンス */
@@ -65,7 +110,7 @@ public final class RpcServer extends HttpsConfigurator {
 	/** サーバアドレス */
 	private final InetSocketAddress address;
 	/** 共通フィルター */
-	private final List<Filter> commonFilter = List.of(new LoggerFilter());
+	private final List<Filter> commonFilter = List.of(new ExceptionFilter(), new LoggerFilter(), new RpcMethodFilter());
 
 	/**
 	 * デフォルトコンストラクタ
@@ -116,30 +161,12 @@ public final class RpcServer extends HttpsConfigurator {
 			if (ctxClazz.isAnnotationPresent(RpcSetting.class)) {
 				// RPC設定情報取得
 				RpcSetting setting = ctxClazz.getDeclaredAnnotation(RpcSetting.class);
-				// 呼び出しメソッド確認
-				for (Method method : ctxClazz.getDeclaredMethods()) {
-					// RPC対象メソッドの場合処理
-					if (method.isAnnotationPresent(RpcMethod.class)) {
-						// RPCメソッド設定情報取得
-						RpcMethod rpcMethod = method.getDeclaredAnnotation(RpcMethod.class);
-						try {
-							// ハンドラ生成
-							RpcHttpHandler handler = new RpcHttpHandler(ctx, setting, rpcMethod, method);
-							// ハンドラ登録
-							HttpContext httpContext = server.createContext(handler.createURL(), handler);
-							// 登録ログ出力
-							KagerowLogger.newAppLogger()
-									.log(Level.INFO, String.format("[BindedBy]:%s [URL]:https://%s:%d%s",
-											ctxClazz.getSimpleName(), getHost(), getPort(), handler.createURL()),
-											new Object[0]);
-							// コンテキスト初期設定
-							setHttpContext(httpContext, handler);
-						} catch (IllegalAccessException e) {
-							// 登録失敗ログ出力
-							KagerowLogger.newAppLogger().err(e);
-						}
-					}
-				}
+				// エンドポイント設定
+				RpcHttpHandlerContext context = new RpcHttpHandlerContext(this, ctx);
+				// ハンドラ登録
+				HttpContext httpContext = server.createContext("/rpc/" + setting.value(), context);
+				// コンテキスト初期設定
+				setHttpContext(httpContext, context);
 			}
 		}
 	}
@@ -150,7 +177,7 @@ public final class RpcServer extends HttpsConfigurator {
 	 * @param ctx     コンテキスト
 	 * @param handler ハンドラ
 	 */
-	private void setHttpContext(HttpContext ctx, RpcHttpHandler handler) {
+	private void setHttpContext(HttpContext ctx, RpcHttpHandlerContext handler) {
 		// フィルター一覧取得
 		List<Filter> filters = ctx.getFilters();
 		// 共通フィルタ設定
