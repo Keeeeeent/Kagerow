@@ -1,3 +1,8 @@
+![Release](https://img.shields.io/github/v/release/Keeeeeent/Kagerow)
+![Downloads](https://img.shields.io/github/downloads/Keeeeeent/Kagerow/total)
+![License](https://img.shields.io/github/license/Keeeeeent/Kagerow)
+![Java](https://img.shields.io/badge/Java-25-orange)
+![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue)
 ![KageriwLogo](core/src/main/resources/image/application.png)
 
 ## 🎁 概要  
@@ -34,6 +39,21 @@ GUI/CLIアプリケーション、ライブラリなど幅広い範囲で使用�
     - 外部コマンド設定（Command）
       - 実行モード一覧
   - スクリプト実行
+  - KSQLファイル
+    - ファイル構成
+      - ルート要素
+      - configuration
+      - environment
+      - plugins
+        - plugin
+        - param
+      - ksqls
+        - ksql
+        - variable
+      - command
+        - スクリプト種別
+        - environmental-variables
+      - サンプルスクリプト
 - [developer](#-developer)  
 
 ## 🚀 特徴  
@@ -66,13 +86,13 @@ GUI/CLIアプリケーション、ライブラリなど幅広い範囲で使用�
     <tbody>
       <tr>
         <td rowspan=1">Windous</td>
-        <td><a href="https://github.com/Keeeeeent/Kagerow/releases/download/v1.0.0-%CE%B1/Kagerow-windous.zip">取得</a></td>
+        <td><a href="https://github.com/Keeeeeent/Kagerow/releases/latest/download/Kagerow-windous.zip">取得</a></td>
         <td>zip</td>
         <td>68.3</td>
       </tr>
        <tr>
         <td rowspan="1">Mac OS</td>
-        <td><a href="https://github.com/Keeeeeent/Kagerow/releases/download/v1.0.0-%CE%B1/Kagerow-macos.tar.gz">取得</a></td>
+        <td><a href="https://github.com/Keeeeeent/Kagerow/releases/latest/download/Kagerow-macos.tar.gz">取得</a></td>
         <td>tar</td>
         <td>70.9</td>
       </tr>
@@ -84,7 +104,7 @@ GUI/CLIアプリケーション、ライブラリなど幅広い範囲で使用�
       </tr>
       <tr>
         <td>LibraryOnly</td>
-         <td><a href="https://github.com/Keeeeeent/Kagerow/releases/download/v1.0.0-%CE%B1/application-core.jar">取得</a></td>
+         <td><a href="https://github.com/Keeeeeent/Kagerow/releases/latest/download/application-core.jar">取得</a></td>
         <td>jar</td>
         <td>1</td>
       </tr>
@@ -192,7 +212,7 @@ GUI/CLIアプリケーション、ライブラリなど幅広い範囲で使用�
 
 - ${テーブル名[n]}
 - ${テーブル名[L]}
-- ${テーブル名[n-L]}
+- ${テーブル名[Ln]}
 
 ※nは0から始まる番号</br>
 ※Lは世代数の最後の添字となります
@@ -426,6 +446,321 @@ KSQLはKDB構築後であれば個別実行を行うことが可能です。</br
 実行が完了すると結果が表示されます。
 
 ![KagerowImg](public/manual/img/スクリプト実行.png)
+
+### KSQLファイル
+**Kagerow** は専用のXMLスキーマに沿って記述されるKSQLファイルを取り込み実行されます。</br>
+KSQLファイルの各セクションについてここからは説明します。
+
+#### ファイル構成
+KSQLファイルは以下の主要構成要素によって管理されています。
+
+```xml
+<kagerow-script>
+
+    <configuration>
+        <name>...</name>
+        <summary>...</summary>
+        <mode>...</mode>
+        <schema>...</schema>
+        <cache>...</cache> <!-- 任意 -->
+    </configuration>
+
+    <environment> <!-- 任意 -->
+        <env name="..." value="..." />
+    </environment>
+
+    <plugins> <!-- 任意 -->
+
+        <input>
+
+            <plugin
+                id="..."
+                name="..."
+                package="..."
+                next="...">
+
+                <param name="...">...</param>
+
+            </plugin>
+
+        </input>
+
+        <output>
+
+            <plugin ... />
+
+        </output>
+
+    </plugins>
+
+    <ksqls>
+
+        <ksql
+            id="..."
+            name="..."
+            next="...">
+
+            <variable-declaration>
+
+                <variable
+                    name="..."
+                    value="..." />
+
+            </variable-declaration>
+
+            <sql><![CDATA[
+                SELECT ...
+            ]]></sql>
+
+        </ksql>
+
+    </ksqls>
+
+    <command>
+
+        <environmental-variables>
+
+            <variable
+                name="..."
+                value="..." />
+
+        </environmental-variables>
+
+        <cmd mode="bash">
+            ...
+        </cmd>
+
+    </command>
+
+</kagerow-script>
+```
+
+---
+
+##### ルート要素
+
+| 要素 | 必須 | 説明 |
+|------|:---:|------|
+| `configuration` | ✅ | スクリプトの基本設定 |
+| `environment` | | スクリプトで利用する環境変数 |
+| `plugins` | | 入力・出力プラグインの定義 |
+| `ksqls` | ✅ | 実行するSQLの定義 |
+| `command` | | SQL実行後に実行するコマンド |
+
+---
+
+##### configuration
+
+| 要素 | 必須 | 説明 |
+|------|:---:|------|
+| `name` | ✅ | スクリプト名 |
+| `summary` | ✅ | スクリプトの説明 |
+| `mode` | ✅ | 実行モード |
+| `schema` | ✅ | スキーマバージョン |
+| `cache` | | キャッシュ設定 |
+
+---
+
+##### environment
+
+実行時に利用する環境変数を定義します。
+
+```xml
+<environment>
+
+    <env name="DB_HOST" value="localhost"/>
+
+    <env name="DB_PORT" value="5432"/>
+
+</environment>
+```
+
+| 属性 | 必須 | 説明 |
+|------|:---:|------|
+| `name` | ✅ | 環境変数名 |
+| `value` | ✅ | 環境変数の値 |
+
+---
+
+##### plugins
+
+プラグインは **input** と **output** に分類されます。
+
+```xml
+<plugins>
+
+    <input>
+
+        <plugin id="csv" name="CSV Reader">
+
+            <param name="path">employees.csv</param>
+
+            <param name="encoding">UTF-8</param>
+
+        </plugin>
+
+    </input>
+
+    <output>
+
+        <plugin id="excel" name="Excel Writer"/>
+
+    </output>
+
+</plugins>
+```
+
+###### plugin
+
+| 属性 | 必須 | 説明 |
+|------|:---:|------|
+| `id` | ✅ | プラグインID |
+| `name` | ✅ | プラグイン名 |
+| `package` | | プラグインのパッケージ名 |
+| `next` | | 次に実行するプラグインID |
+
+###### param
+
+| 属性 | 必須 | 説明 |
+|------|:---:|------|
+| `name` | ✅ | パラメータ名 |
+
+要素の値がパラメータの値になります。
+
+---
+
+##### ksqls
+
+```xml
+<ksqls>
+
+    <ksql id="main" name="社員一覧">
+
+        <variable-declaration>
+
+            <variable
+                name="table"
+                value="EMPLOYEE"/>
+
+        </variable-declaration>
+
+        <sql><![CDATA[
+            SELECT * FROM ${table};
+        ]]></sql>
+
+    </ksql>
+
+</ksqls>
+```
+
+###### ksql
+
+| 属性 | 必須 | 説明 |
+|------|:---:|------|
+| `id` | ✅ | SQLの識別子 |
+| `name` | ✅ | SQLの表示名 |
+| `next` | | 次に実行するSQLのID |
+
+###### variable
+
+| 属性 | 必須 | 説明 |
+|------|:---:|------|
+| `name` | ✅ | 変数名 |
+| `value` | ✅ | 変数の値 |
+
+---
+
+##### command
+
+`command` はすべてのSQL実行後に実行されます。
+
+```xml
+<command>
+
+    <environmental-variables>
+
+        <variable
+            name="OUTPUT"
+            value="./output"/>
+
+    </environmental-variables>
+
+    <cmd mode="bash">
+        echo "$OUTPUT"
+    </cmd>
+
+</command>
+```
+
+###### スクリプト種別
+
+| 値 | 説明 |
+|----|------|
+| `ps` | PowerShell |
+| `cmd` | Windows コマンドプロンプト |
+| `sh` | POSIX Shell |
+| `bash` | Bash |
+
+###### environmental-variables
+
+| 属性 | 必須 | 説明 |
+|------|:---:|------|
+| `name` | ✅ | 環境変数名 |
+| `value` | ✅ | 環境変数の値 |
+
+---
+
+##### サンプルスクリプト
+
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<kagerow-script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="KsqlSchema.xsd">
+    <configuration>
+        <name>練習スクリプト</name>
+        <summary>サンプルデータを使用しスクリプトの練習を行うことを目的としています</summary>
+        <mode>Oracle</mode>
+        <schema>t_sample</schema>
+        <cache>default</cache>
+    </configuration>
+    <environment>
+        <env name="CONST_VALUE" value="L0"/>
+    </environment>
+    <plugins>
+        <input>
+            <plugin id="zhGdm" name="KagerowDDLPlugin" package="default/1/0/0">
+                <param name="DDL"/>
+            </plugin>
+        </input>
+        <output>
+            <plugin id="czLMM" name="KagerowCSVPlugin" package="default/1/0/0">
+                <param name="OutputPath">#{HOME}/sample.csv</param>
+                <param name="DateFormat">YYYY-MM-dd</param>
+                <param name="IsEscape">false</param>
+                <param name="Charset">UTF-8</param>
+                <param name="KsqlId">fKPgo</param>
+                <param name="IsHeader">false</param>
+            </plugin>
+        </output>
+    </plugins>
+    <ksqls>
+        <ksql id="fKPgo" name="sample" next="fPODz">
+            <sql>SELECT * FROM ${test_table[#{CONST_VALUE}]}</sql>
+        </ksql>
+        <ksql id="fPODz" name="sample2">
+            <variable-declaration>
+                <variable name="SQL_PARAM" value="'KAGEROW'"/>
+            </variable-declaration>
+            <sql>SELECT * FROM VALUES((@{SQL_PARAM})) AS K_HLPER(DEF)</sql>
+        </ksql>
+    </ksqls>
+    <command>
+        <environmental-variables>
+            <variable name="TEST_ENV" value="テスト"/>
+        </environmental-variables>
+        <cmd mode="sh">echo $TEST_ENV</cmd>
+    </command>
+</kagerow-script>
+```
 
 ## ☕️ developer
 開発者向けのページは[こちら](./public/design/index-README.md)です。
