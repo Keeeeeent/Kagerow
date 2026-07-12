@@ -17,6 +17,7 @@ import com.sakulabo.application.app.gui.CenterPanelParts.ContextPanelParts.Schem
 import com.sakulabo.application.app.gui.CenterPanelParts.ContextPanelParts.SchemaParts.VirtualFileTableTabPanel;
 import com.sakulabo.application.app.gui.CenterPanelParts.ScriptPanelParts.ScriptPanel;
 import com.sakulabo.application.app.gui.MenuPanelParts.FileMenuParts.FileMenu;
+import com.sakulabo.application.app.rpc.RpcServer;
 import com.sakulabo.application.common.code.GUIText;
 import com.sakulabo.application.common.initializer.GraphicComponent;
 import com.sakulabo.application.common.mixin.AppMixin;
@@ -32,7 +33,7 @@ import com.sakulabo.regulation.annotation.KagerowInject;
 
 /**
  * GUIアプリケーションのメインフレーム実装クラスです
- * 
+ *
  * @author keeeeeent
  */
 @KagerowComponent
@@ -46,6 +47,9 @@ public class MainFrame extends WindowAdapter implements ViewRunner, JFrameMixin 
 	/** ロガー */
 	@KagerowInject
 	private KagerowLogger logger;
+	/** RPCサーバ */
+	@KagerowInject
+	private RpcServer rpcServer;
 	/** メインフレーム（上側） */
 	@KagerowInject
 	private MenuPanel menuPanel;
@@ -126,17 +130,14 @@ public class MainFrame extends WindowAdapter implements ViewRunner, JFrameMixin 
 		// フレームクローズ
 		frame.dispose();
 		// サブレームクローズ
-		for (AppTabPanel tabPanel : new AppTabPanel[] {
-				fileSchemaTabPanel,
-				fileTableTabPanel,
-				pluginTabPanel,
-				pkgTabPanel,
-				cacheTabPanel
-		}) {
+		for (AppTabPanel tabPanel : new AppTabPanel[] { fileSchemaTabPanel, fileTableTabPanel, pluginTabPanel,
+				pkgTabPanel, cacheTabPanel }) {
 			if (tabPanel.frame.isDisplayable()) {
 				tabPanel.frame.dispose();
 			}
 		}
+		// RPCサーバ停止
+		rpcServer.stop();
 	}
 
 	/** {@inheritDoc} */
@@ -159,9 +160,7 @@ public class MainFrame extends WindowAdapter implements ViewRunner, JFrameMixin 
 		}
 
 		// GUI初期化
-		AppPanel[] panelList = {
-				menuPanel, noticePanel, centerPanel
-		};
+		AppPanel[] panelList = { menuPanel, noticePanel, centerPanel };
 		for (AppPanel panel : panelList) {
 			panel.initialize();
 		}
@@ -184,6 +183,9 @@ public class MainFrame extends WindowAdapter implements ViewRunner, JFrameMixin 
 		centerPanel.lazyInitialize();
 		fileMenu.lazyInitialize();
 
+		// RPCサーバ起動
+		rpcServer.start();
+
 	}
 
 	/**
@@ -202,6 +204,7 @@ public class MainFrame extends WindowAdapter implements ViewRunner, JFrameMixin 
 
 	/**
 	 * 免責事項ダイアログをクローズします
+	 *
 	 * @throws IllegalAccessException ダイアログインスタンス未初期化の場合
 	 */
 	public void closeDialog() throws IllegalAccessException {

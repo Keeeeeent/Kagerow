@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.List;
 
+import com.sakulabo.regulation.annotation.KagerowComponent;
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpExchange;
 
@@ -12,6 +13,7 @@ import com.sun.net.httpserver.HttpExchange;
  *
  * @author keeeeeent
  */
+@KagerowComponent
 public class RpcMethodFilter extends Filter {
 
 	/**

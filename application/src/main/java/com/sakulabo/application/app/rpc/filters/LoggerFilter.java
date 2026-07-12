@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
+import com.sakulabo.regulation.annotation.KagerowComponent;
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpExchange;
 
@@ -18,6 +19,7 @@ import com.sun.net.httpserver.HttpExchange;
  *
  * @author keeeeeent
  */
+@KagerowComponent
 public class LoggerFilter extends Filter {
 
 	/** 開始ログフォーマット */

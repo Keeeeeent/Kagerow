@@ -40,7 +40,8 @@ public class DataImportControllerImpl implements DataImportController {
 	 * @throws VirtualFileConstructionFailException 仮想DB物理ファイル生成失敗
 	 */
 	@RpcMethod("import")
-	public void dataImport(@RpcMethodParam(value = "mode", required = true) StringReceiveDataType paramMode,
+	public void dataImport(
+			@RpcMethodParam(value = "mode", required = true) StringReceiveDataType paramMode,
 			@RpcMethodParam(value = "schema", required = true) StringReceiveDataType paramSchema,
 			@RpcMethodParam(value = "path", required = true) PathReceiveDataType paramPath,
 			@RpcMethodParam("charset") CharsetReceiveDataType paramCharset,

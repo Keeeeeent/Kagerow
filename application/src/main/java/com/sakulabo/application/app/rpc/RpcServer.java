@@ -24,6 +24,8 @@ import com.sakulabo.application.app.rpc.filters.RpcMethodFilter;
 import com.sakulabo.application.common.spi.RpcTarget;
 import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
+import com.sakulabo.regulation.annotation.KagerowComponent;
+import com.sakulabo.regulation.annotation.KagerowInject;
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpsConfigurator;
@@ -34,12 +36,13 @@ import com.sun.net.httpserver.HttpsParameters;
  *
  * @author keeeeeent
  */
+@KagerowComponent
 public final class RpcServer extends HttpsConfigurator {
 
 	/** キーストア物理ファイルパス生成 */
-	public static final Path SERVER_P12 = KagerowUtilities.createAppDirPath().resolve("config", "server.p12");
+	public static final Path SERVER_P12 = KagerowUtilities.createKagerowHomePath().resolve("setting", "server.p12");
 	/** サーバ証明書物理パス */
-	public static final Path SERVER_CRT = KagerowUtilities.createAppDirPath().resolve("config", "server.crt");
+	public static final Path SERVER_CRT = KagerowUtilities.createKagerowHomePath().resolve("setting", "server.crt");
 
 	/** 暗号化方式規定 */
 	private final static SSLContext TLS;
@@ -109,20 +112,28 @@ public final class RpcServer extends HttpsConfigurator {
 	private final HttpsServer server;
 	/** サーバアドレス */
 	private final InetSocketAddress address;
-	/** 共通フィルター */
-	private final List<Filter> commonFilter = List.of(new ExceptionFilter(), new LoggerFilter(), new RpcMethodFilter());
+
+	/** 例外フィルター */
+	@KagerowInject
+	private ExceptionFilter exceptionFilter;
+	/** ログフィルター */
+	@KagerowInject
+	private LoggerFilter loggerFilter;
+	/** RPC呼び出しフィルター */
+	@KagerowInject
+	private RpcMethodFilter rpcMethodFilter;
 
 	/**
 	 * デフォルトコンストラクタ
 	 *
-	 * @param hostname   ホスト名
-	 * @param portNumber ポート番号
-	 *
 	 * @throws NoSuchAlgorithmException SSLContext.getInstance()の呼出しが失敗した場合
 	 * @throws IOException              httpsサーバインスタンス生成失敗
 	 */
-	public RpcServer(final String hostname, final Integer portNumber) throws NoSuchAlgorithmException, IOException {
+	public RpcServer() throws NoSuchAlgorithmException, IOException {
 		super(TLS);
+		// 初期値取得
+		String hostname = System.getProperty("rpc.hostname");
+		Integer portNumber = Integer.getInteger("rpc.port");
 		// ホストを設定
 		InetAddress localhost = null;
 		if (Objects.nonNull(hostname)) {
@@ -143,8 +154,6 @@ public final class RpcServer extends HttpsConfigurator {
 		address = server.getAddress();
 		// サーバ設定情報初期化
 		server.setHttpsConfigurator(this);
-		// サーバ初期設定
-		setServer();
 	}
 
 	/**
@@ -178,6 +187,8 @@ public final class RpcServer extends HttpsConfigurator {
 	 * @param handler ハンドラ
 	 */
 	private void setHttpContext(HttpContext ctx, RpcHttpHandlerContext handler) {
+		/** 共通フィルター */
+		final List<Filter> commonFilter = List.of(exceptionFilter, loggerFilter, rpcMethodFilter);
 		// フィルター一覧取得
 		List<Filter> filters = ctx.getFilters();
 		// 共通フィルタ設定
@@ -190,6 +201,8 @@ public final class RpcServer extends HttpsConfigurator {
 	 * サーバを起動します
 	 */
 	public void start() {
+		// サーバ初期設定
+		setServer();
 		// サーバ起動
 		server.start();
 		// 起動完了メッセージ
@@ -204,7 +217,7 @@ public final class RpcServer extends HttpsConfigurator {
 		// 停止完了メッセージ
 		KagerowLogger.newAppLogger().log(Level.INFO, String.format("Stop Request RPC Server", getHost(), getPort()),
 				new Object[0]);
-		// サーバ起動
+		// サーバ停止
 		server.stop(10);
 		// 停止完了メッセージ
 		KagerowLogger.newAppLogger().log(Level.INFO,
