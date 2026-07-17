@@ -12,7 +12,9 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.crypto.SecretKey;
 import javax.naming.Binding;
+import javax.naming.CompositeName;
 import javax.naming.CompoundName;
 import javax.naming.Context;
 import javax.naming.InvalidNameException;
@@ -23,13 +25,17 @@ import com.sakulabo.core.Common.AppPathUtils;
 import com.sakulabo.core.Common.StringUtils;
 import com.sakulabo.core.Kagerow.KagerowApplication;
 import com.sakulabo.core.Kagerow.Contents.KagerowPluginContent;
+import com.sakulabo.core.Kagerow.Contents.KagerowSecurityContent;
 import com.sakulabo.core.Kagerow.Contents.KagerowSettingContent;
 import com.sakulabo.core.Kagerow.Contents.Impl.KagerowPluginContentImpl;
+import com.sakulabo.core.Kagerow.Contents.KagerowSecurityContent.SecureObject;
 import com.sakulabo.core.Kagerow.Context.KagerowContexts;
 import com.sakulabo.core.Kagerow.Context.KagerowPluginContext;
 import com.sakulabo.core.Kagerow.Context.KagerowPluginPackageContext;
+import com.sakulabo.core.Kagerow.Context.KagerowSecurityContext;
 import com.sakulabo.core.Kagerow.Context.KagerowSettingContext;
 import com.sakulabo.core.Kagerow.Context.Impl.KagerowPluginPackageContextImpl;
+import com.sakulabo.core.Kagerow.Context.Impl.KagerowSecurityContextImpl;
 import com.sakulabo.core.Kagerow.Context.Impl.KagerowSettingContextImpl;
 import com.sakulabo.core.Processor.aop.CommonAOPInvocationHandlProcessor;
 import com.sakulabo.core.Processor.plugin.PluginParamParser;
@@ -577,6 +583,50 @@ public final class KagerowUtilities {
 	 */
 	public static Path createKagerowHomePath() {
 		return AppPathUtils.createKagerowHomePath();
+	}
+
+	/**
+	 * 秘密鍵をシステム管理下で保管します
+	 * @param name 秘密鍵名称
+	 * @param secretKey 秘密鍵
+	 * @return 保存パスワード
+	 * @throws NamingException セキュアブートを行っていない場合
+	 */
+	public static Optional<String> registSecretKey(String name, SecretKey secretKey) throws NamingException {
+		// コンテキスト取得
+		KagerowSecurityContextImpl ctx = (KagerowSecurityContextImpl) getContext(KagerowSecurityContext._NAME);
+		// コンテンツ取得
+		if (ctx.getMasterKey().isEmpty()) {
+			return Optional.empty();
+		}
+		KagerowSecurityContent cnt = ctx.getMasterKey().get();
+		// 秘密鍵登録
+		String pass = cnt.bind(name, secretKey);
+		return Optional.of(pass);
+	}
+
+	/**
+	 * システム管理の秘密鍵を取得します
+	 * @param name 秘密鍵名称
+	 * @param pass 保存パスワード
+	 * @return 秘密鍵
+	 * @throws NamingException セキュアブートを行っていない場合
+	 */
+	public static Optional<SecretKey> selectSecretKey(String name, String pass) throws NamingException {
+		// コンテキスト取得
+		KagerowSecurityContextImpl ctx = (KagerowSecurityContextImpl) getContext(KagerowSecurityContext._NAME);
+		// コンテンツ取得
+		if (ctx.getMasterKey().isEmpty()) {
+			return Optional.empty();
+		}
+		KagerowSecurityContent cnt = ctx.getMasterKey().get();
+		// 検索キー生成
+		CompositeName key = new CompositeName(String.join(StringUtils.SLASH_DELIMIT, name, pass));
+		// 秘密鍵取得
+		SecureObject secretKey = cnt.lookup(key);
+		// 秘密鍵返却
+		SecretKey secKey = (SecretKey) secretKey.resultKey();
+		return Optional.of(secKey);
 	}
 
 }

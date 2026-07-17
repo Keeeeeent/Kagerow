@@ -1,6 +1,7 @@
 package com.sakulabo.application.service.Rpc.Impl;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -14,6 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.util.Base64;
+import java.util.HexFormat;
 import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 
@@ -24,13 +26,9 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
-import javax.naming.CompositeName;
 import javax.naming.NamingException;
 
 import com.sakulabo.application.service.Rpc.AuthService;
-import com.sakulabo.core.Kagerow.Contents.KagerowSecurityContent;
-import com.sakulabo.core.Kagerow.Contents.KagerowSecurityContent.SecureObject;
-import com.sakulabo.core.Kagerow.Context.KagerowSecurityContext;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 import com.sakulabo.regulation.annotation.KagerowComponent;
 
@@ -72,6 +70,8 @@ public class AuthServiceImpl implements AuthService {
 		try {
 			// ハッシュ関数生成
 			digest = MessageDigest.getInstance("sha256");
+			// キーストア初期化
+			store = KeyStore.getInstance("PKCS12");
 			// キーストアの存在確認実施
 			if (Files.exists(STORE_PATH)) {
 				// パスワード生成
@@ -82,17 +82,15 @@ public class AuthServiceImpl implements AuthService {
 				// 暗号化パスワード生成
 				String savePassStr = createPass((SecretKey) secretKey, ivData);
 				// キーストアロード
-				store = KeyStore.getInstance(STORE_PATH.toFile(), savePassStr.toCharArray());
+				try (InputStream input = Files.newInputStream(STORE_PATH)) {
+					store.load(input, savePassStr.toCharArray());
+				}
 			} else {
 				// キーストアロード
-				store = KeyStore.getInstance("PKCS12");
 				store.load(null, null);
 			}
-			try {
-				this.store();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			// 初期化結果保存
+			this.store();
 		} finally {
 			// 排他制御解除
 			lock.unlock();
@@ -139,35 +137,33 @@ public class AuthServiceImpl implements AuthService {
 			SecretKey secretKey = keyGenerator.generateKey();
 			// 暗号化パスワード生成
 			String savePassStr = createPass(secretKey, ivData);
-			// 秘密鍵保存
-			KagerowSecurityContext ctx = (KagerowSecurityContext) KagerowUtilities
-					.getContext(KagerowSecurityContext._NAME);
-			// ネームスペース生成
-			KagerowSecurityContent cnt = ctx.createSubcontext(AuthServiceImpl.class.getSimpleName());
-			// 秘密鍵保存
-			String pass = cnt.bind("sec", secretKey);
-			// パスワード保存（このパスワードはセキュアブート管理下の内部使用向けのため保存しても問題がない）
-			KagerowUtilities.setSetting(AuthServiceImpl.class.getName(), "pass", pass);
-			// 初期化ベクトル保存
-			KagerowUtilities.setSetting(AuthServiceImpl.class.getName(), "iv",
-					Base64.getUrlEncoder().encodeToString(ivData));
-			// キーストア保存
 			try (OutputStream output = Files.newOutputStream(STORE_PATH)) {
+				// キーストア保存
 				store.store(output, savePassStr.toString().toCharArray());
+				// 秘密鍵保存
+				String pass = KagerowUtilities.registSecretKey(AuthServiceImpl.class.getSimpleName(), secretKey).get();
+				// パスワード保存（このパスワードはセキュアブート管理下の内部使用向けのため保存しても問題がない）
+				KagerowUtilities.setSetting(AuthServiceImpl.class.getName(), "pass", pass);
+				// 初期化ベクトル保存
+				KagerowUtilities.setSetting(AuthServiceImpl.class.getName(), "iv",
+						Base64.getUrlEncoder().encodeToString(ivData));
+			} catch (Exception e) {
+				Files.deleteIfExists(STORE_PATH);
 			}
 		}
 	}
 
+	/**
+	 * 秘密鍵を生成します
+	 * @return 秘密鍵
+	 * @throws NamingException セキュアブートを行っていない場合
+	 */
 	private SecretKey createKey() throws NamingException {
-		// 秘密鍵取得
-		KagerowSecurityContext ctx = (KagerowSecurityContext) KagerowUtilities
-				.getContext(KagerowSecurityContext._NAME);
-		KagerowSecurityContent cnt = ctx.lookup(AuthServiceImpl.class.getSimpleName());
 		// パスワード取得
 		String pass = KagerowUtilities.getSetting(AuthServiceImpl.class.getName(), "pass");
-		CompositeName name = new CompositeName("sec/" + pass);
-		SecureObject secretKey = cnt.lookup(name);
-		return (SecretKey) secretKey.resultKey();
+		// 秘密鍵取得
+		SecretKey secretKey = KagerowUtilities.selectSecretKey(AuthServiceImpl.class.getSimpleName(), pass).get();
+		return secretKey;
 	}
 
 	/**
@@ -192,11 +188,7 @@ public class AuthServiceImpl implements AuthService {
 		encryptor.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
 		byte[] savePass = encryptor.doFinal(AuthServiceImpl.class.getName().getBytes(StandardCharsets.UTF_8));
 		savePass = digest.digest(savePass);
-		StringBuilder savePassStr = new StringBuilder();
-		for (int i = 0; i < savePass.length; i++) {
-			savePassStr.append(Integer.toHexString(savePass[i]));
-		}
-		return savePassStr.toString();
+		return HexFormat.of().formatHex(savePass);
 	}
 
 	/** {@inheritDoc} */

@@ -32,7 +32,7 @@ import com.sakulabo.core.Processor.security.PBEKeyEncrypter;
 
 /**
  * Kagerowアプリケーションのセキュリティコンテンツ実装クラスです
- * 
+ *
  * @author keeeeeent
  */
 public sealed class KagerowSecurityContentImpl extends BaseKagerowContent implements KagerowSecurityContent {
@@ -278,6 +278,7 @@ public sealed class KagerowSecurityContentImpl extends BaseKagerowContent implem
 			// 調整済みのパスワード
 			AppEncrypter encrypter = new AppAESPassEncrypter(secretKey, name);
 			String pass = encrypter.getPassword();
+			pass = Base64.getUrlEncoder().encodeToString(pass.getBytes(StandardCharsets.UTF_8));
 
 			// キー登録
 			KeyStore.Entry entry = new KeyStore.SecretKeyEntry(secretKey);
