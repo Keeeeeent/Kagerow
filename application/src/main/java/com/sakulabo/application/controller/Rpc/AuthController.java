@@ -4,6 +4,7 @@ import com.sakulabo.application.app.rpc.RpcSendParam;
 import com.sakulabo.application.app.rpc.datatype.receive.StringReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.send.Base64SendDataType;
 import com.sakulabo.application.app.rpc.datatype.send.DateTimeSendDataType;
+import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
 import com.sakulabo.application.common.spi.RpcTarget;
 
 /**
@@ -25,11 +26,27 @@ public interface AuthController extends RpcTarget {
 	}
 
 	/**
+	 * チャレンジ結果データ構造
+	 *
+	 * @param token      アクセストークン
+	 */
+	public static record ChallengeResult(
+			@RpcSendParam("token") StringSendDataType token) {
+	}
+
+	/**
 	 * チャレンジデータ取得処理を実施します
 	 *
 	 * @param userName ユーザ名
 	 * @return チャレンジデータ
 	 */
 	Challenge nonce(StringReceiveDataType userName);
+
+	/**
+	 * チャレンジデータの検証を行います
+	 * @param challenge チャレンジデータ（Base64）
+	 * @return 認証トークン
+	 */
+	ChallengeResult challenge(Base64SendDataType challenge);
 
 }

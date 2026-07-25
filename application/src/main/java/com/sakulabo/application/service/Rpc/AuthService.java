@@ -1,6 +1,7 @@
 package com.sakulabo.application.service.Rpc;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -39,14 +40,14 @@ public interface AuthService {
 	 * @param userName ユーザ名
 	 * @return チャレンジデータ
 	 */
-	Challenge nonce(String userName);
+	Optional<Challenge> nonce(String userName);
 
 	/**
 	 * チャレンジデータの検証を行います
 	 * @param challenge チャレンジデータ（Base64）
 	 * @return 認証トークン（Base64）
 	 */
-	String challenge(String challenge);
+	Optional<String> challenge(String challenge);
 
 	/**
 	 * 認証ユーザ登録を行います
@@ -54,6 +55,6 @@ public interface AuthService {
 	 * @param userName ユーザ名
 	 * @return シークレットキー
 	 */
-	String regist(String userName);
+	Optional<String> regist(String userName);
 
 }

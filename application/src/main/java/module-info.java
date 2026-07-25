@@ -33,7 +33,8 @@ import com.sakulabo.regulation.annotation.KagerowSpiModule;
 	uses com.sakulabo.application.common.spi.ViewRunner;
 
 	provides com.sakulabo.application.common.spi.RpcTarget
-			with com.sakulabo.application.controller.Rpc.Impl.DataImportControllerImpl;
+			with com.sakulabo.application.controller.Rpc.Impl.DataImportControllerImpl
+				,com.sakulabo.application.controller.Rpc.Impl.AuthControllerImpl;
 
 	// KagerowSPI
 	provides com.sakulabo.core.Kagerow.Spi.KagerowAutomaticStarter

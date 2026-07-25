@@ -169,7 +169,7 @@ public class RpcHttpHandlerContext implements HttpHandler {
 			}
 
 			// リクエストをマップへ変換（成功時）
-			Map<String, String> rawData = readRequestXML(exchange);
+			Map<String, String> rawData = readRequestXML(exchange, dom);
 			// メイン処理呼びだし
 			final Map<String, BaseDataType<?>> resultMap = handler.handle(exchange, rawData);
 			// レスポンスXML生成
@@ -178,7 +178,7 @@ public class RpcHttpHandlerContext implements HttpHandler {
 			exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, size);
 
 		} catch (Throwable e) {
-
+			KagerowLogger.newAppLogger().err(e);
 		}
 
 	}
@@ -213,61 +213,56 @@ public class RpcHttpHandlerContext implements HttpHandler {
 	 * リクエストを解析しRPC呼び出しパラメータを生成します
 	 *
 	 * @param exchange リクエスト
+	 * @param requestXML XML-RPCリクエスト
 	 * @return RPC呼び出しパラメータ
 	 * @throws Exception 解析失敗
 	 */
-	public Map<String, String> readRequestXML(HttpExchange exchange) throws Exception {
+	public Map<String, String> readRequestXML(HttpExchange exchange, Document requestXML) throws Exception {
+
 		// リクエストをマップへ変換（成功時）
 		Map<String, String> rawData = new HashMap<>();
-		try (InputStream input = exchange.getRequestBody()) {
 
-			// レスポンスRPC-XMLファクトリ生成
-			DocumentBuilderFactory responseXMLFactory = DocumentBuilderFactory.newDefaultInstance();
-			DocumentBuilder requestXMLBuilder = responseXMLFactory.newDocumentBuilder();
-			Document requestXML = requestXMLBuilder.parse(input);
+		// Xpath取得
+		XPathFactory xPathFactory = XPathFactory.newInstance();
+		XPath xPath = xPathFactory.newXPath();
+		XPathExpression expr = xPath.compile("/methodCall/params/param/value/struct");
+		Node node = (Node) expr.evaluate(requestXML, XPathConstants.NODE);
+		NodeList nodeList = node.getChildNodes();
 
-			// Xpath取得
-			XPathFactory xPathFactory = XPathFactory.newInstance();
-			XPath xPath = xPathFactory.newXPath();
-			XPathExpression expr = xPath.compile("/methodCall/params/param/struct");
-			Node node = (Node) expr.evaluate(requestXML, XPathConstants.NODE);
-			NodeList nodeList = node.getChildNodes();
-
-			// メンバ取得向けのXpathを取得
-			for (int i = 0; i < nodeList.getLength(); i++) {
-				Node member = nodeList.item(i);
-				NodeList memberNodeList = member.getChildNodes();
-				String name = null, value = null;
-				for (int j = 0; j < memberNodeList.getLength(); j++) {
-					Node memberNode = memberNodeList.item(j);
-					// メンバーの解析
-					if (memberNode instanceof Element element) {
-						// パラメータ名称の解析
-						String tagName = element.getTagName();
-						if (Objects.equals("name", tagName)) {
-							name = element.getTextContent();
-						} else if (Objects.equals("value", tagName)) {
-							// パラメータバリューの解析
-							Node valueNode = element.getFirstChild();
-							if (valueNode instanceof Element valueElement) {
-								String valueTagName = valueElement.getTagName();
-								// NULL変換
-								if (RpcDataTypes.NIL.toString().equals(valueTagName)) {
+		// メンバ取得向けのXpathを取得
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			Node member = nodeList.item(i);
+			NodeList memberNodeList = member.getChildNodes();
+			String name = null, value = null;
+			for (int j = 0; j < memberNodeList.getLength(); j++) {
+				Node memberNode = memberNodeList.item(j);
+				// メンバーの解析
+				if (memberNode instanceof Element element) {
+					// パラメータ名称の解析
+					String tagName = element.getTagName();
+					if (Objects.equals("name", tagName)) {
+						name = element.getTextContent();
+					} else if (Objects.equals("value", tagName)) {
+						// パラメータバリューの解析
+						Node valueNode = element.getFirstChild();
+						if (valueNode instanceof Element valueElement) {
+							String valueTagName = valueElement.getTagName();
+							// NULL変換
+							if (RpcDataTypes.NIL.toString().equals(valueTagName)) {
+								value = null;
+							} else {
+								// 値を取得
+								value = valueElement.getTextContent();
+								if (value.isEmpty()) {
+									// 空文字の場合、NULL変換
 									value = null;
-								} else {
-									// 値を取得
-									value = valueElement.getTextContent();
-									if (value.isEmpty()) {
-										// 空文字の場合、NULL変換
-										value = null;
-									}
 								}
 							}
 						}
 					}
 				}
-				rawData.put(name, value);
 			}
+			rawData.put(name, value);
 		}
 		return rawData;
 	}
