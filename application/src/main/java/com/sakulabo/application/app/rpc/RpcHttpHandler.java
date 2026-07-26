@@ -80,17 +80,17 @@ public class RpcHttpHandler {
 			// RPCマッピングパラメータ名称取得
 			RpcMethodParam methodParam = param.getDeclaredAnnotation(RpcMethodParam.class);
 			// パラメータ型定義取得
-			Class<?> paramClazz = param.getClass();
+			Class<?> paramClazz = param.getType();
 			// クライアントからのパラメータを取得
 			String clientParam = methodParam.value();
-			// 必須パラメータチェック
-			if (methodParam.required()) {
-				if (Objects.isNull(clientParam)) {
-					throw new IllegalArgumentException(String.format("%s is Required", methodParam.value()));
-				}
-			}
 			// コンストラクタ向けパラメータ取得
 			String forConstructorParam = rawData.get(clientParam);
+			// 必須パラメータチェック
+			if (methodParam.required()) {
+				if (Objects.isNull(forConstructorParam)) {
+					throw new IllegalArgumentException(String.format("%s is Required", clientParam));
+				}
+			}
 			// パラメータインスタンス取得
 			BaseDataType<?> paramInstance = (BaseDataType<?>) paramClazz.getConstructor(String.class)
 					.newInstance(forConstructorParam);
@@ -99,7 +99,7 @@ public class RpcHttpHandler {
 		}
 
 		// メソッド呼び出し
-		Object result = handle.invoke(params.toArray());
+		Object result = handle.invokeWithArguments(params.toArray());
 
 		// 結果のマップ変換
 		final Map<String, BaseDataType<?>> resultMap = new HashMap<>();

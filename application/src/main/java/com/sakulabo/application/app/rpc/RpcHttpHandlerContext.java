@@ -178,7 +178,8 @@ public class RpcHttpHandlerContext implements HttpHandler {
 			exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, size);
 
 		} catch (Throwable e) {
-			KagerowLogger.newAppLogger().err(e);
+			// ハンドラー起動
+			RpcExceptionHandler.handleException(exchange, e);
 		}
 
 	}
@@ -244,25 +245,29 @@ public class RpcHttpHandlerContext implements HttpHandler {
 						name = element.getTextContent();
 					} else if (Objects.equals("value", tagName)) {
 						// パラメータバリューの解析
-						Node valueNode = element.getFirstChild();
-						if (valueNode instanceof Element valueElement) {
-							String valueTagName = valueElement.getTagName();
-							// NULL変換
-							if (RpcDataTypes.NIL.toString().equals(valueTagName)) {
-								value = null;
-							} else {
-								// 値を取得
-								value = valueElement.getTextContent();
-								if (value.isEmpty()) {
-									// 空文字の場合、NULL変換
+						NodeList valueNode = element.getChildNodes();
+						for (int k = 0; k < valueNode.getLength(); k++) {
+							if (valueNode.item(k) instanceof Element valueElement) {
+								String valueTagName = valueElement.getTagName();
+								// NULL変換
+								if (RpcDataTypes.NIL.toString().equals(valueTagName)) {
 									value = null;
+								} else {
+									// 値を取得
+									value = valueElement.getTextContent();
+									if (value.isEmpty()) {
+										// 空文字の場合、NULL変換
+										value = null;
+									}
 								}
 							}
 						}
 					}
 				}
 			}
-			rawData.put(name, value);
+			if (Objects.nonNull(name)) {
+				rawData.put(name, value);
+			}
 		}
 		return rawData;
 	}

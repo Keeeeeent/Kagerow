@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
@@ -102,6 +103,26 @@ public final class RpcExceptionHandler {
 	}
 
 	/**
+	 * 例外ハンドリングを行います
+	 * @param exchange レスポンス
+	 * @param e 例外クラス
+	 * @throws IOException ハンドリング失敗
+	 */
+	public static void handleException(HttpExchange exchange, Throwable e) throws IOException {
+		// ハンドラー検索
+		BiConsumer<Throwable, HttpExchange> handler = getHandler(e.getClass());
+		if (Objects.isNull(handler)) {
+			// レスポンスをXMLへ変換（失敗時）
+			long size = createFalutResponseXML(exchange, e);
+			// レスポンスコード設定
+			exchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, size);
+		} else {
+			// ハンドラーが見つかった場合、ハンドラーに処理を委譲
+			handler.accept(e, exchange);
+		}
+	}
+
+	/**
 	 * ハンドラーを取得します
 	 *
 	 * @param target 処理対象例外
@@ -138,55 +159,50 @@ public final class RpcExceptionHandler {
 				}
 			}
 
-			// レスポンスをXMLへ変換（成功時）
-			try (OutputStream output = exchange.getResponseBody()) {
+			// レスポンスRPC-XMLファクトリ生成
+			DocumentBuilderFactory responseXMLFactory = DocumentBuilderFactory.newDefaultInstance();
+			DocumentBuilder responseXMLBuilder = responseXMLFactory.newDocumentBuilder();
+			StringReader baseXML = new StringReader(COMMON_FAULT_XML_STR);
+			InputSource responseInputSource = new InputSource(baseXML);
+			Document responseXML = responseXMLBuilder.parse(responseInputSource);
 
-				// レスポンスRPC-XMLファクトリ生成
-				DocumentBuilderFactory responseXMLFactory = DocumentBuilderFactory.newDefaultInstance();
-				DocumentBuilder responseXMLBuilder = responseXMLFactory.newDocumentBuilder();
-				StringReader baseXML = new StringReader(COMMON_FAULT_XML_STR);
-				InputSource responseInputSource = new InputSource(baseXML);
-				Document responseXML = responseXMLBuilder.parse(responseInputSource);
+			// Xpath取得
+			XPathFactory xPathFactory = XPathFactory.newInstance();
+			XPath xPath = xPathFactory.newXPath();
+			XPathExpression expr = xPath.compile("/methodResponse/fault/value/struct");
+			Node node = (Node) expr.evaluate(responseXML, XPathConstants.NODE);
 
-				// Xpath取得
-				XPathFactory xPathFactory = XPathFactory.newInstance();
-				XPath xPath = xPathFactory.newXPath();
-				XPathExpression expr = xPath.compile("/methodResponse/params/param/struct");
-				Node node = (Node) expr.evaluate(responseXML, XPathConstants.NODE);
+			// 返却パラメータ追加
+			for (Entry<String, BaseDataType<?>> structParam : resultMap.entrySet()) {
 
-				// 返却パラメータ追加
-				for (Entry<String, BaseDataType<?>> structParam : resultMap.entrySet()) {
+				// メンバー追加
+				Element memberElem = responseXML.createElement("member");
 
-					// メンバー追加
-					Element memberElem = responseXML.createElement("member");
+				// パラメータ名称追加
+				Element nameElem = responseXML.createElement("name");
+				nameElem.setTextContent(structParam.getKey());
+				// サブメンバー追加
+				memberElem.appendChild(nameElem);
 
-					// パラメータ名称追加
-					Element nameElem = responseXML.createElement("name");
-					nameElem.setTextContent(structParam.getKey());
-					// サブメンバー追加
-					memberElem.appendChild(nameElem);
-
-					// パラメータバリュー追加
-					BaseDataType<?> dataType = structParam.getValue();
-					Element valueElem = responseXML.createElement("value");
-					Element valueSubElem = responseXML.createElement(dataType.toRpcDataType().toString());
-					// 取得データがnilか判定
-					Optional<?> dat = dataType.getRawType();
-					if (dat.isPresent()) {
-						valueSubElem.setTextContent(dat.get().toString());
-					} else {
-						Element nilElem = responseXML.createElement(RpcDataTypes.NIL.toString());
-						valueSubElem.appendChild(nilElem);
-					}
-					// 生成要素追加
-					valueElem.appendChild(valueSubElem);
-					// サブメンバー追加
-					memberElem.appendChild(valueElem);
-
-					// 要素を構造体として追加
-					node.appendChild(memberElem);
-
+				// パラメータバリュー追加
+				BaseDataType<?> dataType = structParam.getValue();
+				Element valueElem = responseXML.createElement("value");
+				Element valueSubElem = responseXML.createElement(dataType.toRpcDataType().toString());
+				// 取得データがnilか判定
+				Optional<?> dat = dataType.getRawType();
+				if (dat.isPresent()) {
+					valueSubElem.setTextContent(dat.get().toString());
+				} else {
+					Element nilElem = responseXML.createElement(RpcDataTypes.NIL.toString());
+					valueSubElem.appendChild(nilElem);
 				}
+				// 生成要素追加
+				valueElem.appendChild(valueSubElem);
+				// サブメンバー追加
+				memberElem.appendChild(valueElem);
+
+				// 要素を構造体として追加
+				node.appendChild(memberElem);
 
 				/**
 				 * XML書き出し
@@ -202,6 +218,8 @@ public final class RpcExceptionHandler {
 
 					// レスポンス書き出し
 					tmpOutput.flush();
+					// レスポンスをXMLへ変換（成功時）
+					OutputStream output = exchange.getResponseBody();
 					output.write(tmpOutput.toByteArray());
 
 					// サイズ設定
