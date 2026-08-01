@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<groupId>com.sakulabo</groupId>
 	<artifactId>application-core</artifactId>
 	<version>1.0.0</version>
@@ -148,7 +148,7 @@
 				<configuration>
 					<argLine>
 					 <![CDATA[
-						${argLine} 
+						${argLine}
 						--add-opens com.sakulabo.core/com.sakulabo.core.Processor.archive=ALL-UNNAMED
 						--add-opens com.sakulabo.core/com.sakulabo.core.Processor.database=ALL-UNNAMED
 						--add-opens com.sakulabo.core/com.sakulabo.core.Processor.migration=ALL-UNNAMED

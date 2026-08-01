@@ -2,6 +2,7 @@ package com.sakulabo.application.app.rpc;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -13,6 +14,7 @@ import java.lang.annotation.Target;
  * @author keeeeeent
  */
 @Documented
+@Inherited
 @Target({ ElementType.FIELD, ElementType.RECORD_COMPONENT })
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(RpcSendParam.List.class)
@@ -34,6 +36,7 @@ public @interface RpcSendParam {
 	 * @author keeeeeent
 	 */
 	@Documented
+	@Inherited
 	@Target({ ElementType.FIELD, ElementType.RECORD_COMPONENT })
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface List {

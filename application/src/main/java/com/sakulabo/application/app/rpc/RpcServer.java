@@ -62,7 +62,7 @@ public final class RpcServer extends HttpsConfigurator {
 					createServerP12.command(JAVA_HOME.resolve("bin", "keytool").toString(), "-genkeypair", "-alias",
 							"kagerow", "-keyalg", "RSA", "-keysize", "2048", "-validity", "36500", "-storetype",
 							"PKCS12", "-keystore", SERVER_P12.toString(), "-storepass", System.getProperty("instance"),
-							"-dname", "CN=Kagerow");
+							"-dname", "CN=Kagerow", "-ext", "SAN=dns:localhost,ip:127.0.0.1,ip:::1");
 					// ビルダー設定調整（入出力継承）
 					createServerP12.inheritIO();
 					// コマンド実行

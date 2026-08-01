@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.UncheckedIOException;
 import java.lang.invoke.CallSite;
@@ -113,9 +112,11 @@ public final class RpcExceptionHandler {
 		BiConsumer<Throwable, HttpExchange> handler = getHandler(e.getClass());
 		if (Objects.isNull(handler)) {
 			// レスポンスをXMLへ変換（失敗時）
-			long size = createFalutResponseXML(exchange, e);
+			byte[] response = createFalutResponseXML(exchange, e);
 			// レスポンスコード設定
-			exchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, size);
+			exchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, response.length);
+			// レスポンスボディ設定
+			exchange.getResponseBody().write(response);
 		} else {
 			// ハンドラーが見つかった場合、ハンドラーに処理を委譲
 			handler.accept(e, exchange);
@@ -139,24 +140,27 @@ public final class RpcExceptionHandler {
 	 * @param e        スローされた例外
 	 * @return レスポンスデータサイズ
 	 */
-	public static long createFalutResponseXML(HttpExchange exchange, Throwable e) {
-		long size = 0;
+	public static byte[] createFalutResponseXML(HttpExchange exchange, Throwable e) {
+
 		try {
 			// 結果のマップ変換
 			final Map<String, BaseDataType<?>> resultMap = new HashMap<>();
 			// クラス情報取得
 			Class<?> resultClazz = e.getClass();
-			for (Field field : resultClazz.getDeclaredFields()) {
-				if (field.isAnnotationPresent(RpcSendParam.class)) {
-					// 返却パラメータ取得
-					final RpcSendParam resultParam = field.getDeclaredAnnotation(RpcSendParam.class);
-					// アクセス許可
-					field.setAccessible(true);
-					// パラメータインスタンス取得
-					BaseDataType<?> paramInstance = (BaseDataType<?>) field.get(e);
-					// インスタンス保管
-					resultMap.put(resultParam.value(), paramInstance);
+			while (Object.class != resultClazz) {
+				for (Field field : resultClazz.getDeclaredFields()) {
+					if (field.isAnnotationPresent(RpcSendParam.class)) {
+						// 返却パラメータ取得
+						final RpcSendParam resultParam = field.getDeclaredAnnotation(RpcSendParam.class);
+						// アクセス許可
+						field.setAccessible(true);
+						// パラメータインスタンス取得
+						BaseDataType<?> paramInstance = (BaseDataType<?>) field.get(e);
+						// インスタンス保管
+						resultMap.put(resultParam.value(), paramInstance);
+					}
 				}
+				resultClazz = resultClazz.getSuperclass();
 			}
 
 			// レスポンスRPC-XMLファクトリ生成
@@ -204,34 +208,32 @@ public final class RpcExceptionHandler {
 				// 要素を構造体として追加
 				node.appendChild(memberElem);
 
-				/**
-				 * XML書き出し
-				 */
-				try (ByteArrayOutputStream tmpOutput = new ByteArrayOutputStream()) {
+			}
 
-					Source xmlSource = new DOMSource(responseXML);
-					Result xmlResult = new StreamResult(tmpOutput);
-					Transformer transformer = TransformerFactory.newDefaultInstance().newTransformer();
-					transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-					transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.toString());
-					transformer.transform(xmlSource, xmlResult);
+			/**
+			 * XML書き出し
+			 */
+			try (ByteArrayOutputStream tmpOutput = new ByteArrayOutputStream()) {
 
-					// レスポンス書き出し
-					tmpOutput.flush();
-					// レスポンスをXMLへ変換（成功時）
-					OutputStream output = exchange.getResponseBody();
-					output.write(tmpOutput.toByteArray());
+				Source xmlSource = new DOMSource(responseXML);
+				Result xmlResult = new StreamResult(tmpOutput);
+				Transformer transformer = TransformerFactory.newDefaultInstance().newTransformer();
+				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+				transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.toString());
+				transformer.transform(xmlSource, xmlResult);
 
-					// サイズ設定
-					size = tmpOutput.size();
-				}
+				// レスポンス書き出し
+				tmpOutput.flush();
+				// レスポンスを返却
+				return tmpOutput.toByteArray();
 
 			}
+
 		} catch (Exception exp) {
 			// ロガー書き出し
 			KagerowLogger.newAppLogger().err(exp);
 		}
-		return size;
+		return new byte[0];
 	}
 
 	/**
@@ -244,9 +246,11 @@ public final class RpcExceptionHandler {
 	@RpcException(IllegalCertificationException.class)
 	public void commonHandler(IllegalCertificationException e, HttpExchange exchange) throws IOException {
 		// レスポンスをXMLへ変換（失敗時）
-		long size = RpcExceptionHandler.createFalutResponseXML(exchange, e);
+		byte[] response = RpcExceptionHandler.createFalutResponseXML(exchange, e);
 		// レスポンスコード設定
-		exchange.sendResponseHeaders(HttpURLConnection.HTTP_UNAUTHORIZED, size);
+		exchange.sendResponseHeaders(HttpURLConnection.HTTP_UNAUTHORIZED, response.length);
+		// レスポンスボディ設定
+		exchange.getResponseBody().write(response);
 	}
 
 }

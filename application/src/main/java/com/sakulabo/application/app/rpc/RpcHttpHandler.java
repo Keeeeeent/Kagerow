@@ -106,20 +106,24 @@ public class RpcHttpHandler {
 		if (Objects.nonNull(result)) {
 			// クラス情報取得
 			Class<?> resultClazz = result.getClass();
-			for (Field field : resultClazz.getDeclaredFields()) {
-				if (field.isAnnotationPresent(RpcSendParam.class)) {
-					// 返却パラメータ取得
-					final RpcSendParam resultParam = field.getDeclaredAnnotation(RpcSendParam.class);
-					// アクセス許可
-					field.setAccessible(true);
-					// パラメータインスタンス取得
-					BaseDataType<?> paramInstance = (BaseDataType<?>) field.get(result);
-					// インスタンス保管
-					resultMap.put(resultParam.value(), paramInstance);
+			while (Object.class != resultClazz) {
+				for (Field field : resultClazz.getDeclaredFields()) {
+					if (field.isAnnotationPresent(RpcSendParam.class)) {
+						// 返却パラメータ取得
+						final RpcSendParam resultParam = field.getDeclaredAnnotation(RpcSendParam.class);
+						// アクセス許可
+						field.setAccessible(true);
+						// パラメータインスタンス取得
+						BaseDataType<?> paramInstance = (BaseDataType<?>) field.get(result);
+						// インスタンス保管
+						resultMap.put(resultParam.value(), paramInstance);
+					}
 				}
+				resultClazz = resultClazz.getSuperclass();
 			}
 		}
 
+		// 結果返却
 		return resultMap;
 
 	}

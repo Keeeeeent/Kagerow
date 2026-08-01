@@ -124,9 +124,10 @@ public class RpcHttpHandlerContext implements HttpHandler {
 	public void handle(HttpExchange exchange) throws IOException {
 
 		// リクエストをXMLへ変換
-		try (InputStream input = exchange.getRequestBody()) {
+		try {
 
 			// DOMファクトリ生成
+			InputStream input = exchange.getRequestBody();
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newDefaultInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document dom = builder.parse(input);
@@ -173,9 +174,11 @@ public class RpcHttpHandlerContext implements HttpHandler {
 			// メイン処理呼びだし
 			final Map<String, BaseDataType<?>> resultMap = handler.handle(exchange, rawData);
 			// レスポンスXML生成
-			long size = createResponseXML(exchange, resultMap);
+			byte[] response = createResponseXML(exchange, resultMap);
 			// レスポンスコード設定
-			exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, size);
+			exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, response.length);
+			// レスポンスボディ設定
+			exchange.getResponseBody().write(response);
 
 		} catch (Throwable e) {
 			// ハンドラー起動
@@ -280,80 +283,78 @@ public class RpcHttpHandlerContext implements HttpHandler {
 	 * @return レスポンスデータサイズ
 	 * @throws Exception レスポンス失敗
 	 */
-	public long createResponseXML(HttpExchange exchange, Map<String, BaseDataType<?>> resultMap) throws Exception {
+	public byte[] createResponseXML(HttpExchange exchange, Map<String, BaseDataType<?>> resultMap) throws Exception {
 
 		// レスポンスをXMLへ変換（成功時）
-		try (OutputStream output = exchange.getResponseBody()) {
+		OutputStream output = exchange.getResponseBody();
 
-			// レスポンスRPC-XMLファクトリ生成
-			DocumentBuilderFactory responseXMLFactory = DocumentBuilderFactory.newDefaultInstance();
-			DocumentBuilder responseXMLBuilder = responseXMLFactory.newDocumentBuilder();
-			StringReader baseXML = new StringReader(COMMON_RESPONSE_XML_STR);
-			InputSource responseInputSource = new InputSource(baseXML);
-			Document responseXML = responseXMLBuilder.parse(responseInputSource);
+		// レスポンスRPC-XMLファクトリ生成
+		DocumentBuilderFactory responseXMLFactory = DocumentBuilderFactory.newDefaultInstance();
+		DocumentBuilder responseXMLBuilder = responseXMLFactory.newDocumentBuilder();
+		StringReader baseXML = new StringReader(COMMON_RESPONSE_XML_STR);
+		InputSource responseInputSource = new InputSource(baseXML);
+		Document responseXML = responseXMLBuilder.parse(responseInputSource);
 
-			// Xpath取得
-			XPathFactory xPathFactory = XPathFactory.newInstance();
-			XPath xPath = xPathFactory.newXPath();
-			XPathExpression expr = xPath.compile("/methodResponse/params/param/struct");
-			Node node = (Node) expr.evaluate(responseXML, XPathConstants.NODE);
+		// Xpath取得
+		XPathFactory xPathFactory = XPathFactory.newInstance();
+		XPath xPath = xPathFactory.newXPath();
+		XPathExpression expr = xPath.compile("/methodResponse/params/param/struct");
+		Node node = (Node) expr.evaluate(responseXML, XPathConstants.NODE);
 
-			// 返却パラメータ追加
-			for (Entry<String, BaseDataType<?>> structParam : resultMap.entrySet()) {
+		// 返却パラメータ追加
+		for (Entry<String, BaseDataType<?>> structParam : resultMap.entrySet()) {
 
-				// メンバー追加
-				Element memberElem = responseXML.createElement("member");
+			// メンバー追加
+			Element memberElem = responseXML.createElement("member");
 
-				// パラメータ名称追加
-				Element nameElem = responseXML.createElement("name");
-				nameElem.setTextContent(structParam.getKey());
-				// サブメンバー追加
-				memberElem.appendChild(nameElem);
+			// パラメータ名称追加
+			Element nameElem = responseXML.createElement("name");
+			nameElem.setTextContent(structParam.getKey());
+			// サブメンバー追加
+			memberElem.appendChild(nameElem);
 
-				// パラメータバリュー追加
-				BaseDataType<?> dataType = structParam.getValue();
-				Element valueElem = responseXML.createElement("value");
-				Element valueSubElem = responseXML.createElement(dataType.toRpcDataType().toString());
-				// 取得データがnilか判定
-				Optional<?> dat = dataType.getRawType();
-				if (dat.isPresent()) {
-					valueSubElem.setTextContent(dat.get().toString());
-				} else {
-					Element nilElem = responseXML.createElement(RpcDataTypes.NIL.toString());
-					valueSubElem.appendChild(nilElem);
-				}
-				// 生成要素追加
-				valueElem.appendChild(valueSubElem);
-				// サブメンバー追加
-				memberElem.appendChild(valueElem);
-
-				// 要素を構造体として追加
-				node.appendChild(memberElem);
-
+			// パラメータバリュー追加
+			BaseDataType<?> dataType = structParam.getValue();
+			Element valueElem = responseXML.createElement("value");
+			Element valueSubElem = responseXML.createElement(dataType.toRpcDataType().toString());
+			// 取得データがnilか判定
+			Optional<?> dat = dataType.getRawType();
+			if (dat.isPresent()) {
+				valueSubElem.setTextContent(dat.get().toString());
+			} else {
+				Element nilElem = responseXML.createElement(RpcDataTypes.NIL.toString());
+				valueSubElem.appendChild(nilElem);
 			}
+			// 生成要素追加
+			valueElem.appendChild(valueSubElem);
+			// サブメンバー追加
+			memberElem.appendChild(valueElem);
 
-			/**
-			 * XML書き出し
-			 */
-			try (ByteArrayOutputStream tmpOutput = new ByteArrayOutputStream()) {
-
-				Source xmlSource = new DOMSource(responseXML);
-				Result xmlResult = new StreamResult(tmpOutput);
-				Transformer transformer = TransformerFactory.newDefaultInstance().newTransformer();
-				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-				transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.toString());
-				transformer.transform(xmlSource, xmlResult);
-
-				// レスポンス書き出し
-				tmpOutput.flush();
-				output.write(tmpOutput.toByteArray());
-
-				// サイズ返却
-				return tmpOutput.size();
-
-			}
+			// 要素を構造体として追加
+			node.appendChild(memberElem);
 
 		}
+
+		/**
+		 * XML書き出し
+		 */
+		try (ByteArrayOutputStream tmpOutput = new ByteArrayOutputStream()) {
+
+			Source xmlSource = new DOMSource(responseXML);
+			Result xmlResult = new StreamResult(tmpOutput);
+			Transformer transformer = TransformerFactory.newDefaultInstance().newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.toString());
+			transformer.transform(xmlSource, xmlResult);
+
+			// レスポンス書き出し
+			tmpOutput.flush();
+
+			// サイズ返却
+			return tmpOutput.toByteArray();
+
+		}
+
 	}
 
 }
