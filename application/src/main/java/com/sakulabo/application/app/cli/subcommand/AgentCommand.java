@@ -10,19 +10,19 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 /**
- * 実装クラスです
+ * エージェント機能実装クラスです
  *
  * @author keeeeeent
  */
 @Command(name = "agent", subcommands = {
 		AgentCommand.CreateAgentCommand.class
-})
+}, mixinStandardHelpOptions = true)
 public class AgentCommand {
 
 	/**
 	 * ユーザ作成コマンド
 	 */
-	@Command(name = "user")
+	@Command(name = "user", mixinStandardHelpOptions = true)
 	public static class CreateAgentCommand implements Callable<Integer> {
 
 		/** ユーザ名称 */

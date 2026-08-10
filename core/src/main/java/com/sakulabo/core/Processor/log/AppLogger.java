@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import com.sakulabo.core.Common.AppPathUtils;
 import com.sakulabo.core.Common.StringUtils;
 import com.sakulabo.core.Kagerow.KagerowApplication;
+import com.sakulabo.core.Kagerow.KagerowApplication.Mode;
 import com.sakulabo.core.Kagerow.Exception.ApplicationError;
 import com.sakulabo.core.Kagerow.Utilities.KagerowAOPProcessor;
 import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
@@ -26,7 +27,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * アプリケーション共通で使用されるロガークラスです
- * 
+ *
  * @author keeeeeent
  */
 public final class AppLogger implements KagerowAOPProcessor, KagerowLogger {
@@ -85,8 +86,9 @@ public final class AppLogger implements KagerowAOPProcessor, KagerowLogger {
 			fileHandler.setFormatter(formatter);
 
 			// コンソール設定
-			if (KagerowApplication.getConfig().LOG_CONSOLE()) {
-				logger.setUseParentHandlers(false);
+			logger.setUseParentHandlers(false);
+			if (KagerowApplication.getConfig().LOG_CONSOLE()
+					&& KagerowApplication.getApplicationMode() != Mode.CLI) {
 				Formatter cFormatter = new AppConsoleFormatter(message);
 				Handler consoleHandler = new AppConsoleHandler(cFormatter);
 				consoleHandler.setLevel(Level.ALL);

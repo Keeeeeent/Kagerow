@@ -9,6 +9,7 @@ import com.sakulabo.regulation.annotation.KagerowComponent;
 
 import com.sakulabo.application.Main;
 import com.sakulabo.application.app.cli.subcommand.AgentCommand;
+import com.sakulabo.application.app.cli.subcommand.ImportCommand;
 
 /**
  * CLIアプリケーションのメインコマンド実装クラスです
@@ -18,7 +19,8 @@ import com.sakulabo.application.app.cli.subcommand.AgentCommand;
 @KagerowComponent
 @CommandComponent
 @Command(name = "kagerow", mixinStandardHelpOptions = true, version = "1.0.0", subcommands = {
-		AgentCommand.class
+		AgentCommand.class,
+		ImportCommand.class
 })
 public class MainCommand implements ViewRunner {
 
