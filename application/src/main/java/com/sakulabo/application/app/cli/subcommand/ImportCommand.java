@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 
 import javax.naming.NameAlreadyBoundException;
 
+import com.sakulabo.application.app.cli.converter.ExistingFilePathConverter;
 import com.sakulabo.application.model.Data.DataImportModel;
 import com.sakulabo.application.service.Data.DataService;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
@@ -37,14 +38,15 @@ public class ImportCommand implements Callable<Integer> {
 	@Option(names = { "--schema", "-d" }, required = true, description = "Destination schema.")
 	public String schema;
 	/** インポートファイルパス */
-	@Option(names = { "--path", "-p" }, required = true, description = "Import file path.")
+	@Option(names = { "--path",
+			"-p" }, required = true, description = "Import file path.", converter = ExistingFilePathConverter.class)
 	public Path path;
 	/** インポートファイル文字コード */
 	@Option(names = { "--charset", "-c" }, description = "Import file charset. Default: ${DEFAULT-VALUE}")
 	public Charset charset = StandardCharsets.UTF_8;
 	/** インポートファイルヘッダーフラグ */
-	@Option(names = { "--header","-h" }, negatable = true,
-			description = "The import file has a header. Default: ${DEFAULT-VALUE}")
+	@Option(names = { "--header",
+			"-h" }, negatable = true, description = "The import file has a header. Default: ${DEFAULT-VALUE}")
 	public boolean isHeader = true;
 	/** インポートデータシノニム */
 	@Option(names = { "--synonym", "-n" }, required = true, description = "Import data synonym.")

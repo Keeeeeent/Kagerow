@@ -849,7 +849,7 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 						// 開始時刻記録
 						startTime = Instant.now();
 						// 開始リスナー実行
-						this.planAdapter.startDoKsqlIndividual();
+						this.planAdapter.startDoKsqlIndividual(sql.getKey());
 						// SQL実行
 						List<CachedRowSet> tmpResult = connectionHandler.transaction(sql.getValue());
 						if (!tmpResult.isEmpty()) {
