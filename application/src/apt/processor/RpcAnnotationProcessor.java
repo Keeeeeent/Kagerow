@@ -41,36 +41,40 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 
 			    <!-- 構造体定義 -->
 			    <xs:complexType name="StructType">
-			        <xs:element name="struct">
-			            <xs:complexType>
-			            	<xs:sequence>
-					            <xs:element name="member" minOccurs="0" maxOccurs="unbounded">
-					                <xs:complexType>
-					                    <xs:sequence>
-					                        {0}
-					                    </xs:sequence>
-					                </xs:complexType>
-				                </xs:element>
-							</xs:sequence>
-			            </xs:complexType>
-			        </xs:element>
+			    	<xs:sequence>
+				        <xs:element name="struct">
+				            <xs:complexType>
+				            	<xs:sequence>
+						            <xs:element name="member" minOccurs="0" maxOccurs="unbounded">
+						                <xs:complexType>
+						                    <xs:sequence>
+						                        {0}
+						                    </xs:sequence>
+						                </xs:complexType>
+					                </xs:element>
+								</xs:sequence>
+				            </xs:complexType>
+				        </xs:element>
+			        </xs:sequence>
 			    </xs:complexType>
 
 			    <xs:complexType name="RpcParamType">
-			        <xs:element name="param">
-			            <xs:complexType>
-			                <xs:sequence>
-			                    <xs:element name="value" type="StructType" minOccurs="1" maxOccurs="1"/>
-			                </xs:sequence>
-			            </xs:complexType>
-			        </xs:element>
+				    <xs:sequence>
+				        <xs:element name="param">
+				            <xs:complexType>
+				                <xs:sequence>
+				                    <xs:element name="value" type="StructType" minOccurs="1" maxOccurs="1"/>
+				                </xs:sequence>
+				            </xs:complexType>
+				        </xs:element>
+			        </xs:sequence>
 			    </xs:complexType>
 
 				<!-- ルート要素 -->
 				<xs:element name="methodCall">
 					<xs:complexType>
 						<xs:sequence>
-			                <xs:element name="methodName" minOccurs="1" maxOccurs="1"/>
+			                <xs:element name="methodName" minOccurs="1" maxOccurs="1">
 							    <xs:simpleType>
 							        <xs:restriction base="xs:string">
 							            <xs:enumeration value="{1}"/>
@@ -86,15 +90,20 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 
 	/** XSDパラメータフォーマット */
 	private final static MessageFormat STRUCT_XML_FORMAT = new MessageFormat("""
-								<xs:element name="name">
-								    <xs:simpleType>
-								        <xs:restriction base="xs:string">
-								            <xs:enumeration value="{0}"/>
-								        </xs:restriction>
-								    </xs:simpleType>
-								</xs:element>
-								<xs:element name="{1}" type="{2}"/>
-			""");
+			<xs:element name="name">
+												    <xs:simpleType>
+												        <xs:restriction base="xs:string">
+												            <xs:enumeration value="{0}"/>
+												        </xs:restriction>
+												    </xs:simpleType>
+												</xs:element>
+												<xs:element name="value">
+										          <xs:complexType>
+										              <xs:sequence>
+										                  <xs:element name="{1}" type="{2}"/>
+										              </xs:sequence>
+										          </xs:complexType>
+												</xs:element>""");
 
 	/** {@inheritDoc} */
 	@Override

@@ -25,4 +25,10 @@ public interface BaseDataType<T> {
 	 */
 	RpcDataTypes toRpcDataType();
 
+	/**
+	 * 変換前のデータを取得します
+	 * @return 変換前データ
+	 */
+	String getData();
+
 }

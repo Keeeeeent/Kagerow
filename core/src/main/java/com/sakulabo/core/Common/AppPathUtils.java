@@ -8,7 +8,7 @@ import java.util.Objects;
 
 /**
  * Kagerowアプリケーション専用パス生成ユーティリティクラスです
- * 
+ *
  * @author keeeeeent
  */
 public final class AppPathUtils {

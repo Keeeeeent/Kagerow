@@ -28,6 +28,7 @@ import com.sakulabo.regulation.annotation.KagerowSpiModule;
 	requires jdk.httpserver;
 	requires java.xml;
 	requires java.compiler;
+	requires info.picocli;
 
 	// KagerowRPC
 	uses com.sakulabo.application.common.spi.RpcTarget;

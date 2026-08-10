@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.UncheckedIOException;
 import java.lang.reflect.InvocationTargetException;
@@ -16,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
@@ -181,6 +179,8 @@ public class RpcHttpHandlerContext implements HttpHandler {
 			exchange.getResponseBody().write(response);
 
 		} catch (Throwable e) {
+			// ログ記録
+			KagerowLogger.newAppLogger().err(e);
 			// ハンドラー起動
 			RpcExceptionHandler.handleException(exchange, e);
 		}
@@ -285,9 +285,6 @@ public class RpcHttpHandlerContext implements HttpHandler {
 	 */
 	public byte[] createResponseXML(HttpExchange exchange, Map<String, BaseDataType<?>> resultMap) throws Exception {
 
-		// レスポンスをXMLへ変換（成功時）
-		OutputStream output = exchange.getResponseBody();
-
 		// レスポンスRPC-XMLファクトリ生成
 		DocumentBuilderFactory responseXMLFactory = DocumentBuilderFactory.newDefaultInstance();
 		DocumentBuilder responseXMLBuilder = responseXMLFactory.newDocumentBuilder();
@@ -318,9 +315,9 @@ public class RpcHttpHandlerContext implements HttpHandler {
 			Element valueElem = responseXML.createElement("value");
 			Element valueSubElem = responseXML.createElement(dataType.toRpcDataType().toString());
 			// 取得データがnilか判定
-			Optional<?> dat = dataType.getRawType();
-			if (dat.isPresent()) {
-				valueSubElem.setTextContent(dat.get().toString());
+			String dat = dataType.getData();
+			if (Objects.nonNull(dat) && !dat.isEmpty()) {
+				valueSubElem.setTextContent(dat);
 			} else {
 				Element nilElem = responseXML.createElement(RpcDataTypes.NIL.toString());
 				valueSubElem.appendChild(nilElem);

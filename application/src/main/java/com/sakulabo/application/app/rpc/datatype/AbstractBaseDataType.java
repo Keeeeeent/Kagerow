@@ -19,4 +19,12 @@ public class AbstractBaseDataType {
 		this.baseData = baseData;
 	}
 
+	/**
+	 * 変換前のデータを取得します
+	 * @return 変換前データ
+	 */
+	public final String getData() {
+		return baseData;
+	}
+
 }

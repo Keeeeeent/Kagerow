@@ -41,9 +41,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXParseException;
 
 import com.sakulabo.application.app.rpc.datatype.BaseDataType;
 import com.sakulabo.application.app.rpc.datatype.RpcDataTypes;
+import com.sakulabo.application.app.rpc.exception.BaseServerException;
 import com.sakulabo.application.app.rpc.exception.IllegalCertificationException;
 import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
 import com.sun.net.httpserver.HttpExchange;
@@ -111,8 +113,11 @@ public final class RpcExceptionHandler {
 		// ハンドラー検索
 		BiConsumer<Throwable, HttpExchange> handler = getHandler(e.getClass());
 		if (Objects.isNull(handler)) {
+			// 例外翻訳
+			BaseServerException responseData = new BaseServerException("Server Internal Error",
+					HttpURLConnection.HTTP_INTERNAL_ERROR, e);
 			// レスポンスをXMLへ変換（失敗時）
-			byte[] response = createFalutResponseXML(exchange, e);
+			byte[] response = createFalutResponseXML(exchange, responseData);
 			// レスポンスコード設定
 			exchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, response.length);
 			// レスポンスボディ設定
@@ -249,6 +254,26 @@ public final class RpcExceptionHandler {
 		byte[] response = RpcExceptionHandler.createFalutResponseXML(exchange, e);
 		// レスポンスコード設定
 		exchange.sendResponseHeaders(HttpURLConnection.HTTP_UNAUTHORIZED, response.length);
+		// レスポンスボディ設定
+		exchange.getResponseBody().write(response);
+	}
+
+	/**
+	 * XMLリクエスト不正の場合
+	 *
+	 * @param e        スローされた例外
+	 * @param exchange リクエスト
+	 * @throws IOException レスポンス書き込み失敗
+	 */
+	@RpcException(SAXParseException.class)
+	public void commonHandler(SAXParseException e, HttpExchange exchange) throws IOException {
+		// 例外翻訳
+		BaseServerException responseData = new BaseServerException("Invalid request structure",
+				HttpURLConnection.HTTP_BAD_REQUEST, e);
+		// レスポンスをXMLへ変換（失敗時）
+		byte[] response = RpcExceptionHandler.createFalutResponseXML(exchange, responseData);
+		// レスポンスコード設定
+		exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, response.length);
 		// レスポンスボディ設定
 		exchange.getResponseBody().write(response);
 	}

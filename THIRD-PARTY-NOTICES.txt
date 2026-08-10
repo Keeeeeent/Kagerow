@@ -13,3 +13,24 @@ EPL 1.0 OR MPL 2.0
 https://h2database.com
 
 ------------------------------------------------------------
+curl --cacert ./application/target/release/Kagerow.app/Contents/app/.kagerow/setting/server.crt -v -X POST \
+  https://localhost:57280/rpc/auth \
+  -H "Content-Type: text/xml" \
+  --data-binary '<?xml version="1.0"?>
+<methodCall>
+  <methodName>nonce</methodName>
+  <params>
+    <param>
+      <value>
+        <struct>
+          <member>
+            <name>user</name>
+            <value>
+              <string>Kagerow</string>
+            </value>
+          </member>
+        </struct>
+      </value>
+    </param>
+  </params>
+</methodCall>'

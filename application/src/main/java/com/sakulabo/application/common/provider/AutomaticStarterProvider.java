@@ -1,5 +1,6 @@
 package com.sakulabo.application.common.provider;
 
+import java.io.Console;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -15,6 +16,7 @@ import com.sakulabo.application.common.code.DialogHelperText;
 import com.sakulabo.application.common.initializer.DefaultInitializer;
 import com.sakulabo.application.common.initializer.EmptyInitializer;
 import com.sakulabo.application.helper.DialogHelper;
+import com.sakulabo.core.Kagerow.KagerowApplication;
 import com.sakulabo.core.Kagerow.Adapter.KagerowDIContextAdapter;
 import com.sakulabo.core.Kagerow.Spi.KagerowAutomaticStarter;
 import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
@@ -65,7 +67,9 @@ public class AutomaticStarterProvider implements KagerowAutomaticStarter {
 				break;
 			case DefaultInitializer.INIT_MODE_SYSTEM_PROP_CLI_VAL:
 				// CLIモードの場合
-				// TODO 実装を提供する
+				Console console = System.console();
+				char[] pass = console.readPassword("password:");
+				password = new String(pass);
 				break;
 			default:
 				// 未知のモードの場合、何もしない
@@ -88,32 +92,80 @@ public class AutomaticStarterProvider implements KagerowAutomaticStarter {
 	/** {@inheritDoc} */
 	@Override
 	public void mistake() {
-		DialogHelper.showPasswordMistake();
+
+		// パスワード入力再試行か確認
 		try {
 			if (Files.notExists(MISTAKE_PASS_FILE)) {
 				// パスワード検証失敗ファイルがない場合、初回とみなしファイルを作成し終了
 				Files.createFile(MISTAKE_PASS_FILE);
-			} else {
-				// パスワード検証失敗ファイルがある場合、アプリケーションリセットを行うか確認
-				int res = JOptionPane.showConfirmDialog(null, DialogHelperText.DialogHelper_RESET_APP_MSG.toString(),
-						DialogHelperText.DialogHelper_RESET_APP_TITLE.toString(), JOptionPane.YES_NO_OPTION,
-						JOptionPane.QUESTION_MESSAGE);
-				// 初期化を希望の場合、初期化処理へ移行
-				if (res == JOptionPane.YES_OPTION) {
-					ResetPassDialog dialog = new ResetPassDialog();
-					dialog.resetPass();
-				}
+				return;
 			}
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
+
+		// モード毎に処理分岐
+		switch (DefaultInitializer.getMode()) {
+		case DefaultInitializer.INIT_MODE_SYSTEM_PROP_GUI_VAL:
+			// GUIモードの場合
+			DialogHelper.showPasswordMistake();
+			// パスワード検証失敗ファイルがある場合、アプリケーションリセットを行うか確認
+			int res = JOptionPane.showConfirmDialog(null,
+					DialogHelperText.DialogHelper_RESET_APP_MSG.toString(),
+					DialogHelperText.DialogHelper_RESET_APP_TITLE.toString(), JOptionPane.YES_NO_OPTION,
+					JOptionPane.QUESTION_MESSAGE);
+			// 初期化を希望の場合、初期化処理へ移行
+			if (res == JOptionPane.YES_OPTION) {
+				ResetPassDialog dialog = new ResetPassDialog();
+				dialog.resetPass();
+			} else {
+				return;
+			}
+			break;
+		case DefaultInitializer.INIT_MODE_SYSTEM_PROP_CLI_VAL:
+			// CLIモードの場合
+			System.err.println("Password verification failed");
+			Console console = System.console();
+			String answer = console.readLine("Initialize Kagerow? [y/n]: ");
+			if (answer.equalsIgnoreCase("y")) {
+				// データリセット
+				try {
+					KagerowApplication.resetApplication();
+				} catch (IOException e) {
+					KagerowLogger.newAppLogger().err(e);
+				}
+			} else {
+				return;
+			}
+			break;
+		default:
+			// 未知のモードの場合、何もしない
+			break;
+		}
+
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public void unexpected(Throwable e) {
+
+		// ログ書き込み
 		KagerowLogger.newAppLogger().err(e);
-		DialogHelper.showStaticSystemError(DialogHelperText.DialogHelper_ERROR_UNEXPECTED_MSG.toString());
+
+		// モード毎に処理分岐
+		switch (DefaultInitializer.getMode()) {
+		case DefaultInitializer.INIT_MODE_SYSTEM_PROP_GUI_VAL:
+			// GUIモードの場合
+			DialogHelper.showStaticSystemError(DialogHelperText.DialogHelper_ERROR_UNEXPECTED_MSG.toString());
+			break;
+		case DefaultInitializer.INIT_MODE_SYSTEM_PROP_CLI_VAL:
+			// CLIモードの場合、ロガーの書き込みだけ行う
+			break;
+		default:
+			// 未知のモードの場合、何もしない
+			break;
+		}
+
 	}
 
 	/** {@inheritDoc} */

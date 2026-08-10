@@ -29,7 +29,7 @@ public class Base64SendDataType extends AbstractBaseDataType implements BaseData
 	@Override
 	public Optional<String> getRawType() {
 		if (Objects.nonNull(baseData)) {
-			byte[] data = Base64.getDecoder().decode(baseData.getBytes(StandardCharsets.UTF_8));
+			byte[] data = Base64.getUrlDecoder().decode(baseData.getBytes(StandardCharsets.UTF_8));
 			return Optional.of(new String(data));
 		}
 		return Optional.empty();

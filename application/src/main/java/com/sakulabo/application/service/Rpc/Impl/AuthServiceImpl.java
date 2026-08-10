@@ -344,7 +344,7 @@ public class AuthServiceImpl implements AuthService {
 			byte[] rawHash = digest.digest(userName.getBytes(StandardCharsets.UTF_8));
 			String strHash = HexFormat.of().formatHex(rawHash);
 			// AES秘密鍵生成
-			KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+			KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA256");
 			keyGenerator.init(256);
 			SecretKey secretKey = keyGenerator.generateKey();
 			// キーストア登録用パスワード生成
@@ -353,6 +353,8 @@ public class AuthServiceImpl implements AuthService {
 			KeyStore.Entry entry = new SecretKeyEntry(secretKey);
 			KeyStore.ProtectionParameter protectionParam = new KeyStore.PasswordProtection(pass.toCharArray());
 			store.setEntry(strHash, entry, protectionParam);
+			// キーストア保存
+			store();
 			// 秘密鍵返却
 			byte[] rawKey = secretKey.getEncoded();
 			String encodedKey = Base64.getEncoder().encodeToString(rawKey);

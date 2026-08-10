@@ -62,6 +62,22 @@
 			<scope>compile</scope>
 		</dependency>
 
+		<!-- Source: https://mvnrepository.com/artifact/info.picocli/picocli -->
+		<dependency>
+		    <groupId>info.picocli</groupId>
+		    <artifactId>picocli</artifactId>
+		    <version>4.7.7</version>
+		    <scope>compile</scope>
+		</dependency>
+
+		<!-- Source: https://mvnrepository.com/artifact/com.gitlab.klamonte/jexer -->
+		<dependency>
+		    <groupId>com.gitlab.klamonte</groupId>
+		    <artifactId>jexer</artifactId>
+		    <version>1.6.0</version>
+		    <scope>compile</scope>
+		</dependency>
+
 	</dependencies>
 
 

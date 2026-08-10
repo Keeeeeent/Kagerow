@@ -58,7 +58,7 @@ public class RpcHttpHandler {
 		MethodHandles.Lookup lookup = MethodHandles.lookup();
 		handle = lookup.unreflect(method).bindTo(ctx);
 		// XSDファイルパス生成
-		xsdFileName = "/rpc-xsd/" + String.format("%s-%s.xml", rpcSetting.value(), rpcMethod.value());
+		xsdFileName = "/rpc-xsd/" + String.format("request-%s-%s.xsd", rpcSetting.value(), rpcMethod.value());
 	}
 
 	/**
