@@ -199,7 +199,8 @@ public class ExecuteCommand
 	@Override
 	public void startDoKsqlIndividual(String id) {
 		System.out.printf(
-				"  → Executing SQL [%s]...%n",
+				"  → Executing SQL#%d [%s]...%n",
+				++sqlCount,
 				id);
 	}
 
