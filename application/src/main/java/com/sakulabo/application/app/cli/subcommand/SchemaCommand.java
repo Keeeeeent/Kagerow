@@ -5,8 +5,6 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.concurrent.Callable;
 
 import javax.naming.Binding;
@@ -67,7 +65,7 @@ public class SchemaCommand {
 	@Command(name = "delete", mixinStandardHelpOptions = true)
 	public static class SchemaDeleteCommand implements Callable<Integer> {
 
-		/** ユーザ名称 */
+		/**　スキーマ名称 */
 		@Option(names = "--name", required = true)
 		private String schemaName;
 
@@ -98,7 +96,7 @@ public class SchemaCommand {
 	@Command(name = "info", mixinStandardHelpOptions = true)
 	public static class SchemaInfoCommand implements Callable<Integer> {
 
-		/** ユーザ名称 */
+		/** スキーマ名称 */
 		@Option(names = "--name", required = true)
 		private String schemaName;
 
@@ -116,11 +114,7 @@ public class SchemaCommand {
 				BasicFileAttributeView view = Files.getFileAttributeView(path, BasicFileAttributeView.class);
 				BasicFileAttributes attr = view.readAttributes();
 				FileTime time = attr.lastModifiedTime();
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-				String lastUpdated = time
-						.toInstant()
-						.atZone(ZoneId.systemDefault())
-						.format(formatter);
+				String lastUpdated = time.toInstant().toString();
 				// サイズ
 				long size = cnt.getSchemaContextSize();
 				// テーブル数
@@ -130,32 +124,13 @@ public class SchemaCommand {
 				System.out.println("────────────────────────────────");
 				System.out.printf("Name         : %s%n", schemaName);
 				System.out.printf("Last Updated : %s%n", lastUpdated);
-				System.out.printf("Size         : %s%n", formatSize(size));
+				System.out.printf("Size         : %s%n", String.format("%dKB", size));
 				System.out.printf("Tables       : %,d%n", tables);
 			} catch (Exception e) {
 				KagerowLogger.newAppLogger().err(e);
 				return Integer.valueOf(1);
 			}
 			return Integer.valueOf(0);
-		}
-
-		/**
-		 * サイズフォーマット
-		 * @param sizeKb サイズ
-		 * @return フォーマット済みのサイズ
-		 */
-		private static String formatSize(long sizeKb) {
-			if (sizeKb < 1024)
-				return sizeKb + " KB";
-			double size = sizeKb;
-			String[] units = { "MB", "GB", "TB", "PB" };
-			for (String unit : units) {
-				size /= 1024;
-				if (size < 1024) {
-					return String.format("%.1f %s", size, unit);
-				}
-			}
-			return String.format("%.1f EB", size / 1024);
 		}
 
 	}

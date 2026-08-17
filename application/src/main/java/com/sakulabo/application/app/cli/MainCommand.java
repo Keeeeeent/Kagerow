@@ -12,6 +12,7 @@ import com.sakulabo.application.app.cli.subcommand.AgentCommand;
 import com.sakulabo.application.app.cli.subcommand.ExecuteCommand;
 import com.sakulabo.application.app.cli.subcommand.ImportCommand;
 import com.sakulabo.application.app.cli.subcommand.SchemaCommand;
+import com.sakulabo.application.app.cli.subcommand.TableCommand;
 
 /**
  * CLIアプリケーションのメインコマンド実装クラスです
@@ -24,7 +25,8 @@ import com.sakulabo.application.app.cli.subcommand.SchemaCommand;
 		AgentCommand.class,
 		ImportCommand.class,
 		ExecuteCommand.class,
-		SchemaCommand.class
+		SchemaCommand.class,
+		TableCommand.class
 })
 public class MainCommand implements ViewRunner {
 
