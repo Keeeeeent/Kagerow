@@ -95,9 +95,11 @@ public class ImportCommand implements Callable<Integer> {
 			model instance = new model();
 			DataService service = KagerowUtilities.getBean(DataService.class, null).get();
 			service.importData(instance);
+			System.out.println();
 			return Integer.valueOf(0);
 		} catch (NameAlreadyBoundException _) {
 			System.err.print("\r" + "This file has already been imported");
+			System.out.println();
 			return Integer.valueOf(2);
 		} catch (Exception e) {
 			System.out.print("\r");
