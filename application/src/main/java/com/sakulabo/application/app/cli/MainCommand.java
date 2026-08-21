@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import com.sakulabo.application.Main;
 import com.sakulabo.application.app.cli.subcommand.AgentCommand;
+import com.sakulabo.application.app.cli.subcommand.CacheCommand;
 import com.sakulabo.application.app.cli.subcommand.ExecuteCommand;
 import com.sakulabo.application.app.cli.subcommand.ImportCommand;
 import com.sakulabo.application.app.cli.subcommand.PluginCommand;
@@ -38,7 +39,8 @@ import com.sakulabo.application.app.cli.subcommand.TableCommand;
 		TableCommand.class,
 		SynonymCommand.class,
 		SettingCommand.class,
-		PluginCommand.class
+		PluginCommand.class,
+		CacheCommand.class
 })
 public class MainCommand implements ViewRunner {
 
