@@ -17,6 +17,7 @@ import com.sakulabo.application.Main;
 import com.sakulabo.application.app.cli.subcommand.AgentCommand;
 import com.sakulabo.application.app.cli.subcommand.ExecuteCommand;
 import com.sakulabo.application.app.cli.subcommand.ImportCommand;
+import com.sakulabo.application.app.cli.subcommand.PluginCommand;
 import com.sakulabo.application.app.cli.subcommand.SchemaCommand;
 import com.sakulabo.application.app.cli.subcommand.SettingCommand;
 import com.sakulabo.application.app.cli.subcommand.SynonymCommand;
@@ -36,7 +37,8 @@ import com.sakulabo.application.app.cli.subcommand.TableCommand;
 		SchemaCommand.class,
 		TableCommand.class,
 		SynonymCommand.class,
-		SettingCommand.class
+		SettingCommand.class,
+		PluginCommand.class
 })
 public class MainCommand implements ViewRunner {
 
