@@ -17,6 +17,7 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
 import com.sakulabo.core.Kagerow.Utilities.KagerowTransaction;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 
+import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -229,15 +230,24 @@ public class TableCommand {
 	@Command(name = "delete", mixinStandardHelpOptions = true)
 	public static class TableDeleteCommand implements Callable<Integer> {
 
+		/**
+		 * オプショングループ
+		 */
+		private static class Options {
+			/** テーブル名称 */
+			@Option(names = { "--table", "-t" })
+			private String tableName;
+			/** テーブル名称 */
+			@Option(names = "--synonym")
+			private String synonymName;
+		}
+
 		/** スキーマ名称 */
 		@Option(names = { "--schema", "-s" }, required = true)
 		private String schemaName;
-		/** テーブル名称 */
-		@Option(names = { "--table", "-t" })
-		private String tableName;
-		/** テーブル名称 */
-		@Option(names = "--synonym")
-		private String synonymName;
+		/** オプション */
+		@ArgGroup(exclusive = true, multiplicity = "1")
+		private Options options;
 		/** テーブル世代 */
 		@Option(names = { "--generation", "-g" })
 		private int generation = 0;
@@ -245,24 +255,24 @@ public class TableCommand {
 		/** {@inheritDoc} */
 		@Override
 		public Integer call() throws Exception {
-			if (Objects.isNull(tableName) && Objects.isNull(synonymName)) {
+			if (Objects.isNull(options.tableName) && Objects.isNull(options.synonymName)) {
 				System.err.println("synonym or table must be specified");
 				return Integer.valueOf(2);
 			}
 			KagerowVirtualFileContext ctx = KagerowUtilities.getContext(KagerowVirtualFileContext._NAME);
 			KagerowVirtualDirContext dirCtx = ctx.lookup(schemaName);
 			Map<String, String> synonyms = dirCtx.getSynonymMapList();
-			if (Objects.isNull(tableName)) {
+			if (Objects.isNull(options.tableName)) {
 				for (Map.Entry<String, String> entry : synonyms.entrySet()) {
-					if (entry.getKey().equals(synonymName)) {
-						tableName = entry.getValue();
+					if (entry.getKey().equals(options.synonymName)) {
+						options.tableName = entry.getValue();
 						break;
 					}
 				}
 			}
 			KagerowTransaction tran = KagerowTransaction.getTransactionFromSchemaName(schemaName);
 			try (tran) {
-				KagerowVirtualFileContent cnt = dirCtx.lookup(tableName);
+				KagerowVirtualFileContent cnt = dirCtx.lookup(options.tableName);
 				if (cnt.contentSize() < generation) {
 					System.err.println("The number of specified generations exceeds the maximum limit");
 					return Integer.valueOf(3);
