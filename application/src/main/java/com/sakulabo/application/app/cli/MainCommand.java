@@ -19,6 +19,7 @@ import com.sakulabo.application.app.cli.subcommand.BackupCommand;
 import com.sakulabo.application.app.cli.subcommand.CacheCommand;
 import com.sakulabo.application.app.cli.subcommand.ExecuteCommand;
 import com.sakulabo.application.app.cli.subcommand.ImportCommand;
+import com.sakulabo.application.app.cli.subcommand.LicenseCommand;
 import com.sakulabo.application.app.cli.subcommand.ManageCommand;
 import com.sakulabo.application.app.cli.subcommand.PluginCommand;
 import com.sakulabo.application.app.cli.subcommand.SchemaCommand;
@@ -44,7 +45,8 @@ import com.sakulabo.application.app.cli.subcommand.TableCommand;
 		PluginCommand.class,
 		CacheCommand.class,
 		BackupCommand.class,
-		ManageCommand.class
+		ManageCommand.class,
+		LicenseCommand.class
 })
 public class MainCommand implements ViewRunner {
 
