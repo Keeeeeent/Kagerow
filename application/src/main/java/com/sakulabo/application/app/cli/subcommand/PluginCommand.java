@@ -205,14 +205,15 @@ public class PluginCommand {
 					return Integer.valueOf(4);
 				}
 				KagerowPluginPackageContext ctx = KagerowUtilities.getContext(KagerowPluginPackageContext._NAME);
-				if (ctx.isDisable(packageName)) {
-					System.err.println("The target package has already been disabled");
-					return Integer.valueOf(2);
-				}
+				Name pkgName = KagerowUtilities.createVersioningPluginPkgName(packageName, version);
 				if (Objects.isNull(pluginName)) {
-					ctx.setDisable(true, packageName);
+					if (ctx.isDisable(pkgName.toString())) {
+						System.err.println("The target package has already been disabled");
+						return Integer.valueOf(2);
+					}
+					ctx.setDisable(true, pkgName.toString());
 				} else {
-					KagerowPluginContext plugins = ctx.lookup(packageName);
+					KagerowPluginContext plugins = ctx.lookup(pkgName);
 					if (plugins.isDisable(pluginName)) {
 						System.err.println("The plugin has already been disabled");
 						return Integer.valueOf(3);
@@ -252,14 +253,15 @@ public class PluginCommand {
 					return Integer.valueOf(0);
 				}
 				KagerowPluginPackageContext ctx = KagerowUtilities.getContext(KagerowPluginPackageContext._NAME);
-				if (!ctx.isDisable(packageName)) {
-					System.err.println("The target package has already been enable");
-					return Integer.valueOf(2);
-				}
+				Name pkgName = KagerowUtilities.createVersioningPluginPkgName(packageName, version);
 				if (Objects.isNull(pluginName)) {
-					ctx.setDisable(false, packageName);
+					if (!ctx.isDisable(pkgName.toString())) {
+						System.err.println("The target package has already been enable");
+						return Integer.valueOf(2);
+					}
+					ctx.setDisable(false, pkgName.toString());
 				} else {
-					KagerowPluginContext plugins = ctx.lookup(packageName);
+					KagerowPluginContext plugins = ctx.lookup(pkgName);
 					if (!plugins.isDisable(pluginName)) {
 						System.err.println("The plugin has already been enable");
 						return Integer.valueOf(3);

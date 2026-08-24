@@ -405,8 +405,8 @@ public final class KagerowPluginContextImpl extends BaseKagerowContext<KagerowPl
 			disablePluginList.add(name);
 			unbind(name);
 		} else {
-			Object target = disablePluginList.remove(name);
-			if (Objects.nonNull(target)) {
+			boolean target = disablePluginList.remove(name);
+			if (!target) {
 				// 無効化されていない場合、例外をスロー
 				throw new NameNotFoundException(name);
 			}
