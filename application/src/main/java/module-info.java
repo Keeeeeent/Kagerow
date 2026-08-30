@@ -29,14 +29,15 @@ import com.sakulabo.regulation.annotation.KagerowSpiModule;
 	requires java.xml;
 	requires java.compiler;
 	requires info.picocli;
+	requires java.net.http;
 
 	// KagerowRPC
 	uses com.sakulabo.application.common.spi.RpcTarget;
 	uses com.sakulabo.application.common.spi.ViewRunner;
 
 	provides com.sakulabo.application.common.spi.RpcTarget
-			with com.sakulabo.application.controller.Rpc.Impl.DataImportControllerImpl,
-			com.sakulabo.application.controller.Rpc.Impl.AuthControllerImpl;
+			with com.sakulabo.application.app.rpc.executor.Impl.DataImportExecutorImpl,
+			com.sakulabo.application.app.rpc.executor.Impl.AuthExecutorImpl;
 
 	// KagerowSPI
 	provides com.sakulabo.core.Kagerow.Spi.KagerowAutomaticStarter

@@ -1,0 +1,10 @@
+<methodCall>
+  <params>
+    <param>
+      <value>
+        <struct>
+        </struct>
+      </value>
+    </param>
+  </params>
+</methodCall>

@@ -1,4 +1,4 @@
-package com.sakulabo.application.controller.Rpc.Impl;
+package com.sakulabo.application.app.rpc.executor.Impl;
 
 import java.time.format.DateTimeFormatter;
 
@@ -11,7 +11,7 @@ import com.sakulabo.application.app.rpc.datatype.send.DateTimeSendDataType;
 import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
 import com.sakulabo.application.app.rpc.exception.IllegalCertificationException;
 import com.sakulabo.application.app.rpc.exception.RpcRuntmeException;
-import com.sakulabo.application.controller.Rpc.AuthController;
+import com.sakulabo.application.app.rpc.executor.AuthExecutor;
 import com.sakulabo.application.service.Rpc.AuthService;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 
@@ -21,7 +21,7 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
  * @author keeeeeent
  */
 @RpcSetting("auth")
-public class AuthControllerImpl implements AuthController {
+public class AuthExecutorImpl implements AuthExecutor {
 
 	/** 認証サービス取得 */
 	private AuthService service = KagerowUtilities.getBean(AuthService.class, null).get();

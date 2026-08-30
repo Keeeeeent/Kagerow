@@ -1,4 +1,4 @@
-package com.sakulabo.application.controller.Rpc.Impl;
+package com.sakulabo.application.app.rpc.executor.Impl;
 
 import java.io.IOException;
 import java.net.URI;
@@ -6,12 +6,15 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.Base64;
 
 import javax.naming.NameAlreadyBoundException;
 
 import com.sakulabo.application.app.rpc.RpcMethod;
 import com.sakulabo.application.app.rpc.RpcMethodParam;
 import com.sakulabo.application.app.rpc.RpcSetting;
+import com.sakulabo.application.app.rpc.datatype.receive.Base64ReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.receive.BooleanReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.receive.CharsetReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.receive.PathReceiveDataType;
@@ -19,9 +22,10 @@ import com.sakulabo.application.app.rpc.datatype.receive.StringReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
 import com.sakulabo.application.app.rpc.exception.RpcIllegalArgumentException;
 import com.sakulabo.application.app.rpc.exception.RpcRuntmeException;
-import com.sakulabo.application.controller.Rpc.DataImportController;
+import com.sakulabo.application.app.rpc.executor.DataImportExecutor;
 import com.sakulabo.core.Kagerow.Exception.VirtualFileConstructionFailException;
 import com.sakulabo.core.Kagerow.Utilities.KagerowChunkCreater.ChunkCreateMode;
+import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 import com.sakulabo.core.Kagerow.Utilities.KagerowVirtualFileCreater;
 
 /**
@@ -30,7 +34,7 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowVirtualFileCreater;
  * @author keeeeeent
  */
 @RpcSetting("data")
-public class DataImportControllerImpl implements DataImportController {
+public class DataImportExecutorImpl implements DataImportExecutor {
 
 	/** {@inheritDoc} */
 	@Override
@@ -82,6 +86,41 @@ public class DataImportControllerImpl implements DataImportController {
 		} catch (NameAlreadyBoundException | IOException | VirtualFileConstructionFailException e) {
 			// 例外翻訳
 			throw new RpcRuntmeException(e.getMessage());
+		}
+
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	@RpcMethod("binarydataImport")
+	public ImportResult binarydataImport(
+			@RpcMethodParam(value = "mode", required = true) StringReceiveDataType paramMode,
+			@RpcMethodParam(value = "schema", required = true) StringReceiveDataType paramSchema,
+			@RpcMethodParam(value = "data", required = true) Base64ReceiveDataType paramData,
+			@RpcMethodParam("charset") CharsetReceiveDataType paramCharset,
+			@RpcMethodParam("isHeader") BooleanReceiveDataType paramIsHeader,
+			@RpcMethodParam("synonym") StringReceiveDataType paramSynonym,
+			@RpcMethodParam("isSecure") BooleanReceiveDataType paramIsSecure) throws RpcRuntmeException {
+
+		try {
+			// データを一時ファイル化
+			Path path = KagerowUtilities.createTemporaryDirPath();
+			path = Files.createTempFile(path, "dataimport", ".tmp").toAbsolutePath().normalize();
+			// データデシリアライズ
+			byte[] data = Base64.getUrlDecoder().decode(paramData.getData());
+			Files.write(path, data, StandardOpenOption.TRUNCATE_EXISTING);
+			try {
+				// 引数用意
+				PathReceiveDataType param = new PathReceiveDataType(path.toString());
+				// データインポート処理呼び出し
+				return dataImport(paramMode, paramSchema, param, paramCharset, paramIsHeader, paramSynonym,
+						paramIsSecure);
+			} finally {
+				// 一時ファイル削除
+				Files.delete(path);
+			}
+		} catch (IOException e) {
+			throw new RpcRuntmeException("Failed to create a temporary file", e);
 		}
 
 	}

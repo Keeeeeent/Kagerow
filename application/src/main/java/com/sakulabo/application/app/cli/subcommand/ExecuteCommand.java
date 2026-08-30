@@ -5,12 +5,15 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.function.UnaryOperator;
 
 import com.sakulabo.application.app.cli.converter.ExistingFilePathConverter;
+import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Fail;
+import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Success;
 import com.sakulabo.application.model.Script.KSQLScriptModel;
 import com.sakulabo.application.service.Script.KSQLService;
 import com.sakulabo.core.Kagerow.Adapter.KagerowExecutionPlanAdapter;
@@ -28,7 +31,7 @@ import picocli.CommandLine.Option;
  * @author keeeeeent
  */
 @Command(name = "run", mixinStandardHelpOptions = true)
-public class ExecuteCommand
+public class ExecuteCommand extends RemoteCommand
 		implements Callable<Integer>, KagerowExecutionPlanAdapter, UnaryOperator<KagerowScriptAccessor> {
 
 	/** インポートファイルパス */
@@ -52,8 +55,7 @@ public class ExecuteCommand
 
 	/** {@inheritDoc} */
 	@Override
-	public Integer call() throws Exception {
-
+	protected Integer local() throws Exception {
 		try {
 			// 実行モデル生成
 			KagerowScriptAccessor scriptAccessor = KagerowScriptAccessor.getInstance(path);
@@ -74,7 +76,25 @@ public class ExecuteCommand
 			KagerowLogger.newAppLogger().err(e);
 			return Integer.valueOf(1);
 		}
+	}
 
+	/** {@inheritDoc} */
+	@Override
+	protected Integer remote() throws Exception {
+		// リクエスト実行
+		RpcResult result = doRpcMethodCall("/script/execute", () -> {
+			return new HashMap<>();
+		});
+		// 結果処理
+		return switch (result) {
+		case Success _: {
+			yield Integer.valueOf(0);
+		}
+		case Fail res: {
+			System.err.println(String.format("StatusCode : %d ResponseText", res.statusCode(), res.response()));
+			yield Integer.valueOf(1);
+		}
+		};
 	}
 
 	/** {@inheritDoc} */

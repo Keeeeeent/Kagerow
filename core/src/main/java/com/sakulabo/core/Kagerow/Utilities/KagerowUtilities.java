@@ -577,6 +577,15 @@ public final class KagerowUtilities {
 	}
 
 	/**
+	 * 一時フォルダパスを生成します
+	 *
+	 * @return 生成されたパス
+	 */
+	public static Path createTemporaryDirPath() {
+		return AppPathUtils.createTemporaryDirPath();
+	}
+
+	/**
 	 * アプリケーションが管理しているホームディレクトリのパスを生成します
 	 *
 	 * @return 生成されたパス

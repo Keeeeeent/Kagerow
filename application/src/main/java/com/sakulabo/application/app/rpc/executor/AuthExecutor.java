@@ -1,4 +1,4 @@
-package com.sakulabo.application.controller.Rpc;
+package com.sakulabo.application.app.rpc.executor;
 
 import com.sakulabo.application.app.rpc.RpcSendParam;
 import com.sakulabo.application.app.rpc.datatype.receive.StringReceiveDataType;
@@ -12,7 +12,7 @@ import com.sakulabo.application.common.spi.RpcTarget;
  *
  * @author keeeeeent
  */
-public interface AuthController extends RpcTarget {
+public interface AuthExecutor extends RpcTarget {
 
 	/**
 	 * チャレンジデータ構造
