@@ -1,6 +1,5 @@
 package com.sakulabo.application.app.rpc.executor.Impl;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -13,8 +12,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.UnaryOperator;
 
-import javax.naming.NamingException;
-
 import com.sakulabo.application.app.rpc.RpcMethod;
 import com.sakulabo.application.app.rpc.RpcMethodParam;
 import com.sakulabo.application.app.rpc.RpcSetting;
@@ -24,10 +21,6 @@ import com.sakulabo.application.app.rpc.datatype.receive.StringReceiveDataType;
 import com.sakulabo.application.app.rpc.exception.RpcRuntmeException;
 import com.sakulabo.application.app.rpc.executor.ScriptExecutor;
 import com.sakulabo.core.Kagerow.Adapter.KagerowExecutionPlanBaseAdapter;
-import com.sakulabo.core.Kagerow.Exception.AppLogicException;
-import com.sakulabo.core.Kagerow.Exception.KFileParseException;
-import com.sakulabo.core.Kagerow.Exception.KSQLParseException;
-import com.sakulabo.core.Kagerow.Exception.KagerowExecuteException;
 import com.sakulabo.core.Kagerow.Utilities.KagerowExecutionPlanAccessor;
 import com.sakulabo.core.Kagerow.Utilities.KagerowScriptAccessor;
 
@@ -109,7 +102,7 @@ public class ScriptExecutorImpl implements ScriptExecutor {
 	public void executeScript(
 			@RpcMethodParam("sessionid") StringReceiveDataType sessionId,
 			@RpcMethodParam("secure") BooleanReceiveDataType isSecure,
-			@RpcMethodParam("secure") PathReceiveDataType path) {
+			@RpcMethodParam("path") PathReceiveDataType path) {
 
 		try {
 

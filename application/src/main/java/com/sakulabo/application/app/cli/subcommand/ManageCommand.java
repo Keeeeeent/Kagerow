@@ -17,8 +17,7 @@ import picocli.CommandLine.Option;
  *
  * @author keeeeeent
  */
-@Command(name = "manage", mixinStandardHelpOptions = true, subcommands = {
-})
+@Command(name = "manage")
 public class ManageCommand implements Callable<Integer> {
 
 	/**

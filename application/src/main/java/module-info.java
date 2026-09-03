@@ -43,4 +43,7 @@ import com.sakulabo.regulation.annotation.KagerowSpiModule;
 	provides com.sakulabo.core.Kagerow.Spi.KagerowAutomaticStarter
 			with com.sakulabo.application.common.provider.AutomaticStarterProvider;
 
+	// 開発環境専用
+	requires static com.github.spotbugs.annotations;
+
 }

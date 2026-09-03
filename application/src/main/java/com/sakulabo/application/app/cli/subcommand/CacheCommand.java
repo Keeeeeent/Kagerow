@@ -19,7 +19,7 @@ import picocli.CommandLine.Option;
  *
  * @author keeeeeent
  */
-@Command(name = "cache", mixinStandardHelpOptions = true, subcommands = {
+@Command(name = "cache", subcommands = {
 		CacheCommand.CacheListCommand.class,
 		CacheCommand.CacheCreateCommand.class,
 		CacheCommand.CacheDeleteCommand.class,
@@ -30,7 +30,7 @@ public class CacheCommand {
 	/**
 	 * キャッシュ一覧確認コマンド
 	 */
-	@Command(name = "list", mixinStandardHelpOptions = true)
+	@Command(name = "list")
 	public static class CacheListCommand implements Callable<Integer> {
 
 		/** {@inheritDoc} */
@@ -60,7 +60,7 @@ public class CacheCommand {
 	/**
 	 * キャッシュ情報詳細表示コマンド
 	 */
-	@Command(name = "info", mixinStandardHelpOptions = true)
+	@Command(name = "info")
 	public static class CacheInfoCommand implements Callable<Integer> {
 
 		/** キャッシュID */
@@ -95,7 +95,7 @@ public class CacheCommand {
 	/**
 	 * キャッシュ生成コマンド
 	 */
-	@Command(name = "create", mixinStandardHelpOptions = true)
+	@Command(name = "create")
 	public static class CacheCreateCommand implements Callable<Integer> {
 
 		/** {@inheritDoc} */
@@ -117,7 +117,7 @@ public class CacheCommand {
 	/**
 	 * キャッシュ削除コマンド
 	 */
-	@Command(name = "delete", mixinStandardHelpOptions = true)
+	@Command(name = "delete")
 	public static class CacheDeleteCommand implements Callable<Integer> {
 
 		/** キャッシュID */

@@ -16,7 +16,7 @@ import picocli.CommandLine.Option;
  *
  * @author keeeeeent
  */
-@Command(name = "synonym", mixinStandardHelpOptions = true, subcommands = {
+@Command(name = "synonym", subcommands = {
 		SynonymCommand.SynonymListCommand.class,
 })
 public class SynonymCommand {
@@ -24,7 +24,7 @@ public class SynonymCommand {
 	/**
 	 * シノニム一覧確認コマンド
 	 */
-	@Command(name = "list", mixinStandardHelpOptions = true)
+	@Command(name = "list")
 	public static class SynonymListCommand implements Callable<Integer> {
 
 		/** スキーマ名称 */

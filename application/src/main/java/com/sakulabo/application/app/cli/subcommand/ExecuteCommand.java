@@ -14,6 +14,9 @@ import java.util.function.UnaryOperator;
 import com.sakulabo.application.app.cli.converter.ExistingFilePathConverter;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Fail;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Success;
+import com.sakulabo.application.app.rpc.datatype.receive.BooleanReceiveDataType;
+import com.sakulabo.application.app.rpc.datatype.receive.PathReceiveDataType;
+import com.sakulabo.application.app.rpc.datatype.receive.StringReceiveDataType;
 import com.sakulabo.application.model.Script.KSQLScriptModel;
 import com.sakulabo.application.service.Script.KSQLService;
 import com.sakulabo.core.Kagerow.Adapter.KagerowExecutionPlanAdapter;
@@ -30,8 +33,8 @@ import picocli.CommandLine.Option;
  *
  * @author keeeeeent
  */
-@Command(name = "run", mixinStandardHelpOptions = true)
-public class ExecuteCommand extends RemoteCommand
+@Command(name = "run")
+public class ExecuteCommand extends AuthRemoteCommand
 		implements Callable<Integer>, KagerowExecutionPlanAdapter, UnaryOperator<KagerowScriptAccessor> {
 
 	/** インポートファイルパス */
@@ -44,6 +47,9 @@ public class ExecuteCommand extends RemoteCommand
 	/** スクリプト環境変数 */
 	@Option(names = "--env", description = "Environment variable. Example: --env KEY=VALUE")
 	public List<String> env;
+	/** セッションID */
+	@Option(names = "--sessionid", description = "Specify the session ID of the script to be executed")
+	public String sessionid;
 	/** KSQLカウンター */
 	private int sqlCount;
 	/** 入力プラグインカウンター */
@@ -82,8 +88,14 @@ public class ExecuteCommand extends RemoteCommand
 	@Override
 	protected Integer remote() throws Exception {
 		// リクエスト実行
-		RpcResult result = doRpcMethodCall("/script/execute", () -> {
-			return new HashMap<>();
+		RpcResult result = doRpcMethodCall("execute", "/rpc/script", () -> {
+			return new HashMap<>() {
+				{
+					put("sessionid", new StringReceiveDataType(sessionid));
+					put("secure", new BooleanReceiveDataType(Boolean.toString(isSecure)));
+					put("path", new PathReceiveDataType(path.toAbsolutePath().normalize().toString()));
+				}
+			};
 		});
 		// 結果処理
 		return switch (result) {

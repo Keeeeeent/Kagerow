@@ -12,10 +12,10 @@ import picocli.CommandLine.TypeConversionException;
  *
  * @author keeeeeent
  */
-public class RpcUriConverter implements ITypeConverter<URI> {
+public class RpcAuthUriConverter implements ITypeConverter<URI> {
 
 	/** URI形式検証フォーマット */
-	private static final Pattern pattern = Pattern.compile("rpc://\\S+");
+	private static final Pattern pattern = Pattern.compile("rpc://\\S+\\?token=\\S+");
 
 	/** {@inheritDoc} */
 	@Override

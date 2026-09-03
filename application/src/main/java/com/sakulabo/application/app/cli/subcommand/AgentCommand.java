@@ -1,11 +1,26 @@
 package com.sakulabo.application.app.cli.subcommand;
 
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+import com.sakulabo.application.app.cli.converter.ExistingFilePathConverter;
+import com.sakulabo.application.app.cli.converter.RpcUriConverter;
+import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Fail;
+import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Success;
+import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
 import com.sakulabo.application.service.Rpc.AuthService;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -15,14 +30,15 @@ import picocli.CommandLine.Option;
  * @author keeeeeent
  */
 @Command(name = "agent", subcommands = {
-		AgentCommand.CreateAgentCommand.class
-}, mixinStandardHelpOptions = true)
+		AgentCommand.CreateAgentCommand.class,
+		AgentCommand.LoginAgentCommand.class
+})
 public class AgentCommand {
 
 	/**
 	 * ユーザ作成コマンド
 	 */
-	@Command(name = "user", mixinStandardHelpOptions = true)
+	@Command(name = "create")
 	public static class CreateAgentCommand implements Callable<Integer> {
 
 		/** ユーザ名称 */
@@ -48,4 +64,104 @@ public class AgentCommand {
 		}
 
 	}
+
+	/**
+	 * ログインコマンド
+	 */
+	@Command(name = "login")
+	public static class LoginAgentCommand extends RemoteCommand implements Callable<Integer> {
+
+		/** ユーザ名称 */
+		@Option(names = "--name", required = true)
+		private String username;
+		/** 秘密鍵 */
+		@Option(names = "--secret", required = true)
+		private String secretkey;
+		/** リモート実行 */
+		@SuppressFBWarnings("MF_CLASS_MASKS_FIELD")
+		@Option(names = "--remote", description = "Please specify the URI in the format rpc://host:port", converter = RpcUriConverter.class, required = true)
+		public URI remote = null;
+		/** 証明書 */
+		@SuppressFBWarnings("MF_CLASS_MASKS_FIELD")
+		@Option(names = "--cacert", description = "Please specify the path to the X.509 certificate in PEM format", converter = ExistingFilePathConverter.class)
+		public Path cacert = null;
+
+		/** {@inheritDoc} */
+		@Override
+		protected Integer local() throws Exception {
+			if (Objects.isNull(remote)) {
+				return Integer.valueOf(1);
+			}
+			return remote();
+		}
+
+		/** {@inheritDoc} */
+		@Override
+		protected Integer remote() throws Exception {
+
+			// フィールド上書き
+			super.remote = this.remote;
+			super.cacert = this.cacert;
+
+			// 変数宣言
+			RpcResult result = null;
+
+			// メソッド呼び出し(認証取得)
+			RpcResult loginResult = doRpcMethodCall("nonce", "/rpc/auth", () -> {
+				return new HashMap<>() {
+					{
+						put("user", new StringSendDataType(username));
+					}
+				};
+			}, false);
+
+			// 呼び出し結果検証
+			if (loginResult instanceof Fail fail) {
+				// ログイン失敗の場合後続処理は行わない
+				result = fail;
+			} else if (loginResult instanceof Success success) {
+				// チャレンジ開始
+				String nonce = success.response().get("nonce");
+				nonce = nonce.strip();
+				byte[] rawNonce = Base64.getUrlDecoder().decode(nonce.getBytes(StandardCharsets.UTF_8));
+				// 秘密鍵を生成
+				byte[] keyByte = Base64.getDecoder().decode(secretkey.getBytes(StandardCharsets.UTF_8));
+				SecretKeySpec key = new SecretKeySpec(keyByte, "AES");
+				Mac mac = Mac.getInstance("HmacSHA256");
+				mac.init(key);
+				// チャレンジ実施
+				byte[] challenge = mac.doFinal(rawNonce);
+				String challengeStr = Base64.getUrlEncoder()
+						.withoutPadding()
+						.encodeToString(challenge);
+				// メソッド呼び出し(チャレンジ認証)
+				RpcResult challengeResult = doRpcMethodCall("challenge", "/rpc/auth",
+						() -> {
+							return new HashMap<>() {
+								{
+									put("challenge", new StringSendDataType(challengeStr));
+								}
+							};
+						}, false);
+				// 結果設定
+				result = challengeResult;
+			}
+
+			// 結果処理
+			return switch (result) {
+			case Success success: {
+				String token = success.response().get("token");
+				System.out.println(token.strip());
+				yield Integer.valueOf(0);
+			}
+			case Fail fail: {
+				System.err.println(String.format("StatusCode : %d ResponseText", fail.statusCode(), fail.response()));
+				yield Integer.valueOf(1);
+			}
+			};
+
+		}
+
+	}
+
 }

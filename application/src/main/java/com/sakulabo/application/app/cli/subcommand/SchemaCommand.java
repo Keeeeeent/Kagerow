@@ -25,7 +25,7 @@ import picocli.CommandLine.Option;
  *
  * @author keeeeeent
  */
-@Command(name = "schema", mixinStandardHelpOptions = true, subcommands = {
+@Command(name = "schema", subcommands = {
 		SchemaCommand.SchemaListCommand.class,
 		SchemaCommand.SchemaDeleteCommand.class,
 		SchemaCommand.SchemaInfoCommand.class
@@ -35,7 +35,7 @@ public class SchemaCommand {
 	/**
 	 * スキーマ一覧確認コマンド
 	 */
-	@Command(name = "list", mixinStandardHelpOptions = true)
+	@Command(name = "list")
 	public static class SchemaListCommand implements Callable<Integer> {
 
 		/** {@inheritDoc} */
@@ -62,7 +62,7 @@ public class SchemaCommand {
 	/**
 	 * スキーマ削除コマンド
 	 */
-	@Command(name = "delete", mixinStandardHelpOptions = true)
+	@Command(name = "delete")
 	public static class SchemaDeleteCommand implements Callable<Integer> {
 
 		/**　スキーマ名称 */
@@ -93,7 +93,7 @@ public class SchemaCommand {
 	/**
 	 * スキーマ詳細確認コマンド
 	 */
-	@Command(name = "info", mixinStandardHelpOptions = true)
+	@Command(name = "info")
 	public static class SchemaInfoCommand implements Callable<Integer> {
 
 		/** スキーマ名称 */

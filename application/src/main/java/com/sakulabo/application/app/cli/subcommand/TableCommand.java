@@ -26,7 +26,7 @@ import picocli.CommandLine.Option;
  *
  * @author keeeeeent
  */
-@Command(name = "table", mixinStandardHelpOptions = true, subcommands = {
+@Command(name = "table", subcommands = {
 		TableCommand.TableListCommand.class,
 		TableCommand.TableInfoCommand.class,
 		TableCommand.TableDeleteCommand.class
@@ -58,7 +58,7 @@ public class TableCommand {
 	/**
 	 * テーブル一覧確認コマンド
 	 */
-	@Command(name = "list", mixinStandardHelpOptions = true)
+	@Command(name = "list")
 	public static class TableListCommand implements Callable<Integer> {
 
 		/** スキーマ名称 */
@@ -165,7 +165,7 @@ public class TableCommand {
 	/**
 	 * テーブル情報確認コマンド
 	 */
-	@Command(name = "info", mixinStandardHelpOptions = true)
+	@Command(name = "info")
 	public static class TableInfoCommand implements Callable<Integer> {
 
 		/** スキーマ名称 */
@@ -227,7 +227,7 @@ public class TableCommand {
 	/**
 	 * テーブル削除コマンド
 	 */
-	@Command(name = "delete", mixinStandardHelpOptions = true)
+	@Command(name = "delete")
 	public static class TableDeleteCommand implements Callable<Integer> {
 
 		/**

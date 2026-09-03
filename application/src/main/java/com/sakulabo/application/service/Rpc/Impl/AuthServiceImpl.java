@@ -317,7 +317,7 @@ public class AuthServiceImpl implements AuthService {
 				// チェレンジが存在する場合、有効期限を確認
 				Instant limitTime = Instant.now().minus(MAX_TIME);
 				// 有効期限がチャレンジの有効期限より前の場合、トークンを発行
-				if (!limitTime.isAfter(limit)) {
+				if (limitTime.isBefore(limit)) {
 					// トークン生成
 					String token = UUID.randomUUID().toString();
 					Instant createAt = Instant.now();

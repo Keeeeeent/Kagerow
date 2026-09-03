@@ -1,15 +1,27 @@
 package com.sakulabo.application.app.cli.subcommand;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.Callable;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.function.Consumer;
 
 import javax.naming.NameAlreadyBoundException;
 
 import com.sakulabo.application.app.cli.converter.ExistingFilePathConverter;
+import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Fail;
+import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Success;
+import com.sakulabo.application.app.rpc.datatype.receive.Base64ReceiveDataType;
+import com.sakulabo.application.app.rpc.datatype.receive.BooleanReceiveDataType;
+import com.sakulabo.application.app.rpc.datatype.receive.CharsetReceiveDataType;
+import com.sakulabo.application.app.rpc.datatype.receive.PathReceiveDataType;
+import com.sakulabo.application.app.rpc.datatype.receive.StringReceiveDataType;
 import com.sakulabo.application.model.Data.DataImportModel;
 import com.sakulabo.application.service.Data.DataService;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
@@ -25,8 +37,8 @@ import picocli.CommandLine.Option;
  *
  * @author keeeeeent
  */
-@Command(name = "import", mixinStandardHelpOptions = true)
-public class ImportCommand implements Callable<Integer> {
+@Command(name = "import")
+public class ImportCommand extends AuthRemoteCommand {
 
 	/** セキュアモード */
 	@Option(names = { "--secure", "-s" }, negatable = true, description = "Secure mode. Default: ${DEFAULT-VALUE}")
@@ -90,7 +102,7 @@ public class ImportCommand implements Callable<Integer> {
 
 	/** {@inheritDoc} */
 	@Override
-	public Integer call() throws Exception {
+	protected Integer local() throws Exception {
 		try {
 			model instance = new model();
 			DataService service = KagerowUtilities.getBean(DataService.class, null).get();
@@ -106,7 +118,63 @@ public class ImportCommand implements Callable<Integer> {
 			KagerowLogger.newAppLogger().err(e);
 			return Integer.valueOf(1);
 		}
+	}
 
+	/** {@inheritDoc} */
+	@Override
+	protected Integer remote() throws Exception {
+		// リクエスト実行
+		String hostname = InetAddress.getLoopbackAddress().getHostName();
+		RpcResult result = null;
+		// ローカル実行かリモート実行か判定
+		if (hostname.equals(super.remote.getHost())) {
+			// リクエスト送信
+			result = doRpcMethodCall("import", "/rpc/data", () -> {
+				return new HashMap<>() {
+					{
+						put("mode", new StringReceiveDataType(mode.name()));
+						put("schema", new StringReceiveDataType(schema));
+						put("path", new PathReceiveDataType(path.toString()));
+						put("charset", new CharsetReceiveDataType(charset.name()));
+						put("isHeader", new BooleanReceiveDataType(Boolean.toString(isHeader)));
+						put("synonym", new StringReceiveDataType(synonym));
+						put("isSecure", new BooleanReceiveDataType(Boolean.toString(isSecure)));
+					}
+				};
+			});
+		} else {
+			try (ByteArrayOutputStream output = new ByteArrayOutputStream();
+					InputStream input = Files.newInputStream(path)) {
+				// データをバイトストリームに変換
+				input.transferTo(output);
+				// リクエスト送信
+				result = doRpcMethodCall("binarydataImport", "/rpc/data", () -> {
+					// Base64に変換
+					String data = Base64.getUrlEncoder().encodeToString(output.toByteArray());
+					return new HashMap<>() {
+						{
+							put("mode", new StringReceiveDataType(mode.name()));
+							put("schema", new StringReceiveDataType(schema));
+							put("data", new Base64ReceiveDataType(data));
+							put("charset", new CharsetReceiveDataType(charset.name()));
+							put("isHeader", new BooleanReceiveDataType(Boolean.toString(isHeader)));
+							put("synonym", new StringReceiveDataType(synonym));
+							put("isSecure", new BooleanReceiveDataType(Boolean.toString(isSecure)));
+						}
+					};
+				});
+			}
+		}
+		// 結果処理
+		return switch (result) {
+		case Success _: {
+			yield Integer.valueOf(0);
+		}
+		case Fail res: {
+			System.err.println(String.format("StatusCode : %d ResponseText", res.statusCode(), res.response()));
+			yield Integer.valueOf(1);
+		}
+		};
 	}
 
 }

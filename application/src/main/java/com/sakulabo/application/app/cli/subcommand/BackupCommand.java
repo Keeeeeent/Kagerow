@@ -16,7 +16,7 @@ import picocli.CommandLine.Option;
  *
  * @author keeeeeent
  */
-@Command(name = "backup", mixinStandardHelpOptions = true, subcommands = {
+@Command(name = "backup", subcommands = {
 		BackupCommand.BackupExportCommand.class,
 		BackupCommand.BackupImportCommand.class,
 })
@@ -25,7 +25,7 @@ public class BackupCommand {
 	/**
 	 * バックアップファイル出力コマンド
 	 */
-	@Command(name = "export", mixinStandardHelpOptions = true)
+	@Command(name = "export")
 	public static class BackupExportCommand implements Callable<Integer> {
 
 		/** インポートファイルパス */
@@ -51,7 +51,7 @@ public class BackupCommand {
 	/**
 	 * バックアップファイル取込コマンド
 	 */
-	@Command(name = "import", mixinStandardHelpOptions = true)
+	@Command(name = "import")
 	public static class BackupImportCommand implements Callable<Integer> {
 
 		/** インポートファイルパス */

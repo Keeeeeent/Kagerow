@@ -20,7 +20,7 @@ import picocli.CommandLine.Parameters;
  *
  * @author keeeeeent
  */
-@Command(name = "setting", mixinStandardHelpOptions = true, subcommands = {
+@Command(name = "setting", subcommands = {
 		SettingCommand.SettingListCommand.class,
 		SettingCommand.SettingGetCommand.class,
 		SettingCommand.SettingSetCommand.class
@@ -30,7 +30,7 @@ public class SettingCommand {
 	/**
 	 * 設定一覧確認コマンド
 	 */
-	@Command(name = "list", mixinStandardHelpOptions = true)
+	@Command(name = "list")
 	public static class SettingListCommand implements Callable<Integer> {
 
 		/** 名前空間 */
@@ -81,7 +81,7 @@ public class SettingCommand {
 	/**
 	 * 設定確認コマンド
 	 */
-	@Command(name = "get", mixinStandardHelpOptions = true)
+	@Command(name = "get")
 	public static class SettingGetCommand implements Callable<Integer> {
 
 		/** 名前空間 */
@@ -121,7 +121,7 @@ public class SettingCommand {
 	/**
 	 * 設定追加・変更コマンド
 	 */
-	@Command(name = "set", mixinStandardHelpOptions = true)
+	@Command(name = "set")
 	public static class SettingSetCommand implements Callable<Integer> {
 
 		/** 名前空間 */

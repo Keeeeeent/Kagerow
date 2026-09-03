@@ -26,7 +26,7 @@ import picocli.CommandLine.Option;
  *
  * @author keeeeeent
  */
-@Command(name = "plugin", mixinStandardHelpOptions = true, subcommands = {
+@Command(name = "plugin", subcommands = {
 		PluginCommand.PluginListCommand.class,
 		PluginCommand.PluginInfoCommand.class,
 		PluginCommand.PluginDisableCommand.class,
@@ -37,7 +37,7 @@ public class PluginCommand {
 	/**
 	 * プラグイン一覧確認コマンド
 	 */
-	@Command(name = "list", mixinStandardHelpOptions = true)
+	@Command(name = "list")
 	public static class PluginListCommand implements Callable<Integer> {
 
 		/** {@inheritDoc} */
@@ -74,7 +74,7 @@ public class PluginCommand {
 	/**
 	 * プラグイン確認コマンド
 	 */
-	@Command(name = "info", mixinStandardHelpOptions = true)
+	@Command(name = "info")
 	public static class PluginInfoCommand implements Callable<Integer> {
 
 		/**　パッケージ名称 */
@@ -183,7 +183,7 @@ public class PluginCommand {
 	/**
 	 * プラグイン無効化コマンド
 	 */
-	@Command(name = "disable", mixinStandardHelpOptions = true)
+	@Command(name = "disable")
 	public static class PluginDisableCommand implements Callable<Integer> {
 
 		/**　パッケージ名称 */
@@ -232,7 +232,7 @@ public class PluginCommand {
 	/**
 	 * プラグイン有効化コマンド
 	 */
-	@Command(name = "enable", mixinStandardHelpOptions = true)
+	@Command(name = "enable")
 	public static class PluginEnableCommand implements Callable<Integer> {
 
 		/**　パッケージ名称 */

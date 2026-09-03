@@ -21,8 +21,7 @@ import picocli.CommandLine.Parameters;
  *
  * @author keeeeeent
  */
-@Command(name = "license", mixinStandardHelpOptions = true, subcommands = {
-})
+@Command(name = "license")
 public class LicenseCommand implements Callable<Integer>, FileVisitor<Path> {
 
 	/** 名前空間 */

@@ -20,7 +20,7 @@ public class ExistingFilePathConverter implements ITypeConverter<Path> {
 		if (!Files.isRegularFile(path)) {
 			throw new TypeConversionException("File does not exist: " + value);
 		}
-		return path;
+		return path.toAbsolutePath().normalize();
 	}
 
 }

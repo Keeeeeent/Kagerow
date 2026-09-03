@@ -5,12 +5,13 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpClient.Version;
-import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -47,14 +48,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import com.sakulabo.application.app.cli.converter.ExistingFilePathConverter;
-import com.sakulabo.application.app.cli.converter.RpcUriConverter;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Fail;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Success;
 import com.sakulabo.application.app.rpc.datatype.BaseDataType;
 import com.sakulabo.application.app.rpc.datatype.RpcDataTypes;
-
-import picocli.CommandLine.Option;
+import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
 
 /**
  * リモート実行機能規定クラスです
@@ -62,6 +60,11 @@ import picocli.CommandLine.Option;
  * @author keeeeeent
  */
 public abstract class RemoteCommand implements Callable<Integer> {
+
+	/** リモート実行 */
+	protected URI remote = null;
+	/** 証明書 */
+	protected Path cacert = null;
 
 	/**
 	 * リクエスト結果
@@ -83,20 +86,18 @@ public abstract class RemoteCommand implements Callable<Integer> {
 		}
 	}
 
-	/** リモート実行 */
-	@Option(names = "--remote", description = "Please specify the URI in the format rpc://host:port?token=xxxxx", converter = RpcUriConverter.class)
-	public URI remote = null;
-	/** 証明書 */
-	@Option(names = "--cacert", description = "Please specify the path to the X.509 certificate in PEM format", converter = ExistingFilePathConverter.class)
-	public Path cacert = null;
-
 	/** {@inheritDoc} */
 	@Override
 	public final Integer call() throws Exception {
-		if (Objects.isNull(remote)) {
-			return local();
-		} else {
-			return remote();
+		try {
+			if (Objects.isNull(remote)) {
+				return local();
+			} else {
+				return remote();
+			}
+		} catch (Exception e) {
+			KagerowLogger.newAppLogger().err(e);
+			throw e;
 		}
 	}
 
@@ -116,13 +117,16 @@ public abstract class RemoteCommand implements Callable<Integer> {
 
 	/**
 	 * RPCメソッド呼び出しを行います
-	 * @param methodName RPCメソッドパス
+	 * @param methodName RPCメソッド明瞭
+	 * @param rpcPath RPCパス
 	 * @param createRequestBody リクエストXML生成関数
+	 * @param isAuthentication 認証フラグ
 	 * @return 呼び出し結果
 	 * @throws Exception リクエスト失敗
 	 */
-	protected final RpcResult doRpcMethodCall(String methodName,
-			Supplier<Map<String, BaseDataType<?>>> createRequestBody)
+	protected final RpcResult doRpcMethodCall(String methodName, String rpcPath,
+			Supplier<Map<String, BaseDataType<?>>> createRequestBody,
+			boolean isAuthentication)
 			throws Exception {
 		// クライアントビルダー生成
 		HttpClient.Builder builder = HttpClient.newBuilder()
@@ -130,9 +134,9 @@ public abstract class RemoteCommand implements Callable<Integer> {
 				.followRedirects(Redirect.ALWAYS);
 		// 証明書の指定が必要か判定
 		if (Objects.nonNull(cacert)) {
-			CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
 			try (InputStream in = Files.newInputStream(cacert)) {
 				// 証明書読み込み
+				CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
 				X509Certificate certificate = (X509Certificate) certificateFactory.generateCertificate(in);
 				// キーストア生成
 				KeyStore trustStore = KeyStore.getInstance("PKCS12");
@@ -153,42 +157,80 @@ public abstract class RemoteCommand implements Callable<Integer> {
 			}
 		}
 		// クライアント生成
-		HttpClient client = builder.build();
-		// ベースリクエストXML生成
-		DocumentBuilderFactory requestXMLFactory = DocumentBuilderFactory.newDefaultInstance();
-		DocumentBuilder requestXMLBuilder = requestXMLFactory.newDocumentBuilder();
-		InputStream baseRequest = ClassLoader.getSystemResourceAsStream("rpc-xml/common-request.xml");
-		Document requestXML = requestXMLBuilder.parse(baseRequest);
-		// リクエストパラメータ取得
-		Map<String, BaseDataType<?>> requestParam = createRequestBody.get();
-		// リクエストXML生成
-		requestXML = createRequestXML(requestXML, requestParam, methodName);
-		// リクエスト生成
-		String body = null;
-		try (StringWriter tmpOutput = new StringWriter()) {
-			Source xmlSource = new DOMSource(requestXML);
-			Result xmlResult = new StreamResult(tmpOutput);
-			Transformer transformer = TransformerFactory.newDefaultInstance().newTransformer();
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.toString());
-			transformer.transform(xmlSource, xmlResult);
-			tmpOutput.flush();
-			body = tmpOutput.toString();
+		try (HttpClient client = builder.build()) {
+			// ベースリクエストXML生成
+			DocumentBuilderFactory requestXMLFactory = DocumentBuilderFactory.newDefaultInstance();
+			DocumentBuilder requestXMLBuilder = requestXMLFactory.newDocumentBuilder();
+			InputStream baseRequest = ClassLoader.getSystemResourceAsStream("rpc-xml/common-request.xml");
+			Document requestXML = requestXMLBuilder.parse(baseRequest);
+			// リクエストパラメータ取得
+			Map<String, BaseDataType<?>> requestParam = createRequestBody.get();
+			// リクエストXML生成
+			requestXML = createRequestXML(requestXML, requestParam, methodName);
+			// リクエスト生成
+			String body = null;
+			try (StringWriter tmpOutput = new StringWriter()) {
+				Source xmlSource = new DOMSource(requestXML);
+				Result xmlResult = new StreamResult(tmpOutput);
+				Transformer transformer = TransformerFactory.newDefaultInstance().newTransformer();
+				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+				transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.toString());
+				transformer.transform(xmlSource, xmlResult);
+				tmpOutput.flush();
+				body = tmpOutput.toString();
+			}
+			URI uri = getUri(rpcPath);
+			HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
+					.uri(uri)
+					.POST(BodyPublishers.ofString(body))
+					.setHeader("Content-Type", "text/xml");
+			// トークン設定
+			if (isAuthentication) {
+				String token = getToken();
+				requestBuilder = requestBuilder.setHeader("Authorization", String.format("Bearer %s", token));
+			}
+			HttpRequest request = requestBuilder.build();
+			// リクエスト送信
+			HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+			// レスポンス解析
+			DocumentBuilderFactory responseXMLFactory = DocumentBuilderFactory.newDefaultInstance();
+			DocumentBuilder responseXMLBuilder = responseXMLFactory.newDocumentBuilder();
+			StringReader baseXML = new StringReader(response.body());
+			InputSource responseInputSource = new InputSource(baseXML);
+			Document responseXML = responseXMLBuilder.parse(responseInputSource);
+			return convertRequestXML(responseXML, response.statusCode());
 		}
-		HttpRequest request = HttpRequest.newBuilder()
-				.POST(BodyPublishers.ofString(body))
-				.setHeader("Authorization", String.format("Bearer %s", ""))
-				.setHeader("Content-Type", "text/xml")
-				.build();
-		// リクエスト送信
-		HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-		// レスポンス解析
-		DocumentBuilderFactory responseXMLFactory = DocumentBuilderFactory.newDefaultInstance();
-		DocumentBuilder responseXMLBuilder = responseXMLFactory.newDocumentBuilder();
-		StringReader baseXML = new StringReader(response.body());
-		InputSource responseInputSource = new InputSource(baseXML);
-		Document responseXML = responseXMLBuilder.parse(responseInputSource);
-		return convertRequestXML(responseXML, response.statusCode());
+	}
+
+	/**
+	 * トークンの取得を行います
+	 * @return トークン
+	 */
+	private String getToken() {
+		String params = remote.getQuery();
+		if (Objects.isNull(params)) {
+			throw new IllegalStateException("No parameters were specified");
+		}
+		for (String param : params.split("&", -1)) {
+			String[] target = param.split("=", -1);
+			if ("token".equals(target[0])) {
+				return target[0];
+			}
+		}
+		throw new IllegalStateException("No token has been specified");
+	}
+
+	/**
+	 * RPCエンドポイント接続URIを生成します
+	 * @param rpcPath 呼び出しメソッドパス
+	 * @return 生成されたURI
+	 * @throws URISyntaxException URI変換失敗
+	 */
+	private URI getUri(String rpcPath) throws URISyntaxException {
+		String host = remote.getHost();
+		int port = remote.getPort();
+		String query = remote.getQuery();
+		return new URI("https", null, host, port, rpcPath, query, null);
 	}
 
 	/**
@@ -280,5 +322,4 @@ public abstract class RemoteCommand implements Callable<Integer> {
 		}
 		return dom;
 	}
-
 }

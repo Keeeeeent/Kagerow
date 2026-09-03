@@ -67,9 +67,17 @@ public class AutomaticStarterProvider implements KagerowAutomaticStarter {
 				break;
 			case DefaultInitializer.INIT_MODE_SYSTEM_PROP_CLI_VAL:
 				// CLIモードの場合
-				Console console = System.console();
-				char[] pass = console.readPassword("password:");
-				password = new String(pass);
+				// 環境変数からパスワードを取得
+				String kgpass = System.getenv("KGPASSWORD");
+				if (Objects.isNull(kgpass)) {
+					// 環境変数で指定されてない場合、コンソールに入力するよう通知
+					Console console = System.console();
+					char[] pass = console.readPassword("password:");
+					password = new String(pass);
+				} else {
+					// 指定されている場合
+					password = kgpass;
+				}
 				break;
 			default:
 				// 未知のモードの場合、何もしない
