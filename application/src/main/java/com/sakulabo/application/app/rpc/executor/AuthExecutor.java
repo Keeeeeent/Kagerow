@@ -1,6 +1,7 @@
 package com.sakulabo.application.app.rpc.executor;
 
 import com.sakulabo.application.app.rpc.RpcSendParam;
+import com.sakulabo.application.app.rpc.datatype.receive.Base64ReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.receive.StringReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.send.Base64SendDataType;
 import com.sakulabo.application.app.rpc.datatype.send.DateTimeSendDataType;
@@ -47,6 +48,6 @@ public interface AuthExecutor extends RpcTarget {
 	 * @param challenge チャレンジデータ（Base64）
 	 * @return 認証トークン
 	 */
-	ChallengeResult challenge(Base64SendDataType challenge);
+	ChallengeResult challenge(Base64ReceiveDataType challenge);
 
 }

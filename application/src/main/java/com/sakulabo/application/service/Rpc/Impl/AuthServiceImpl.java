@@ -284,16 +284,12 @@ public class AuthServiceImpl implements AuthService {
 			mac.init(secretKey);
 			byte[] digest = mac.doFinal(nonce);
 			// チャレンジデータ保管
-			String expected = Base64.getUrlEncoder()
-					.withoutPadding()
-					.encodeToString(digest);
+			String expected = Base64.getEncoder().encodeToString(digest);
 			Instant createAt = Instant.now();
 			// チャレンジ結果登録
 			challenges.put(expected, createAt);
 			// チャレンジ生成
-			String nonceData = Base64.getUrlEncoder()
-					.withoutPadding()
-					.encodeToString(nonce);
+			String nonceData = Base64.getEncoder().encodeToString(nonce);
 			Challenge challenge = new Challenge(nonceData, LocalDateTime.ofInstant(createAt, ZoneId.systemDefault()));
 			return Optional.of(challenge);
 		} catch (Exception e) {

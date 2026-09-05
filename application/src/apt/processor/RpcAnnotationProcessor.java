@@ -302,13 +302,13 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 		String getTagType() {
 			return switch (className) {
 			case "com.sakulabo.application.app.rpc.datatype.receive.Base64ReceiveDataType" -> {
-				yield "xs:base64";
+				yield "xs:base64Binary";
 			}
 			case "com.sakulabo.application.app.rpc.datatype.receive.BooleanReceiveDataType" -> {
 				yield "xs:boolean";
 			}
 			case "com.sakulabo.application.app.rpc.datatype.receive.DateTimeReceiveDataType" -> {
-				yield "dateTime.iso8601";
+				yield "xs:dateTime";
 			}
 			case "com.sakulabo.application.app.rpc.datatype.receive.DoubleReceiveDataType" -> {
 				yield "xs:double";
@@ -356,7 +356,7 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 					}
 				}
 
-				String className = method.asType().toString();
+				String className = param.asType().toString();
 
 				result.add(new SearchParam(value, required, className));
 

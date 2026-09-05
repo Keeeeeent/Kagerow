@@ -16,6 +16,7 @@ import com.sakulabo.application.app.cli.converter.ExistingFilePathConverter;
 import com.sakulabo.application.app.cli.converter.RpcUriConverter;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Fail;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Success;
+import com.sakulabo.application.app.rpc.datatype.send.Base64SendDataType;
 import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
 import com.sakulabo.application.service.Rpc.AuthService;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
@@ -123,7 +124,7 @@ public class AgentCommand {
 				// チャレンジ開始
 				String nonce = success.response().get("nonce");
 				nonce = nonce.strip();
-				byte[] rawNonce = Base64.getUrlDecoder().decode(nonce.getBytes(StandardCharsets.UTF_8));
+				byte[] rawNonce = Base64.getDecoder().decode(nonce.getBytes(StandardCharsets.UTF_8));
 				// 秘密鍵を生成
 				byte[] keyByte = Base64.getDecoder().decode(secretkey.getBytes(StandardCharsets.UTF_8));
 				SecretKeySpec key = new SecretKeySpec(keyByte, "AES");
@@ -131,15 +132,12 @@ public class AgentCommand {
 				mac.init(key);
 				// チャレンジ実施
 				byte[] challenge = mac.doFinal(rawNonce);
-				String challengeStr = Base64.getUrlEncoder()
-						.withoutPadding()
-						.encodeToString(challenge);
 				// メソッド呼び出し(チャレンジ認証)
 				RpcResult challengeResult = doRpcMethodCall("challenge", "/rpc/auth",
 						() -> {
 							return new HashMap<>() {
 								{
-									put("challenge", new StringSendDataType(challengeStr));
+									put("challenge", new Base64SendDataType(challenge));
 								}
 							};
 						}, false);

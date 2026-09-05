@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import com.sakulabo.application.app.rpc.RpcMethod;
 import com.sakulabo.application.app.rpc.RpcMethodParam;
 import com.sakulabo.application.app.rpc.RpcSetting;
+import com.sakulabo.application.app.rpc.datatype.receive.Base64ReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.receive.StringReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.send.Base64SendDataType;
 import com.sakulabo.application.app.rpc.datatype.send.DateTimeSendDataType;
@@ -38,7 +39,7 @@ public class AuthExecutorImpl implements AuthExecutor {
 		});
 		// 返却インスタンス生成
 		Base64SendDataType nonce = new Base64SendDataType(result.nonce());
-		DateTimeSendDataType expiration = new DateTimeSendDataType(	
+		DateTimeSendDataType expiration = new DateTimeSendDataType(
 				result.expiration().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 		Challenge response = new Challenge(nonce, expiration);
 		return response;
@@ -48,9 +49,9 @@ public class AuthExecutorImpl implements AuthExecutor {
 	@Override
 	@RpcMethod("challenge")
 	public ChallengeResult challenge(
-			@RpcMethodParam(value = "challenge", required = true) Base64SendDataType challenge) {
+			@RpcMethodParam(value = "challenge", required = true) Base64ReceiveDataType challenge) {
 		// 引数用意
-		String challengeData = challenge.getRawType().get();
+		String challengeData = challenge.getBase64String().get();
 		// サービス実行
 		String result = service.challenge(challengeData).orElseThrow(() -> {
 			return new IllegalCertificationException("Challenge authentication failed");

@@ -8,7 +8,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
@@ -149,13 +148,11 @@ public class ImportCommand extends AuthRemoteCommand {
 				input.transferTo(output);
 				// リクエスト送信
 				result = doRpcMethodCall("binarydataImport", "/rpc/data", () -> {
-					// Base64に変換
-					String data = Base64.getUrlEncoder().encodeToString(output.toByteArray());
 					return new HashMap<>() {
 						{
 							put("mode", new StringReceiveDataType(mode.name()));
 							put("schema", new StringReceiveDataType(schema));
-							put("data", new Base64ReceiveDataType(data));
+							put("data", new Base64ReceiveDataType(output.toByteArray()));
 							put("charset", new CharsetReceiveDataType(charset.name()));
 							put("isHeader", new BooleanReceiveDataType(Boolean.toString(isHeader)));
 							put("synonym", new StringReceiveDataType(synonym));
