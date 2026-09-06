@@ -11,6 +11,7 @@ import java.util.Base64;
 
 import javax.naming.NameAlreadyBoundException;
 
+import com.sakulabo.application.app.rpc.RpcFilter;
 import com.sakulabo.application.app.rpc.RpcMethod;
 import com.sakulabo.application.app.rpc.RpcMethodParam;
 import com.sakulabo.application.app.rpc.RpcSetting;
@@ -23,6 +24,7 @@ import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
 import com.sakulabo.application.app.rpc.exception.RpcIllegalArgumentException;
 import com.sakulabo.application.app.rpc.exception.RpcRuntmeException;
 import com.sakulabo.application.app.rpc.executor.DataImportExecutor;
+import com.sakulabo.application.app.rpc.filters.CertificationFilter;
 import com.sakulabo.core.Kagerow.Exception.VirtualFileConstructionFailException;
 import com.sakulabo.core.Kagerow.Utilities.KagerowChunkCreater.ChunkCreateMode;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
@@ -34,6 +36,7 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowVirtualFileCreater;
  * @author keeeeeent
  */
 @RpcSetting("data")
+@RpcFilter(filter = CertificationFilter.class, required = true)
 public class DataImportExecutorImpl implements DataImportExecutor {
 
 	/** {@inheritDoc} */

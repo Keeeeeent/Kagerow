@@ -3,6 +3,7 @@ package com.sakulabo.application.app.cli.subcommand;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -95,9 +96,13 @@ public abstract class RemoteCommand implements Callable<Integer> {
 			} else {
 				return remote();
 			}
+		} catch (ConnectException e) {
+			System.err.println(e.getMessage());
+			KagerowLogger.newAppLogger().err(e);
+			return Integer.valueOf(1);
 		} catch (Exception e) {
 			KagerowLogger.newAppLogger().err(e);
-			throw e;
+			return Integer.valueOf(1);
 		}
 	}
 
@@ -190,15 +195,21 @@ public abstract class RemoteCommand implements Callable<Integer> {
 				requestBuilder = requestBuilder.setHeader("Authorization", String.format("Bearer %s", token));
 			}
 			HttpRequest request = requestBuilder.build();
-			// リクエスト送信
-			HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-			// レスポンス解析
-			DocumentBuilderFactory responseXMLFactory = DocumentBuilderFactory.newDefaultInstance();
-			DocumentBuilder responseXMLBuilder = responseXMLFactory.newDocumentBuilder();
-			StringReader baseXML = new StringReader(response.body());
-			InputSource responseInputSource = new InputSource(baseXML);
-			Document responseXML = responseXMLBuilder.parse(responseInputSource);
-			return convertRequestXML(responseXML, response.statusCode());
+			try {
+				// リクエスト送信
+				HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+				// レスポンス解析
+				DocumentBuilderFactory responseXMLFactory = DocumentBuilderFactory.newDefaultInstance();
+				DocumentBuilder responseXMLBuilder = responseXMLFactory.newDocumentBuilder();
+				StringReader baseXML = new StringReader(response.body());
+				InputSource responseInputSource = new InputSource(baseXML);
+				Document responseXML = responseXMLBuilder.parse(responseInputSource);
+				return convertRequestXML(responseXML, response.statusCode());
+			} catch (ConnectException e) {
+				throw new ConnectException(
+						String.format("An attempt to connect to the RPC server failed. Hostname: %s Port number: %d",
+								uri.getHost(), uri.getPort()));
+			}
 		}
 	}
 

@@ -24,8 +24,6 @@ import com.sakulabo.application.app.rpc.filters.RpcMethodFilter;
 import com.sakulabo.application.common.spi.RpcTarget;
 import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
-import com.sakulabo.regulation.annotation.KagerowComponent;
-import com.sakulabo.regulation.annotation.KagerowInject;
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpsConfigurator;
@@ -36,7 +34,6 @@ import com.sun.net.httpserver.HttpsParameters;
  *
  * @author keeeeeent
  */
-@KagerowComponent
 public final class RpcServer extends HttpsConfigurator {
 
 	/** キーストア物理ファイルパス生成 */
@@ -114,26 +111,26 @@ public final class RpcServer extends HttpsConfigurator {
 	private final InetSocketAddress address;
 
 	/** 例外フィルター */
-	@KagerowInject
-	private ExceptionFilter exceptionFilter;
+	private final ExceptionFilter exceptionFilter = new ExceptionFilter();
 	/** ログフィルター */
-	@KagerowInject
-	private LoggerFilter loggerFilter;
+	private LoggerFilter loggerFilter = new LoggerFilter();
 	/** RPC呼び出しフィルター */
-	@KagerowInject
-	private RpcMethodFilter rpcMethodFilter;
+	private RpcMethodFilter rpcMethodFilter = new RpcMethodFilter();
 
 	/**
 	 * デフォルトコンストラクタ
+	 * @param hostname ホスト名
+	 * @param portNumber ポート番号
 	 *
 	 * @throws NoSuchAlgorithmException SSLContext.getInstance()の呼出しが失敗した場合
 	 * @throws IOException              httpsサーバインスタンス生成失敗
 	 */
-	public RpcServer() throws NoSuchAlgorithmException, IOException {
+	public RpcServer(String hostname, Integer portNumber) throws NoSuchAlgorithmException, IOException {
 		super(TLS);
-		// 初期値取得
-		String hostname = System.getProperty("rpc.hostname");
-		Integer portNumber = Integer.getInteger("rpc.port");
+		if (!KagerowUtilities.isSecure()) {
+			// セキュア起動不可の場合、処理を即終了
+			throw new IllegalStateException("The server cannot boot without Secure Boot");
+		}
 		// ホストを設定
 		InetAddress localhost = null;
 		if (Objects.nonNull(hostname)) {

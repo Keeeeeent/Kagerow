@@ -16,9 +16,11 @@ import com.sakulabo.application.app.cli.converter.ExistingFilePathConverter;
 import com.sakulabo.application.app.cli.converter.RpcUriConverter;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Fail;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Success;
+import com.sakulabo.application.app.rpc.RpcServer;
 import com.sakulabo.application.app.rpc.datatype.send.Base64SendDataType;
 import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
 import com.sakulabo.application.service.Rpc.AuthService;
+import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -32,7 +34,8 @@ import picocli.CommandLine.Option;
  */
 @Command(name = "agent", subcommands = {
 		AgentCommand.CreateAgentCommand.class,
-		AgentCommand.LoginAgentCommand.class
+		AgentCommand.LoginAgentCommand.class,
+		AgentCommand.StartAgentCommand.class
 })
 public class AgentCommand {
 
@@ -43,7 +46,7 @@ public class AgentCommand {
 	public static class CreateAgentCommand implements Callable<Integer> {
 
 		/** ユーザ名称 */
-		@Option(names = "--name", required = true)
+		@Option(names = "--name", description = "Create a new authentication user with a user name and secret key", required = true)
 		private String username;
 
 		/** {@inheritDoc} */
@@ -73,10 +76,10 @@ public class AgentCommand {
 	public static class LoginAgentCommand extends RemoteCommand implements Callable<Integer> {
 
 		/** ユーザ名称 */
-		@Option(names = "--name", required = true)
+		@Option(names = "--name", description = "Please specify the user name for authentication", required = true)
 		private String username;
 		/** 秘密鍵 */
-		@Option(names = "--secret", required = true)
+		@Option(names = "--secret", description = "Please specify the secret key for authentication in Base64 format", required = true)
 		private String secretkey;
 		/** リモート実行 */
 		@SuppressFBWarnings("MF_CLASS_MASKS_FIELD")
@@ -158,6 +161,42 @@ public class AgentCommand {
 			}
 			};
 
+		}
+
+	}
+
+	/**
+	 * RPCサーバ起動コマンド
+	 */
+	@Command(name = "start")
+	public static class StartAgentCommand implements Callable<Integer> {
+
+		/** ホスト名称 */
+		@Option(names = { "--host", "-h" })
+		private String host;
+		/** ポート番号 */
+		@Option(names = { "--port", "-p" })
+		private Integer port;
+
+		/** {@inheritDoc} */
+		@Override
+		public Integer call() throws Exception {
+			try {
+				// サーバインスタンス生成
+				RpcServer server = new RpcServer(host, port);
+				// サーバ起動
+				server.start();
+				return Integer.valueOf(-1);
+			} catch (Exception e) {
+				// 失敗ログ
+				KagerowLogger.newAppLogger().err(e);
+				if (e instanceof IllegalStateException) {
+					System.err.println(e.getMessage());
+				} else {
+					System.err.println("The server failed to start");
+				}
+				return Integer.valueOf(1);
+			}
 		}
 
 	}

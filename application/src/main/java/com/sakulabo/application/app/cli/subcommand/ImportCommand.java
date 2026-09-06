@@ -17,10 +17,10 @@ import com.sakulabo.application.app.cli.converter.ExistingFilePathConverter;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Fail;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Success;
 import com.sakulabo.application.app.rpc.datatype.receive.Base64ReceiveDataType;
-import com.sakulabo.application.app.rpc.datatype.receive.BooleanReceiveDataType;
-import com.sakulabo.application.app.rpc.datatype.receive.CharsetReceiveDataType;
-import com.sakulabo.application.app.rpc.datatype.receive.PathReceiveDataType;
-import com.sakulabo.application.app.rpc.datatype.receive.StringReceiveDataType;
+import com.sakulabo.application.app.rpc.datatype.send.BooleanSendDataType;
+import com.sakulabo.application.app.rpc.datatype.send.CharsetSendDataType;
+import com.sakulabo.application.app.rpc.datatype.send.PathSendDataType;
+import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
 import com.sakulabo.application.model.Data.DataImportModel;
 import com.sakulabo.application.service.Data.DataService;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
@@ -131,13 +131,13 @@ public class ImportCommand extends AuthRemoteCommand {
 			result = doRpcMethodCall("import", "/rpc/data", () -> {
 				return new HashMap<>() {
 					{
-						put("mode", new StringReceiveDataType(mode.name()));
-						put("schema", new StringReceiveDataType(schema));
-						put("path", new PathReceiveDataType(path.toString()));
-						put("charset", new CharsetReceiveDataType(charset.name()));
-						put("isHeader", new BooleanReceiveDataType(Boolean.toString(isHeader)));
-						put("synonym", new StringReceiveDataType(synonym));
-						put("isSecure", new BooleanReceiveDataType(Boolean.toString(isSecure)));
+						put("mode", new StringSendDataType(mode.name()));
+						put("schema", new StringSendDataType(schema));
+						put("path", new PathSendDataType(path.toString()));
+						put("charset", new CharsetSendDataType(charset.name()));
+						put("isHeader", new BooleanSendDataType(Boolean.toString(isHeader)));
+						put("synonym", new StringSendDataType(synonym));
+						put("isSecure", new BooleanSendDataType(Boolean.toString(isSecure)));
 					}
 				};
 			});
@@ -150,13 +150,13 @@ public class ImportCommand extends AuthRemoteCommand {
 				result = doRpcMethodCall("binarydataImport", "/rpc/data", () -> {
 					return new HashMap<>() {
 						{
-							put("mode", new StringReceiveDataType(mode.name()));
-							put("schema", new StringReceiveDataType(schema));
+							put("mode", new StringSendDataType(mode.name()));
+							put("schema", new StringSendDataType(schema));
 							put("data", new Base64ReceiveDataType(output.toByteArray()));
-							put("charset", new CharsetReceiveDataType(charset.name()));
-							put("isHeader", new BooleanReceiveDataType(Boolean.toString(isHeader)));
-							put("synonym", new StringReceiveDataType(synonym));
-							put("isSecure", new BooleanReceiveDataType(Boolean.toString(isSecure)));
+							put("charset", new CharsetSendDataType(charset.name()));
+							put("isHeader", new BooleanSendDataType(Boolean.toString(isHeader)));
+							put("synonym", new StringSendDataType(synonym));
+							put("isSecure", new BooleanSendDataType(Boolean.toString(isSecure)));
 						}
 					};
 				});

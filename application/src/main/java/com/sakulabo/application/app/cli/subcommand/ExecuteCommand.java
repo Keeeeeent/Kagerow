@@ -14,9 +14,9 @@ import java.util.function.UnaryOperator;
 import com.sakulabo.application.app.cli.converter.ExistingFilePathConverter;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Fail;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Success;
-import com.sakulabo.application.app.rpc.datatype.receive.BooleanReceiveDataType;
-import com.sakulabo.application.app.rpc.datatype.receive.PathReceiveDataType;
-import com.sakulabo.application.app.rpc.datatype.receive.StringReceiveDataType;
+import com.sakulabo.application.app.rpc.datatype.send.BooleanSendDataType;
+import com.sakulabo.application.app.rpc.datatype.send.PathSendDataType;
+import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
 import com.sakulabo.application.model.Script.KSQLScriptModel;
 import com.sakulabo.application.service.Script.KSQLService;
 import com.sakulabo.core.Kagerow.Adapter.KagerowExecutionPlanAdapter;
@@ -91,9 +91,9 @@ public class ExecuteCommand extends AuthRemoteCommand
 		RpcResult result = doRpcMethodCall("execute", "/rpc/script", () -> {
 			return new HashMap<>() {
 				{
-					put("sessionid", new StringReceiveDataType(sessionid));
-					put("secure", new BooleanReceiveDataType(Boolean.toString(isSecure)));
-					put("path", new PathReceiveDataType(path.toAbsolutePath().normalize().toString()));
+					put("sessionid", new StringSendDataType(sessionid));
+					put("secure", new BooleanSendDataType(Boolean.toString(isSecure)));
+					put("path", new PathSendDataType(path.toAbsolutePath().normalize().toString()));
 				}
 			};
 		});

@@ -6,8 +6,7 @@ import java.util.Objects;
 
 import com.sakulabo.application.app.rpc.exception.IllegalCertificationException;
 import com.sakulabo.application.service.Rpc.AuthService;
-import com.sakulabo.regulation.annotation.KagerowComponent;
-import com.sakulabo.regulation.annotation.KagerowInject;
+import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -17,12 +16,13 @@ import com.sun.net.httpserver.HttpExchange;
  *
  * @author keeeeeent
  */
-@KagerowComponent
 public class CertificationFilter extends Filter {
 
 	/** 認証サービス */
-	@KagerowInject
 	private AuthService authService;
+	{
+		authService = KagerowUtilities.getBean(AuthService.class, null).get();
+	}
 	/** 認証キー */
 	public static final String AUTH_KEY = "Authorization";
 

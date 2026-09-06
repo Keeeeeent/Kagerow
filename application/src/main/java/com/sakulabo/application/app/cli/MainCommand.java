@@ -59,7 +59,9 @@ public class MainCommand implements ViewRunner {
 		// 実行結果反映
 		if (0 < Main.args.length) {
 			int exitCode = command.execute(Main.args);
-			System.exit(exitCode);
+			if (0 <= exitCode) {
+				System.exit(exitCode);
+			}
 		} else {
 			Console console = System.console();
 			while (true) {

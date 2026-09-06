@@ -17,7 +17,6 @@ import com.sakulabo.application.app.gui.CenterPanelParts.ContextPanelParts.Schem
 import com.sakulabo.application.app.gui.CenterPanelParts.ContextPanelParts.SchemaParts.VirtualFileTableTabPanel;
 import com.sakulabo.application.app.gui.CenterPanelParts.ScriptPanelParts.ScriptPanel;
 import com.sakulabo.application.app.gui.MenuPanelParts.FileMenuParts.FileMenu;
-import com.sakulabo.application.app.rpc.RpcServer;
 import com.sakulabo.application.common.code.GUIText;
 import com.sakulabo.application.common.initializer.GraphicComponent;
 import com.sakulabo.application.common.mixin.AppMixin;
@@ -47,9 +46,6 @@ public class MainFrame extends WindowAdapter implements ViewRunner, JFrameMixin 
 	/** ロガー */
 	@KagerowInject
 	private KagerowLogger logger;
-	/** RPCサーバ */
-	@KagerowInject
-	private RpcServer rpcServer;
 	/** メインフレーム（上側） */
 	@KagerowInject
 	private MenuPanel menuPanel;
@@ -136,8 +132,6 @@ public class MainFrame extends WindowAdapter implements ViewRunner, JFrameMixin 
 				tabPanel.frame.dispose();
 			}
 		}
-		// RPCサーバ停止
-		rpcServer.stop();
 	}
 
 	/** {@inheritDoc} */
@@ -182,9 +176,6 @@ public class MainFrame extends WindowAdapter implements ViewRunner, JFrameMixin 
 		// Swing初期化処理
 		centerPanel.lazyInitialize();
 		fileMenu.lazyInitialize();
-
-		// RPCサーバ起動
-		rpcServer.start();
 
 	}
 

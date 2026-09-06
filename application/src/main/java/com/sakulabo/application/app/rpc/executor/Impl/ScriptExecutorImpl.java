@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.UnaryOperator;
 
+import com.sakulabo.application.app.rpc.RpcFilter;
 import com.sakulabo.application.app.rpc.RpcMethod;
 import com.sakulabo.application.app.rpc.RpcMethodParam;
 import com.sakulabo.application.app.rpc.RpcSetting;
@@ -20,6 +21,7 @@ import com.sakulabo.application.app.rpc.datatype.receive.PathReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.receive.StringReceiveDataType;
 import com.sakulabo.application.app.rpc.exception.RpcRuntmeException;
 import com.sakulabo.application.app.rpc.executor.ScriptExecutor;
+import com.sakulabo.application.app.rpc.filters.CertificationFilter;
 import com.sakulabo.core.Kagerow.Adapter.KagerowExecutionPlanBaseAdapter;
 import com.sakulabo.core.Kagerow.Utilities.KagerowExecutionPlanAccessor;
 import com.sakulabo.core.Kagerow.Utilities.KagerowScriptAccessor;
@@ -30,6 +32,7 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowScriptAccessor;
  * @author keeeeeent
  */
 @RpcSetting("script")
+@RpcFilter(filter = CertificationFilter.class, required = true)
 public class ScriptExecutorImpl implements ScriptExecutor {
 
 	/** セッション格納メモリ */
