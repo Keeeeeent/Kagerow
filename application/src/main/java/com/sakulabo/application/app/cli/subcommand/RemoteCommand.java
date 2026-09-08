@@ -290,12 +290,10 @@ public abstract class RemoteCommand implements Callable<Integer> {
 							NodeList items = targetElement.getChildNodes();
 							for (int l = 0; l < items.getLength(); l++) {
 								Node item = items.item(l);
-								if (Node.ELEMENT_NODE == item.getNodeType()) {
-									String val = item.getTextContent();
-									if (!val.isEmpty()) {
-										result.put(name, val);
-										break;
-									}
+								String val = item.getTextContent();
+								if (!val.isEmpty()) {
+									result.put(name, val);
+									break;
 								}
 							}
 						}
@@ -303,7 +301,9 @@ public abstract class RemoteCommand implements Callable<Integer> {
 				}
 			}
 			return new Success(result);
-		} else {
+		} else
+
+		{
 			// リクエスト失敗の場合
 			XPathFactory xPathFactory = XPathFactory.newInstance();
 			XPath xPath = xPathFactory.newXPath();

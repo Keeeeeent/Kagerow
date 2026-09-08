@@ -126,7 +126,6 @@ public class AgentCommand {
 			} else if (loginResult instanceof Success success) {
 				// チャレンジ開始
 				String nonce = success.response().get("nonce");
-				nonce = nonce.strip();
 				byte[] rawNonce = Base64.getDecoder().decode(nonce.getBytes(StandardCharsets.UTF_8));
 				// 秘密鍵を生成
 				byte[] keyByte = Base64.getDecoder().decode(secretkey.getBytes(StandardCharsets.UTF_8));
@@ -152,7 +151,7 @@ public class AgentCommand {
 			return switch (result) {
 			case Success success: {
 				String token = success.response().get("token");
-				System.out.println(token.strip());
+				System.out.println(token);
 				yield Integer.valueOf(0);
 			}
 			case Fail fail: {
