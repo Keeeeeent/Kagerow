@@ -34,59 +34,74 @@ import javax.tools.FileObject;
 public class RpcAnnotationProcessor extends AbstractProcessor {
 
 	/** XSD規定フォーマット */
-	private final static MessageFormat XML_FORMAT = new MessageFormat("""
-			<?xml version="1.0" encoding="UTF-8"?>
-			<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-				elementFormDefault="qualified">
+	private final static MessageFormat XML_FORMAT = new MessageFormat(
+			"""
+					<?xml version="1.0" encoding="UTF-8"?>
+					<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+						elementFormDefault="qualified">
 
-			    <!-- 構造体定義 -->
-			    <xs:complexType name="StructType">
-			    	<xs:sequence>
-				        <xs:element name="struct">
-				            <xs:complexType>
-				            	<xs:sequence>
-						            <xs:element name="member" minOccurs="0" maxOccurs="unbounded">
-						                <xs:complexType>
-						                    <xs:sequence>
-						                        {0}
-						                    </xs:sequence>
-						                </xs:complexType>
-					                </xs:element>
-								</xs:sequence>
-				            </xs:complexType>
-				        </xs:element>
-			        </xs:sequence>
-			    </xs:complexType>
+					    <!-- 構造体定義 -->
+					    <xs:complexType name="StructType">
+					    	<xs:sequence>
+						        <xs:element name="struct">
+						            <xs:complexType>
+						            	<xs:sequence>
+								            <xs:element name="member" minOccurs="0" maxOccurs="unbounded">
+								                {0}
+							                </xs:element>
+										</xs:sequence>
+						            </xs:complexType>
+						        </xs:element>
+					        </xs:sequence>
+					    </xs:complexType>
 
-			    <xs:complexType name="RpcParamType">
-				    <xs:sequence>
-				        <xs:element name="param">
-				            <xs:complexType>
-				                <xs:sequence>
-				                    <xs:element name="value" type="StructType" minOccurs="1" maxOccurs="1"/>
-				                </xs:sequence>
-				            </xs:complexType>
-				        </xs:element>
-			        </xs:sequence>
-			    </xs:complexType>
+					    <xs:complexType name="RpcParamType">
+						    <xs:sequence>
+						        <xs:element name="param">
+						            <xs:complexType>
+						                <xs:sequence>
+						                    <xs:element name="value" type="StructType" minOccurs="1" maxOccurs="1"/>
+						                </xs:sequence>
+						            </xs:complexType>
+						        </xs:element>
+					        </xs:sequence>
+					    </xs:complexType>
 
-				<!-- ルート要素 -->
-				<xs:element name="methodCall">
-					<xs:complexType>
-						<xs:sequence>
-			                <xs:element name="methodName" minOccurs="1" maxOccurs="1">
-							    <xs:simpleType>
-							        <xs:restriction base="xs:string">
-							            <xs:enumeration value="{1}"/>
-							        </xs:restriction>
-							    </xs:simpleType>
-							</xs:element>
-			                <xs:element name="params" type="RpcParamType" minOccurs="1" maxOccurs="1"/>
-			            </xs:sequence>
-			        </xs:complexType>
-			    </xs:element>
+					    <xs:complexType name="RpcArrayType">
+						    <xs:sequence>
+								<xs:element name="data" minOccurs="1" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="value">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="string" type="xs:string" minOccurs="1" maxOccurs="1"/>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+						    </xs:sequence>
+						</xs:complexType>
 
-			</xs:schema>""");
+						<!-- ルート要素 -->
+						<xs:element name="methodCall">
+							<xs:complexType>
+								<xs:sequence>
+					                <xs:element name="methodName" minOccurs="1" maxOccurs="1">
+									    <xs:simpleType>
+									        <xs:restriction base="xs:string">
+									            <xs:enumeration value="{1}"/>
+									        </xs:restriction>
+									    </xs:simpleType>
+									</xs:element>
+					                <xs:element name="params" type="RpcParamType" minOccurs="1" maxOccurs="1"/>
+					            </xs:sequence>
+					        </xs:complexType>
+					    </xs:element>
+
+					</xs:schema>""");
 
 	/** XSDパラメータフォーマット */
 	private final static MessageFormat STRUCT_XML_FORMAT = new MessageFormat("""
@@ -108,10 +123,8 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 	/** {@inheritDoc} */
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-
 		for (TypeElement ano : annotations) {
 			for (Element elem : roundEnv.getElementsAnnotatedWith(ano)) {
-
 				// クラスのメソッドを全て走査
 				for (Element code : elem.getEnclosedElements()) {
 					if (code instanceof ExecutableElement method) {
@@ -167,18 +180,13 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 										}
 									}
 								}
-
 							}
-
 						}
 					}
 				}
-
 			}
 		}
-
 		return false;
-
 	}
 
 	/** {@inheritDoc} */
@@ -211,7 +219,19 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 			Object value = dat.getValue().getValue();
 
 			if ("value".equals(name)) {
-				return "rpc-xsd/request-%s-%s.xsd".formatted(value, method.getSimpleName().toString());
+				// RPCメソッド設定情報を検索
+				Map<? extends ExecutableElement, ? extends AnnotationValue> methodInfo = isTarget(method,
+						"com.sakulabo.application.app.rpc.RpcMethod")
+								.getFirst()
+								.getElementValues();
+				for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> minfo : methodInfo.entrySet()) {
+					// 要素を取得
+					String mname = minfo.getKey().getSimpleName().toString();
+					Object mvalue = minfo.getValue().getValue();
+					if ("value".equals(mname)) {
+						return "rpc-xsd/request-%s-%s.xsd".formatted(value, mvalue);
+					}
+				}
 			}
 
 		}
@@ -239,13 +259,24 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 	 */
 	private String createXSD(XmlRpcStruct struct) {
 		StringBuilder builder = new StringBuilder();
+		String member = """
+				<xs:complexType>
+								                <xs:sequence>
+								                    %s
+								                </xs:sequence>
+								            </xs:complexType>""";
 		for (SearchParam param : struct.params()) {
 			String formatedParam = STRUCT_XML_FORMAT.format(new Object[] {
 					param.value, param.getTagName(), param.getTagType()
 			});
 			builder.append(formatedParam);
 		}
-		return XML_FORMAT.format(new Object[] { builder.toString(), struct.methodName });
+		if (0 < builder.length()) {
+			member = member.formatted(builder.toString());
+		} else {
+			member = "";
+		}
+		return XML_FORMAT.format(new Object[] { member, struct.methodName });
 	}
 
 	/**
@@ -290,6 +321,9 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 			case "com.sakulabo.application.app.rpc.datatype.receive.IntegerReceiveDataType" -> {
 				yield "int";
 			}
+			case "com.sakulabo.application.app.rpc.datatype.receive.ArrayReceiveDataType" -> {
+				yield "array";
+			}
 			case null -> "nil";
 			default -> "string";
 			};
@@ -315,6 +349,9 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 			}
 			case "com.sakulabo.application.app.rpc.datatype.receive.IntegerReceiveDataType" -> {
 				yield "xs:int";
+			}
+			case "com.sakulabo.application.app.rpc.datatype.receive.ArrayReceiveDataType" -> {
+				yield "RpcArrayType";
 			}
 			case null -> "xs:string";
 			default -> "xs:string";

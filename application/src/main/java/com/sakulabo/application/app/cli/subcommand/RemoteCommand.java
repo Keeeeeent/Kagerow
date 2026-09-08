@@ -7,6 +7,7 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -21,8 +22,11 @@ import java.security.KeyStore;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
@@ -53,6 +57,7 @@ import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Fail;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Success;
 import com.sakulabo.application.app.rpc.datatype.BaseDataType;
 import com.sakulabo.application.app.rpc.datatype.RpcDataTypes;
+import com.sakulabo.application.app.rpc.filters.CertificationFilter;
 import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
 
 /**
@@ -89,7 +94,7 @@ public abstract class RemoteCommand implements Callable<Integer> {
 
 	/** {@inheritDoc} */
 	@Override
-	public final Integer call() throws Exception {
+	public Integer call() throws Exception {
 		try {
 			if (Objects.isNull(remote)) {
 				return local();
@@ -192,7 +197,8 @@ public abstract class RemoteCommand implements Callable<Integer> {
 			// トークン設定
 			if (isAuthentication) {
 				String token = getToken();
-				requestBuilder = requestBuilder.setHeader("Authorization", String.format("Bearer %s", token));
+				requestBuilder = requestBuilder.setHeader(CertificationFilter.AUTH_KEY,
+						String.format("Bearer %s", token));
 			}
 			HttpRequest request = requestBuilder.build();
 			try {
@@ -225,7 +231,7 @@ public abstract class RemoteCommand implements Callable<Integer> {
 		for (String param : params.split("&", -1)) {
 			String[] target = param.split("=", -1);
 			if ("token".equals(target[0])) {
-				return target[0];
+				return target[1];
 			}
 		}
 		throw new IllegalStateException("No token has been specified");
@@ -240,8 +246,7 @@ public abstract class RemoteCommand implements Callable<Integer> {
 	private URI getUri(String rpcPath) throws URISyntaxException {
 		String host = remote.getHost();
 		int port = remote.getPort();
-		String query = remote.getQuery();
-		return new URI("https", null, host, port, rpcPath, query, null);
+		return new URI("https", null, host, port, rpcPath, null, null);
 	}
 
 	/**
@@ -263,8 +268,39 @@ public abstract class RemoteCommand implements Callable<Integer> {
 			for (int i = 0; i < node.getLength(); i++) {
 				Element member = (Element) node.item(i);
 				String name = xPath.evaluate("name", member);
-				String value = xPath.evaluate("value", member);
-				result.put(name, value);
+				Node value = (Node) xPath.evaluate("value", member, XPathConstants.NODE);
+				NodeList valueList = value.getChildNodes();
+				for (int el = 0; el < valueList.getLength(); el++) {
+					Node targetElement = valueList.item(el);
+					if (targetElement.getNodeType() == Node.ELEMENT_NODE) {
+						if (RpcDataTypes.ARRAY.toString().equals(((Element) targetElement).getTagName())) {
+							// 配列変換(カンマ区切りのリスト形式にする)
+							NodeList arrayNode = (NodeList) xPath.evaluate("data/value/string", targetElement,
+									XPathConstants.NODESET);
+							StringJoiner joiner = new StringJoiner(",");
+							for (int l = 0; l < arrayNode.getLength(); l++) {
+								String arrayItemValue = arrayNode.item(l).getTextContent();
+								arrayItemValue = URLEncoder.encode(arrayItemValue, StandardCharsets.UTF_8);
+								if (!arrayItemValue.isEmpty()) {
+									joiner.add(arrayItemValue);
+								}
+							}
+							result.put(name, joiner.toString());
+						} else {
+							NodeList items = targetElement.getChildNodes();
+							for (int l = 0; l < items.getLength(); l++) {
+								Node item = items.item(l);
+								if (Node.ELEMENT_NODE == item.getNodeType()) {
+									String val = item.getTextContent();
+									if (!val.isEmpty()) {
+										result.put(name, val);
+										break;
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 			return new Success(result);
 		} else {
@@ -277,7 +313,7 @@ public abstract class RemoteCommand implements Callable<Integer> {
 				Element member = (Element) node.item(i);
 				String name = xPath.evaluate("name", member);
 				String value = xPath.evaluate("value", member);
-				result.put(name, value);
+				result.put(name, Objects.toString(value, "").strip());
 			}
 			return new Fail(result, responseCode);
 		}
@@ -315,11 +351,30 @@ public abstract class RemoteCommand implements Callable<Integer> {
 			// パラメータバリュー追加
 			BaseDataType<?> dataType = structParam.getValue();
 			Element valueElem = dom.createElement("value");
-			Element valueSubElem = dom.createElement(dataType.toRpcDataType().toString());
+			RpcDataTypes dataTypes = dataType.toRpcDataType();
+			Element valueSubElem = dom.createElement(dataTypes.toString());
 			// 取得データがnilか判定
 			String dat = dataType.getData();
 			if (Objects.nonNull(dat) && !dat.isEmpty()) {
-				valueSubElem.setTextContent(dat);
+				if (RpcDataTypes.ARRAY == dataTypes) {
+					// 配列の場合
+					Element arrayDataElem = dom.createElement("data");
+					@SuppressWarnings("unchecked")
+					Optional<List<String>> line = (Optional<List<String>>) dataType.getRawType();
+					if (line.isPresent()) {
+						for (String val : line.get()) {
+							Element arrayDataValueElem = dom.createElement("value");
+							Element arrayRawDataElem = dom.createElement(RpcDataTypes.STRING.toString());
+							arrayRawDataElem.setTextContent(val);
+							arrayDataValueElem.appendChild(arrayRawDataElem);
+							arrayDataElem.appendChild(arrayDataValueElem);
+						}
+					}
+					valueSubElem.appendChild(arrayDataElem);
+				} else {
+					// 単一の場合
+					valueSubElem.setTextContent(dat);
+				}
 			} else {
 				Element nilElem = dom.createElement(RpcDataTypes.NIL.toString());
 				valueSubElem.appendChild(nilElem);

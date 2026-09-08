@@ -5,12 +5,18 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import javax.naming.Binding;
 import javax.naming.Name;
 import javax.naming.NamingEnumeration;
 
+import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Fail;
+import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Success;
+import com.sakulabo.application.app.rpc.datatype.receive.ArrayReceiveDataType;
 import com.sakulabo.core.Kagerow.Context.KagerowVirtualDirContext;
 import com.sakulabo.core.Kagerow.Context.KagerowVirtualFileContext;
 import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
@@ -36,11 +42,11 @@ public class SchemaCommand {
 	 * スキーマ一覧確認コマンド
 	 */
 	@Command(name = "list")
-	public static class SchemaListCommand implements Callable<Integer> {
+	public static class SchemaListCommand extends AuthRemoteCommand implements Callable<Integer> {
 
 		/** {@inheritDoc} */
 		@Override
-		public Integer call() throws Exception {
+		protected Integer local() throws Exception {
 			try {
 				KagerowVirtualFileContext ctx = KagerowUtilities.getContext(KagerowVirtualFileContext._NAME);
 				NamingEnumeration<Binding> list = ctx.listBindings((Name) null);
@@ -55,6 +61,28 @@ public class SchemaCommand {
 				return Integer.valueOf(1);
 			}
 			return Integer.valueOf(0);
+		}
+
+		/** {@inheritDoc} */
+		@Override
+		protected Integer remote() throws Exception {
+			// メソッド呼び出し
+			RpcResult result = doRpcMethodCall("list", "/rpc/schema", HashMap::new);
+			// 結果処理
+			return switch (result) {
+			case Success success: {
+				ArrayReceiveDataType list = new ArrayReceiveDataType(success.response().get("list"));
+				Optional<List<String>> schemaList = list.getRawType();
+				schemaList.ifPresent(li -> {
+					li.stream().forEach(System.out::println);
+				});
+				yield Integer.valueOf(0);
+			}
+			case Fail fail: {
+				System.err.println(String.format("StatusCode : %d ResponseText", fail.statusCode(), fail.response()));
+				yield Integer.valueOf(1);
+			}
+			};
 		}
 
 	}

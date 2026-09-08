@@ -252,7 +252,7 @@ public class AuthServiceImpl implements AuthService {
 			// トークンが存在する場合、有効期限を確認
 			Instant limitTime = Instant.now().minus(MAX_TIME);
 			// 有効期限がトークンの有効期限より後の場合、トークンを有効期限切れとする
-			boolean isValid = limitTime.isAfter(limit);
+			boolean isValid = limitTime.isBefore(limit);
 			if (isValid) {
 				// トークンが有効期限切れの場合、トークン削除
 				tokens.remove(authorization);

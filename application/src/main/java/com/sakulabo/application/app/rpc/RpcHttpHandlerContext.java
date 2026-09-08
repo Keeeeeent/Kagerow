@@ -10,11 +10,14 @@ import java.io.UncheckedIOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
@@ -255,6 +258,25 @@ public class RpcHttpHandlerContext implements HttpHandler {
 								// NULL変換
 								if (RpcDataTypes.NIL.toString().equals(valueTagName)) {
 									value = null;
+								} else if (RpcDataTypes.ARRAY.toString().equals(valueTagName)) {
+									// 配列変換(カンマ区切りのリスト形式にする)
+									StringJoiner joiner = new StringJoiner(",");
+									Node dataNode = valueElement.getFirstChild();
+									NodeList arrayNode = dataNode.getChildNodes();
+									for (int l = 0; l < arrayNode.getLength(); l++) {
+										Node arrayDataNode = arrayNode.item(l);
+										Node arrayItemNode = arrayDataNode.getFirstChild();
+										if (!RpcDataTypes.NIL.toString()
+												.equals(((Element) arrayItemNode).getTagName())) {
+											String arrayItemValue = arrayItemNode.getTextContent();
+											arrayItemValue = URLEncoder.encode(arrayItemValue, StandardCharsets.UTF_8);
+											joiner.add(arrayItemValue);
+										}
+									}
+									value = joiner.toString();
+									if (value.isEmpty()) {
+										value = null;
+									}
 								} else {
 									// 値を取得
 									value = valueElement.getTextContent();
@@ -313,11 +335,30 @@ public class RpcHttpHandlerContext implements HttpHandler {
 			// パラメータバリュー追加
 			BaseDataType<?> dataType = structParam.getValue();
 			Element valueElem = responseXML.createElement("value");
-			Element valueSubElem = responseXML.createElement(dataType.toRpcDataType().toString());
+			RpcDataTypes dataTypes = dataType.toRpcDataType();
+			Element valueSubElem = responseXML.createElement(dataTypes.toString());
 			// 取得データがnilか判定
 			String dat = dataType.getData();
 			if (Objects.nonNull(dat) && !dat.isEmpty()) {
-				valueSubElem.setTextContent(dat);
+				if (RpcDataTypes.ARRAY == dataTypes) {
+					// 配列の場合
+					Element arrayDataElem = responseXML.createElement("data");
+					@SuppressWarnings("unchecked")
+					Optional<List<String>> line = (Optional<List<String>>) dataType.getRawType();
+					if (line.isPresent()) {
+						for (String val : line.get()) {
+							Element arrayDataValueElem = responseXML.createElement("value");
+							Element arrayRawDataElem = responseXML.createElement(RpcDataTypes.STRING.toString());
+							arrayRawDataElem.setTextContent(val);
+							arrayDataValueElem.appendChild(arrayRawDataElem);
+							arrayDataElem.appendChild(arrayDataValueElem);
+						}
+					}
+					valueSubElem.appendChild(arrayDataElem);
+				} else {
+					// 単一の場合
+					valueSubElem.setTextContent(dat);
+				}
 			} else {
 				Element nilElem = responseXML.createElement(RpcDataTypes.NIL.toString());
 				valueSubElem.appendChild(nilElem);

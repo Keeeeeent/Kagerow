@@ -24,7 +24,9 @@ public enum RpcDataTypes {
 	/** マップ */
 	STRUCT("struct"),
 	/** NULL */
-	NIL("nil");
+	NIL("nil"),
+	/** 値配列 */
+	ARRAY("array");
 
 	/** 型の文字列表現 */
 	private final List<String> typeStr;

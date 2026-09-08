@@ -95,12 +95,8 @@ public class ScriptExecutorImpl implements ScriptExecutor {
 
 	}
 
-	/**
-	 * スクリプトの実行を行います
-	 * @param sessionId セッションID
-	 * @param isSecure セキュアフラグ
-	 * @param path スクリプトパス
-	 */
+	/** {@inheritDoc} */
+	@Override
 	@RpcMethod("execute")
 	public void executeScript(
 			@RpcMethodParam("sessionid") StringReceiveDataType sessionId,

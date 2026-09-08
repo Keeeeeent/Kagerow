@@ -29,6 +29,15 @@ public abstract class AuthRemoteCommand extends RemoteCommand implements Callabl
 	@Option(names = "--cacert", description = "Please specify the path to the X.509 certificate in PEM format", converter = ExistingFilePathConverter.class)
 	public Path cacert = null;
 
+	/** {@inheritDoc} */
+	@Override
+	public final Integer call() throws Exception {
+		// フィールド上書き
+		super.remote = this.remote;
+		super.cacert = this.cacert;
+		return super.call();
+	}
+
 	/**
 	 * RPCメソッド呼び出しを行います
 	 * このメソッドは常に認証済みリクエストを要求します
@@ -42,9 +51,6 @@ public abstract class AuthRemoteCommand extends RemoteCommand implements Callabl
 	protected final RpcResult doRpcMethodCall(String methodName, String rpcPath,
 			Supplier<Map<String, BaseDataType<?>>> createRequestBody)
 			throws Exception {
-		// フィールド上書き
-		super.remote = this.remote;
-		super.cacert = this.cacert;
 		// メソッド呼び出し
 		return doRpcMethodCall(methodName, rpcPath, createRequestBody, true);
 	}
