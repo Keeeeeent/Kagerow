@@ -12,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Objects;
 import java.util.ServiceLoader;
+import java.util.StringJoiner;
 import java.util.logging.Level;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -45,44 +46,10 @@ public final class RpcServer extends HttpsConfigurator {
 	private final static SSLContext TLS;
 	static {
 		try {
-
-			// JAVA_HOME生成
-			Path JAVA_HOME = Paths.get(System.getProperty("java.home")).normalize().toAbsolutePath();
-
 			// 初回起動の場合キーファイル生成
 			if (Files.notExists(SERVER_P12)) {
-
-				{
-					// サーバキーペア作成
-					ProcessBuilder createServerP12 = new ProcessBuilder();
-					// 実行コマンド設定
-					createServerP12.command(JAVA_HOME.resolve("bin", "keytool").toString(), "-genkeypair", "-alias",
-							"kagerow", "-keyalg", "RSA", "-keysize", "2048", "-validity", "36500", "-storetype",
-							"PKCS12", "-keystore", SERVER_P12.toString(), "-storepass", System.getProperty("instance"),
-							"-dname", "CN=Kagerow", "-ext", "SAN=dns:localhost,ip:127.0.0.1,ip:::1");
-					// ビルダー設定調整（入出力継承）
-					createServerP12.inheritIO();
-					// コマンド実行
-					Process serverP12Cmd = createServerP12.start();
-					serverP12Cmd.waitFor();
-				}
-
-				{
-					// サーバ証明書生成
-					ProcessBuilder createServerCrt = new ProcessBuilder();
-					// 実行コマンド設定
-					createServerCrt.command(JAVA_HOME.resolve("bin", "keytool").toString(), "-exportcert", "-alias",
-							"kagerow", "-storetype", "PKCS12", "-keystore", SERVER_P12.toString(), "-storepass",
-							System.getProperty("instance"), "-rfc", "-file", SERVER_CRT.toString());
-					// ビルダー設定調整（入出力継承）
-					createServerCrt.inheritIO();
-					// コマンド実行
-					Process serverCrtCmd = createServerCrt.start();
-					serverCrtCmd.waitFor();
-				}
-
+				createCrtFile(SERVER_CRT, "kagerow", null, null);
 			}
-
 			// キーストア生成
 			KeyStore ks = KeyStore.getInstance("PKCS12");
 			// サーバSSL取込
@@ -243,6 +210,66 @@ public final class RpcServer extends HttpsConfigurator {
 	 */
 	public String getHost() {
 		return address.getHostName();
+	}
+
+	/**
+	 * サーバ証明書を生成します
+	 * @param crtFilePath 証明書パス
+	 * @param cn CN
+	 * @param dns DNS
+	 * @param ip IP
+	 * @throws IOException 証明書生成失敗
+	 * @throws InterruptedException プロセス割り込み発生
+	 */
+	public final static void createCrtFile(Path crtFilePath, String cn, String[] dns, String[] ip)
+			throws IOException, InterruptedException {
+
+		// JAVA_HOME生成
+		Path JAVA_HOME = Paths.get(System.getProperty("java.home")).normalize().toAbsolutePath();
+
+		// SAN生成
+		StringJoiner san = new StringJoiner(",");
+		san.add("SAN=dns:localhost,ip:127.0.0.1,ip:::1");
+		if (Objects.nonNull(dns)) {
+			for (String d : dns) {
+				san.add(String.format("dns:%s", d));
+			}
+		}
+		if (Objects.nonNull(ip)) {
+			for (String i : ip) {
+				san.add(String.format("ip:%s", i));
+			}
+		}
+
+		{
+			// サーバキーペア作成
+			ProcessBuilder createServerP12 = new ProcessBuilder();
+			// 実行コマンド設定
+			createServerP12.command(JAVA_HOME.resolve("bin", "keytool").toString(), "-genkeypair", "-alias",
+					cn, "-keyalg", "RSA", "-keysize", "2048", "-validity", "36500", "-storetype",
+					"PKCS12", "-keystore", SERVER_P12.toString(), "-storepass", System.getProperty("instance"),
+					"-dname", String.format("CN=%s", cn), "-ext", san.toString());
+			// ビルダー設定調整（入出力継承）
+			createServerP12.inheritIO();
+			// コマンド実行
+			Process serverP12Cmd = createServerP12.start();
+			serverP12Cmd.waitFor();
+		}
+
+		{
+			// サーバ証明書生成
+			ProcessBuilder createServerCrt = new ProcessBuilder();
+			// 実行コマンド設定
+			createServerCrt.command(JAVA_HOME.resolve("bin", "keytool").toString(), "-exportcert", "-alias",
+					cn, "-storetype", "PKCS12", "-keystore", SERVER_P12.toString(), "-storepass",
+					System.getProperty("instance"), "-rfc", "-file", crtFilePath.toString());
+			// ビルダー設定調整（入出力継承）
+			createServerCrt.inheritIO();
+			// コマンド実行
+			Process serverCrtCmd = createServerCrt.start();
+			serverCrtCmd.waitFor();
+		}
+
 	}
 
 }

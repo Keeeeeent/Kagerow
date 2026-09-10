@@ -1,10 +1,13 @@
 package com.sakulabo.application.app.cli.subcommand;
 
+import java.net.InetAddress;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
@@ -13,6 +16,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.sakulabo.application.app.cli.converter.ExistingFilePathConverter;
+import com.sakulabo.application.app.cli.converter.ExistingParentDirConverter;
 import com.sakulabo.application.app.cli.converter.RpcUriConverter;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Fail;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Success;
@@ -25,7 +29,9 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ITypeConverter;
 import picocli.CommandLine.Option;
+import picocli.CommandLine.TypeConversionException;
 
 /**
  * エージェント機能実装クラスです
@@ -35,7 +41,8 @@ import picocli.CommandLine.Option;
 @Command(name = "agent", subcommands = {
 		AgentCommand.CreateAgentCommand.class,
 		AgentCommand.LoginAgentCommand.class,
-		AgentCommand.StartAgentCommand.class
+		AgentCommand.StartAgentCommand.class,
+		AgentCommand.CertificateAgentCommand.class,
 })
 public class AgentCommand {
 
@@ -194,6 +201,55 @@ public class AgentCommand {
 				} else {
 					System.err.println("The server failed to start");
 				}
+				return Integer.valueOf(1);
+			}
+		}
+
+	}
+
+	/**
+	 * ユーザ作成コマンド
+	 */
+	@Command(name = "certificate")
+	public static class CertificateAgentCommand implements Callable<Integer>, ITypeConverter<String> {
+
+		/** DNS名称リスト */
+		@Option(names = { "--dns", "-d" }, description = "DNS names to add to the Subject Alternative Name (SAN)")
+		private List<String> dns;
+		/** IPリスト */
+		@Option(names = { "--ip",
+				"-i" }, converter = CertificateAgentCommand.class, description = "IP addresses to add to the Subject Alternative Name (SAN)")
+		private List<String> ip;
+		/** CN名称 */
+		@Option(names = { "--cn", "-c" }, required = true, description = "Common Name (CN) of the certificate")
+		private String cn;
+		/** 証明書出力先 */
+		@Option(names = { "--path",
+				"-p" }, converter = ExistingParentDirConverter.class, required = true, description = "Output path for the generated certificate")
+		private Path crtPath;
+
+		/** {@inheritDoc} */
+		@Override
+		public String convert(String value) {
+			try {
+				InetAddress.getByName(value);
+				// 必要ならIPv4/IPv6の制限も可能
+				return value;
+			} catch (UnknownHostException e) {
+				throw new TypeConversionException("Invalid IP address: " + value);
+			}
+		}
+
+		/** {@inheritDoc} */
+		@Override
+		public Integer call() throws Exception {
+			try {
+				RpcServer.createCrtFile(crtPath, cn, dns.toArray(String[]::new), ip.toArray(String[]::new));
+				return Integer.valueOf(0);
+			} catch (Exception e) {
+				// 失敗ログ
+				System.err.println("Failed to create the certificate");
+				KagerowLogger.newAppLogger().err(e);
 				return Integer.valueOf(1);
 			}
 		}
