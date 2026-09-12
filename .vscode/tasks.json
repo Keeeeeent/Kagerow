@@ -1,0 +1,118 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "ポータブル構成構築(アプリケーション起動)",
+            "type": "shell",
+            "command": "./mvnw",
+            "args": [
+                "-f",
+                "./pom.xml",
+                "clean",
+                "package",
+                "-DrunApp=true"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/manager",
+                "env": {
+                    "MAVEN_OPTS": "--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED -Dapp.logs.dir=../builder/target/dist/logs -Djava.io.tmpdir=../.kagerow/tmp",
+                    "JAVA_HOME": "${workspaceFolder}/public/openjdk/inuse/jdk-25.jdk/Contents/Home"
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "windows": {
+                "command": "mvnw.cmd",
+                "options": {
+                    "env": {
+                        "JAVA_HOME": "${workspaceFolder}/public/openjdk/inuse/jdk-25"
+                    }
+                }
+            },
+        },
+        {
+            "label": "ポータブル構成構築(配布パッケージ)",
+            "type": "shell",
+            "command": "./mvnw",
+            "args": [
+                "-f",
+                "./pom.xml",
+                "clean",
+                "package",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/manager",
+                "env": {
+                    "MAVEN_OPTS": "--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED -Dapp.logs.dir=../builder/target/dist/logs -Djava.io.tmpdir=../.kagerow/tmp",
+                    "JAVA_HOME": "${workspaceFolder}/public/openjdk/inuse/jdk-25.jdk/Contents/Home"
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "windows": {
+                "command": "mvnw.cmd",
+                "options": {
+                    "env": {
+                        "JAVA_HOME": "${workspaceFolder}/public/openjdk/inuse/jdk-25"
+                    }
+                }
+            },
+        },
+        {
+            "label": "ポータブル構成構築(テストスキップ)",
+            "type": "shell",
+            "command": "./mvnw",
+            "args": [
+                "-f",
+                "./pom.xml",
+                "clean",
+                "package",
+                "-DskipTests"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/manager",
+                "env": {
+                    "MAVEN_OPTS": "--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED -Dapp.logs.dir=../builder/target/dist/logs -Djava.io.tmpdir=../.kagerow/tmp",
+                    "JAVA_HOME": "${workspaceFolder}/public/openjdk/inuse/jdk-25.jdk/Contents/Home"
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "windows": {
+                "command": "mvnw.cmd",
+                "options": {
+                    "env": {
+                        "JAVA_HOME": "${workspaceFolder}/public/openjdk/inuse/jdk-25"
+                    }
+                }
+            },
+        },
+        {
+            "label": "GUIアプリケーション起動",
+            "type": "shell",
+            "command": "${workspaceFolder}/application/target/release/Kagerow.app/Contents/MacOS/Kagerow",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {}
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "windows": {
+                "command": "${workspaceFolder}/application/target/release/Kagerow.exe"
+            },
+        }
+    ]
+}

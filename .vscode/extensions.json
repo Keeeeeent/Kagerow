@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "pleiades.java-extension-pack-jdk",
+        "redhat.vscode-xml",
+        "mechatroner.rainbow-csv",
+        "vstirbu.vscode-mermaid-preview",
+        "ms-ceintl.vscode-language-pack-ja",
+        "codezombiech.gitignore",
+        "donjayamanne.githistory",
+        "spmeesseman.vscode-taskexplorer"
+    ]
+}

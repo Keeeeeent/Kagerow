@@ -256,8 +256,9 @@ public class AuthServiceImpl implements AuthService {
 			if (isValid) {
 				// トークンが有効期限切れの場合、トークン削除
 				tokens.remove(authorization);
+				return true;
 			}
-			return isValid;
+			return false;
 		} finally {
 			lock.unlock();
 		}
@@ -313,7 +314,8 @@ public class AuthServiceImpl implements AuthService {
 				// チェレンジが存在する場合、有効期限を確認
 				Instant limitTime = Instant.now().minus(MAX_TIME);
 				// 有効期限がチャレンジの有効期限より前の場合、トークンを発行
-				if (limitTime.isBefore(limit)) {
+				boolean isValid = limitTime.isBefore(limit);
+				if (isValid) {
 					// トークン生成
 					String token = UUID.randomUUID().toString();
 					Instant createAt = Instant.now();

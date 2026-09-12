@@ -1,0 +1,26 @@
+{
+    "java.jdt.ls.java.home": "./public/openjdk/inuse/jdk-25.jdk",
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.format.enabled": true,
+    "java.saveActions.organizeImports": true,
+    "java.compile.nullAnalysis.mode": "disabled",
+    "maven.executable.preferMavenWrapper": true,
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true,
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-25(OpenJDK)",
+            "path": "./public/openjdk/inuse/jdk-25.jdk",
+            "default": true
+        }
+    ],
+    "[java]": {
+        "editor.quickSuggestions": {
+            "other": true,
+            "comments": false,
+            "strings": false
+        },
+        "editor.suggestOnTriggerCharacters": true
+    }
+}
