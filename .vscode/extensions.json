@@ -7,6 +7,8 @@
         "ms-ceintl.vscode-language-pack-ja",
         "codezombiech.gitignore",
         "donjayamanne.githistory",
-        "spmeesseman.vscode-taskexplorer"
+        "spmeesseman.vscode-taskexplorer",
+        "esbenp.prettier-vscode",
+        "rudrapatel.prettier-plugin-java-vscode"
     ]
 }
