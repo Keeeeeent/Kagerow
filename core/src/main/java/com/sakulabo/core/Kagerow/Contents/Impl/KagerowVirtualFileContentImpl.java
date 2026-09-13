@@ -103,12 +103,14 @@ public final class KagerowVirtualFileContentImpl extends BaseKagerowContent impl
 
 		/**
 		 * デフォルトコンストラクタ
+		 * 
 		 * @param rowObject シリアライズ対象
 		 * @throws Exception シリアライズ失敗
 		 */
 		private SecureFileObjectProxy(SecureFileObject rowObject) throws Exception {
 
 			// マスターコンテンツ取得
+			@SuppressWarnings("unchecked")
 			Map<Name, KagerowSecurityContent> content = (Map<Name, KagerowSecurityContent>) OTHER_CONTEXT.getVolatile();
 
 			// セキュアチェック
@@ -142,8 +144,9 @@ public final class KagerowVirtualFileContentImpl extends BaseKagerowContent impl
 
 		/**
 		 * 内部コンストラクタ
+		 * 
 		 * @param data バイト配列
-		 * @param iv 初期化ベク取り
+		 * @param iv   初期化ベク取り
 		 * @throws Exception デシリアライズ失敗
 		 */
 		private SecureFileObjectProxy(byte[] data, byte[] iv) throws Exception {
@@ -152,6 +155,7 @@ public final class KagerowVirtualFileContentImpl extends BaseKagerowContent impl
 			this.data = new byte[0];
 
 			// マスターコンテンツ取得
+			@SuppressWarnings("unchecked")
 			Map<Name, KagerowSecurityContent> content = (Map<Name, KagerowSecurityContent>) OTHER_CONTEXT.getVolatile();
 
 			// セキュアチェック
@@ -183,17 +187,14 @@ public final class KagerowVirtualFileContentImpl extends BaseKagerowContent impl
 
 		}
 
-		@SuppressWarnings("javadoc")
 		private void readObject(ObjectInputStream stream) throws InvalidObjectException {
 			throw new UnsupportedOperationException();
 		}
 
-		@SuppressWarnings("javadoc")
 		private Object writeReplace() {
 			return new SecureFileObjectProxy__Impl__(this.data, this.iv);
 		}
 
-		@SuppressWarnings("javadoc")
 		private final static class SecureFileObjectProxy__Impl__ implements Serializable {
 
 			/** シリアライズID */
@@ -223,7 +224,8 @@ public final class KagerowVirtualFileContentImpl extends BaseKagerowContent impl
 
 	/**
 	 * デフォルトコンストラクタ
-	 * @param name 論理ネームスペース
+	 * 
+	 * @param name   論理ネームスペース
 	 * @param parser 独自スキームURIパーサー
 	 * @throws NamingException コンテキスト生成失敗
 	 */

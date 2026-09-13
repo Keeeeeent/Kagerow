@@ -132,13 +132,13 @@ public enum VMOption {
 	/** VMオプション文字列表現 */
 	private final String vmoption;
 
-	@SuppressWarnings("javadoc")
 	private VMOption(String vmoption) {
 		this.vmoption = vmoption;
 	}
 
 	/**
 	 * VMOptionの文字列表現を取得します
+	 * 
 	 * @return VMOption文字列表現
 	 */
 	public String toVMOption() {
@@ -148,6 +148,7 @@ public enum VMOption {
 
 	/**
 	 * JVMからVMOptionに関連付けられた値を取得します
+	 * 
 	 * @return 関連付けられた値
 	 */
 	public String getVMoption() {
@@ -156,6 +157,7 @@ public enum VMOption {
 
 	/**
 	 * JVMからVMOptionに関連付けられた値を取得します
+	 * 
 	 * @param defaultValue デフォルト値
 	 * @return 関連付けられた値
 	 */
@@ -165,6 +167,7 @@ public enum VMOption {
 
 	/**
 	 * JVMにVMOptionとして値を関連付けします
+	 * 
 	 * @param vmoption 設定値
 	 */
 	public void setVMoption(String vmoption) {
@@ -174,8 +177,9 @@ public enum VMOption {
 	/**
 	 * 文字列表現をVMOptionに変換します<br/>
 	 * VMOption文字列表現が存在しない場合、UNKNOWNを返却します
+	 * 
 	 * @param vmoption VMOption文字列表現
-	 * @return　VMOptionインスタンス
+	 * @return VMOptionインスタンス
 	 */
 	public static final VMOption toVMOption(String vmoption) {
 		VMOption option = UNKNOWN;
@@ -189,9 +193,10 @@ public enum VMOption {
 	/**
 	 * 文字列表現をVMOptionに変換します<br/>
 	 * VMOption文字列表現が存在しない場合、UNKNOWNを返却します
-	 * @param vmoption VMOption文字列表現
+	 * 
+	 * @param vmoption     VMOption文字列表現
 	 * @param defaultValue デフォルト値
-	 * @return　VMOptionインスタンス
+	 * @return VMOptionインスタンス
 	 */
 	public static final VMOption toVMOption(String vmoption, VMOption defaultValue) {
 		VMOption option = toVMOption(vmoption);
@@ -201,6 +206,7 @@ public enum VMOption {
 	/**
 	 * 与えられた値が紐づけられているVMOptionを返却します<br/>
 	 * 関連付けられたキーが存在しない場合、UNKNOWNを返却します
+	 * 
 	 * @param value 検索値
 	 * @return 関連付けられたキー
 	 */

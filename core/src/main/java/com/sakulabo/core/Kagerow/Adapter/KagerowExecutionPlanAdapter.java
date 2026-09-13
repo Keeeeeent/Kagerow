@@ -4,7 +4,7 @@ import java.time.Instant;
 
 /**
  * 実行計画のライフサイクルフックを提供するアダプターインターフェイスです
- * 
+ *
  * @author keeeeeent
  */
 public interface KagerowExecutionPlanAdapter {
@@ -22,7 +22,7 @@ public interface KagerowExecutionPlanAdapter {
 	/**
 	 * KSQL実行結果データ構造です
 	 * @param id KSQLID
-	 * @param startTime 開始時刻 
+	 * @param startTime 開始時刻
 	 * @param endTime 終了時刻
 	 * @param exitCode 終了コード
 	 */
@@ -36,8 +36,8 @@ public interface KagerowExecutionPlanAdapter {
 	/**
 	 * KSQL実行結果データ構造です
 	 * @param pluginName プラグイン名称
-	 * @param id KSQLID
-	 * @param startTime 開始時刻 
+	 * @param id プラグインID
+	 * @param startTime 開始時刻
 	 * @param endTime 終了時刻
 	 * @param exitCode 終了コード
 	 * @param option オプション
@@ -54,7 +54,7 @@ public interface KagerowExecutionPlanAdapter {
 		 * デフォルトコンストラクタ
 		 * @param pluginName プラグイン名称
 		 * @param id KSQLID
-		 * @param startTime 開始時刻 
+		 * @param startTime 開始時刻
 		 * @param endTime 終了時刻
 		 * @param exitCode 終了コード
 		 */
@@ -131,8 +131,9 @@ public interface KagerowExecutionPlanAdapter {
 
 	/**
 	 * SQL個別実行処理の直前にトリガー実行されます
+	 * @param id 実行SQLID
 	 */
-	void startDoKsqlIndividual();
+	void startDoKsqlIndividual(String id);
 
 	/**
 	 * SQL個別実行処理の直後にトリガー実行されます

@@ -1,6 +1,7 @@
 package com.sakulabo.application.service.Script;
 
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 
 import javax.sql.rowset.CachedRowSet;
 
@@ -10,7 +11,7 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowScriptAccessor;
 
 /**
  * KSQLスクリプトサービスの規定インターフェイスです
- * 
+ *
  * @author keeeeeent
  */
 public interface KSQLService {
@@ -22,6 +23,16 @@ public interface KSQLService {
 	 * @throws Exception 実行失敗
 	 */
 	public KagerowExecutionPlanAccessor executionScript(KSQLScriptModel model) throws Exception;
+
+	/**
+	 * KSQLをモデルに従って実行します
+	 * @param model 実行モデル
+	 * @param editOperator スクリプト編集関数
+	 * @return 実行結果
+	 * @throws Exception 実行失敗
+	 */
+	public KagerowExecutionPlanAccessor executionScriptWithEdit(KSQLScriptModel model,
+			UnaryOperator<KagerowScriptAccessor> editOperator) throws Exception;
 
 	/**
 	 * KSQLをモデルに従って実行します

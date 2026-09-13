@@ -3,6 +3,8 @@ package com.sakulabo.application.service.Script.Impl;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.function.UnaryOperator;
 
 import javax.sql.rowset.CachedRowSet;
 
@@ -12,11 +14,12 @@ import com.sakulabo.application.service.Script.KSQLService;
 import com.sakulabo.core.Kagerow.Adapter.KagerowExecutionPlanAdapter;
 import com.sakulabo.core.Kagerow.Utilities.KagerowExecutionPlanAccessor;
 import com.sakulabo.core.Kagerow.Utilities.KagerowScriptAccessor;
+import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 import com.sakulabo.regulation.annotation.KagerowComponent;
 
 /**
  * KSQLスクリプトサービスの実装クラスです
- * 
+ *
  * @author keeeeeent
  */
 @KagerowComponent
@@ -33,6 +36,35 @@ public class KSQLServiceImpl extends BaseService implements KSQLService {
 
 		// スクリプト実行
 		KagerowExecutionPlanAccessor accessor = KagerowExecutionPlanAccessor.execute(path, planAdapter, isSecure);
+
+		// モデル編集
+		if (Objects.isNull(model.planAdapter)) {
+			model.planAdapter = KagerowExecutionPlanAccessor.createDefaultPlanAdapter(accessor);
+		}
+
+		return accessor;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public KagerowExecutionPlanAccessor executionScriptWithEdit(KSQLScriptModel model,
+			UnaryOperator<KagerowScriptAccessor> editOperator) throws Exception {
+
+		// 引数抽出
+		KagerowExecutionPlanAdapter planAdapter = model.planAdapter;
+		boolean isSecure = model.isSecure;
+		KagerowScriptAccessor newAccessor = editOperator.apply(model.scriptAccessor);
+
+		// モデルを再生成
+		KSQLScriptModel tmpModel = new KSQLScriptModel();
+		tmpModel.isSecure = isSecure;
+		tmpModel.scriptAccessor = newAccessor;
+		tmpModel.path = KagerowUtilities.createTemporaryPath(UUID.randomUUID().toString() + ".tmp", true);
+		saveScript(tmpModel);
+
+		// スクリプト実行
+		KagerowExecutionPlanAccessor accessor = KagerowExecutionPlanAccessor.execute(tmpModel.path, planAdapter,
+				isSecure);
 
 		// モデル編集
 		if (Objects.isNull(model.planAdapter)) {

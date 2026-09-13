@@ -41,6 +41,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -114,7 +115,6 @@ import com.sakulabo.regulation.spi.PluginAdapter.KagerowRowSet;
 public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 		implements
 		KagerowExecutionPlanAccessor,
-		AutoCloseable,
 		ExecutionPlanMXBean
 		permits BasicExecutionPlan, SecureExecutionPlan {
 
@@ -168,6 +168,8 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 	protected final ReferenceQueue<ExecutionPlanHistory> refList = new ReferenceQueue<>();
 	/** GC対象検知後処理対応をスレッド */
 	protected final ExecutorService refExec;
+	/** セッションクローズフラグ */
+	protected final AtomicBoolean closeFlag = new AtomicBoolean(false);
 
 	{
 		ThreadFactory factory = ThreadUtils.newDemonThreadFactory(ThreadUtils.JMX_GROUP);
@@ -849,7 +851,7 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 						// 開始時刻記録
 						startTime = Instant.now();
 						// 開始リスナー実行
-						this.planAdapter.startDoKsqlIndividual();
+						this.planAdapter.startDoKsqlIndividual(sql.getKey());
 						// SQL実行
 						List<CachedRowSet> tmpResult = connectionHandler.transaction(sql.getValue());
 						if (!tmpResult.isEmpty()) {
@@ -1112,6 +1114,12 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 	public final void lord(KagerowScriptAccessor script, KagerowExecutionPlanAdapter planAdapter)
 			throws AppLogicException {
 
+		// セッションの状態確認
+		if (closeFlag.get()) {
+			String msg = ErrorMessage.CODE_037.getMessage(sessionId);
+			throw new IllegalStateException(msg);
+		}
+
 		// キャッシュIDの同値性確認
 		if (!Objects.equals(script.getCacheId(), cacheId)) {
 			String msg = ErrorMessage.CODE_012.getMessage(
@@ -1162,6 +1170,12 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 	/** {@inheritDoc} */
 	@Override
 	public Void validation() throws IllegalStateException {
+
+		// セッションの状態確認
+		if (closeFlag.get()) {
+			String msg = ErrorMessage.CODE_037.getMessage(sessionId);
+			throw new IllegalStateException(msg);
+		}
 
 		try {
 
@@ -1271,6 +1285,12 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 	@Override
 	public final void execute() throws KagerowExecuteException {
 
+		// セッションの状態確認
+		if (closeFlag.get()) {
+			String msg = ErrorMessage.CODE_037.getMessage(sessionId);
+			throw new IllegalStateException(msg);
+		}
+
 		try {
 
 			// 開始処理実行
@@ -1318,7 +1338,13 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/** {@inheritDoc} */
 	@Override
-	public void close() throws Exception {
+	public void close() throws AppLogicException, NamingException {
+
+		// セッションの状態確認
+		if (closeFlag.get()) {
+			String msg = ErrorMessage.CODE_037.getMessage(sessionId);
+			throw new IllegalStateException(msg);
+		}
 
 		try {
 			// スレッド終了
@@ -1446,6 +1472,12 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 	@Override
 	@SuppressWarnings("unchecked")
 	public synchronized Optional<CachedRowSet> execute(String ksqlId) throws KagerowExecuteException {
+
+		// セッションの状態確認
+		if (closeFlag.get()) {
+			String msg = ErrorMessage.CODE_037.getMessage(sessionId);
+			throw new IllegalStateException(msg);
+		}
 
 		try {
 

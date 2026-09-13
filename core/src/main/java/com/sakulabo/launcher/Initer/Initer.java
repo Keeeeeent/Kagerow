@@ -24,13 +24,14 @@ import com.sakulabo.launcher.Initer.Impl.CheckArgument;
 import com.sakulabo.launcher.Initer.Impl.CreateRumtimeEnv;
 import com.sakulabo.launcher.Initer.Impl.InitLockFile;
 import com.sakulabo.launcher.Initer.Impl.TmpFolderCleaner;
+import com.sakulabo.launcher.Inject.LoardDIBeans;
 
 /**
  * 初期化処理の機能を提供する基底クラスです
- * 
+ *
  * @author keeeeeent
  */
-public sealed abstract class Initer permits EmptyInit, AllInit, GraphicalIniter {
+public sealed abstract class Initer permits EmptyInit, AllInit, GraphicalIniter, Initer.CommandIniter {
 
 	/**
 	 * メッセージプレフィック対象
@@ -56,6 +57,8 @@ public sealed abstract class Initer permits EmptyInit, AllInit, GraphicalIniter 
 		ALL_INIT,
 		/** GUI対応 */
 		GUI_INIT,
+		/** CLI対応 */
+		CLI_INIT,
 		/** 不明な場合 */
 		UNKNOWN;
 
@@ -200,6 +203,36 @@ public sealed abstract class Initer permits EmptyInit, AllInit, GraphicalIniter 
 		 */
 		public AllInit() {
 			super();
+		}
+
+		/** {@inheritDoc} */
+		@Override
+		public void doInitProcessAll() throws InitProcessFailedException {
+			if (3 < round++)
+				throw new InitProcessFailedException(createMesssage(PREFIX, MAX_RETRY_COUNT), FailType.Reject);
+			for (InitProcessor processer : initProcessList)
+				processer.init();
+		}
+	}
+
+	/**
+	 * 全ての初期化処理を実行するIniterを構築します<br/>
+	 * このIniterは初期化ログを表示しません<br/>
+	 * 途中で初期化処理が中断した場合、再度初めから実行し直します<br />
+	 * 尚、初期化処理が失敗した場合最大3回まで再実行されます
+	 */
+	public final static class CommandIniter extends Initer {
+
+		/** 初期化処理の実行回数を保持します */
+		private int round;
+
+		/**
+		 * デフォルトコンストラクタ
+		 */
+		public CommandIniter() {
+			super();
+			InitProcessor.SHOW_LOG_FLAG.set(false);
+			LoardDIBeans.SHOW_LOG_FLAG.set(false);
 		}
 
 		/** {@inheritDoc} */

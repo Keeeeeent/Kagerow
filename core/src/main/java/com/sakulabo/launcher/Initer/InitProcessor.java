@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
@@ -55,9 +56,12 @@ public interface InitProcessor {
 	/** 初期化カウンター(最大値) */
 	public final static AtomicInteger MAX_COUNT = new AtomicInteger();
 
+	/** ログ表示フラグ */
+	public final static AtomicBoolean SHOW_LOG_FLAG = new AtomicBoolean(true);
+
 	/**
 	 *  初期化処理の実装を実行します
-	 * @throws InitProcessFailedException 
+	 * @throws InitProcessFailedException
 	 */
 	public abstract void init() throws InitProcessFailedException;
 
@@ -104,7 +108,8 @@ public interface InitProcessor {
 				if (method.getName().equals("createLogMessage"))
 					return target.createLogMessage();
 				// 事前処理
-				target.startLog(method, args, target.createLogMessage());
+				if (SHOW_LOG_FLAG.get())
+					target.startLog(method, args, target.createLogMessage());
 				// メソッド呼び出し
 				Object result = null;
 				try {
@@ -114,7 +119,8 @@ public interface InitProcessor {
 					throw e;
 				}
 				// 事後処理
-				target.endLod(method, args, result);
+				if (SHOW_LOG_FLAG.get())
+					target.endLod(method, args, result);
 				// 初期化処理終了通知
 				observer.stream().forEach(Runnable::run);
 				return result;
@@ -131,7 +137,8 @@ public interface InitProcessor {
 	public default String createLogMessage() {
 		Module module = Main.module.orElseThrow(
 				() -> new RuntimeException(Initer.createMesssage(Initer.PREFIX, Initer.NO_MODULE)));
-		ResourceBundle messages = ResourceBundle.getBundle("config.message.Initer-Message", Locale.getDefault(), module);
+		ResourceBundle messages = ResourceBundle.getBundle("config.message.Initer-Message", Locale.getDefault(),
+				module);
 		LogMessage logMessage = getClass().getAnnotation(LogMessage.class);
 		String target = Objects.isNull(logMessage) ? getClass().getSimpleName() : logMessage.value();
 		return messages.getString(target);

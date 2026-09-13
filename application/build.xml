@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="KagerowBuilder" default="build">
-	
+
 	<!-- ===================================================== -->
 	<!-- 変数宣言 -->
 	<!-- ===================================================== -->
-	
+
 	<property name="vmoption_01" value="-client "/>
 	<property name="vmoption_02" value="-XX:+UseG1GC"/>
 	<property name="vmoption_03" value="-XX:+CrashOnOutOfMemoryError"/>
@@ -14,12 +14,13 @@
     <property name="vmoption_06" value="-XX:VMOptionsFile=$APPDIR/config/VMOptions.properties" />
     <property name="vmoption_07" value="-XX:CompileCommandFile=$APPDIR/config/JITCompileOptions.properties" />
     <property name="vmoption_08" value="-Dagentjar=mods/application-core.jar" />
-	
+	<property name="vmoption_09" value="-XX:CompileCommand=quiet" />
+
 	<property name="gui_launcher_file" value="${project.build.directory}/launcher/GUILauncher.properties"/>
 	<property name="cli_launcher_file" value="${project.build.directory}/launcher/CLILauncher.properties"/>
-	
+
 	<property name="nl" value="${line.separator}"/>
-	
+
     <!-- ===================================================== -->
     <!-- OS判定 -->
     <!-- ===================================================== -->
@@ -44,7 +45,7 @@
     <condition property="isUnix">
         <os family="unix"/>
     </condition>
-	
+
 	<condition property="isRunApp">
 		<and>
 	        <isset property="runApp"/>
@@ -66,6 +67,7 @@
 
     <target name="build"
             depends="
+    			compile,
                 init,
                 launcher,
                 runtime,
@@ -75,6 +77,118 @@
     			staging">
 
     	<echo message="[------- アプリケーション構築完了 -------]"/>
+
+    </target>
+
+	<!-- ===================================================== -->
+    <!-- コンパイル -->
+    <!-- ===================================================== -->
+
+	<target name="compile"
+            depends="
+                compile-apt,
+				compile-app">
+
+		<echo message="[------- アプリケーションコンパイル完了 -------]"/>
+
+    </target>
+
+	<target name="compile-apt">
+
+		<!-- コンパイル事前処理 -->
+		<mkdir dir="${project.build.directory}/apt"/>
+
+		<!-- アノテーションプロセッサーコンパイル -->
+		<javac
+		    srcdir="${basedir}/src/apt"
+			destdir="${project.build.directory}/apt"
+		    source="${maven.compiler.source}"
+		    target="${maven.compiler.target}"
+		    encoding="${project.build.sourceEncoding}"
+		    includeantruntime="false"
+			fork="true">
+
+		 	<classpath>
+		        <pathelement location="${project.build.directory}/application.jar"/>
+		    </classpath>
+
+		</javac>
+
+		<!-- リソースファイル格納 -->
+		<copy todir="${project.build.directory}/apt">
+			<fileset dir="${basedir}/src/apt"/>
+        </copy>
+
+		<!-- Jarファイル生成 -->
+	 	<jar
+	        destfile="${project.build.directory}/apt/apt.jar"
+	        basedir="${project.build.directory}/apt"
+	 	/>
+
+    </target>
+
+	<target name="compile-app">
+
+		<!-- コンパイル事前処理 -->
+		<mkdir dir="${project.build.directory}/app"/>
+		<copy todir="${project.build.directory}/deps">
+			<fileset dir="${project.build.directory}">
+                <include name="application.jar"/>
+            </fileset>
+		</copy>
+
+		<!-- リソースファイル格納 -->
+		<copy todir="${project.build.directory}/app">
+		    <fileset dir="${basedir}/src/main/resources"/>
+		</copy>
+
+		<!-- アプリケーションコンパイル -->
+		<javac
+		    srcdir="${project.build.sourceDirectory}"
+			destdir="${project.build.directory}/app"
+		    source="${maven.compiler.source}"
+		    target="${maven.compiler.target}"
+		    release="${maven.compiler.release}"
+		    encoding="${project.build.sourceEncoding}"
+		    includeantruntime="false"
+			fork="true">
+
+			<modulepath>
+		        <pathelement location="${project.build.directory}/deps"/>
+		    </modulepath>
+
+			<compilerarg value="-processorpath"/>
+			<compilerarg value="${project.build.directory}/deps/application-core-${project.version}.jar:${project.build.directory}/apt/apt.jar"/>
+			<compilerarg value="-proc:full"/>
+
+			<compilerarg value="-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED"/>
+			<compilerarg value="-J--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED"/>
+			<compilerarg value="-J--add-exports=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED"/>
+			<compilerarg value="-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED"/>
+			<compilerarg value="-J--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED"/>
+			<compilerarg value="-J--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED"/>
+			<compilerarg value="-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED"/>
+			<compilerarg value="-J--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED"/>
+			<compilerarg value="-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED"/>
+			<compilerarg value="-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED"/>
+
+		</javac>
+
+		<!-- ライセンスファイル対応 -->
+        <copy todir="${project.build.directory}/classes/META-INF/license">
+            <fileset dir="${basedir}/../">
+                <include name="LICENSE"/>
+                <include name="THIRD-PARTY-NOTICES.txt"/>
+                <include name="licenses/*"/>
+            </fileset>
+        </copy>
+
+		<!-- Jarファイル生成 -->
+		<delete dir="${project.build.directory}/library/application.jar"/>
+	 	<jar
+	        destfile="${project.build.directory}/library/application.jar"
+	        basedir="${project.build.directory}/app"
+	 	/>
 
     </target>
 
@@ -112,15 +226,23 @@
 
     <target name="launcher-windows" if="isWindows">
 
-        <!-- CLI -->
-    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_01}${nl}</echo>
-    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_02}${nl}</echo>
-        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_03}${nl}</echo>
-    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_04}${nl}</echo>
-        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=-Dapp.init.mode=CLI${nl}</echo>
-        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=-Dinstance=${build.uuid}${nl}</echo>
-    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=-Dapp.version=${project.version}${nl}</echo>
-        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">icon=${basedir}/config/icon.ico${nl}</echo>
+    	<!-- CLI (java-options)-->
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_01} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_02} </echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_03} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_04} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">-javaagent:$APPDIR/mods/application-core.jar=CLI_INIT </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_09} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_06} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_07} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_08} </echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">-Dapp.init.mode=CLI </echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">-Dinstance=${build.uuid} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">-Dapp.version=${project.version} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">-Dapp.home=$APPDIR${nl}</echo>
+
+    	<!-- CLI (icon)-->
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">--icon=${basedir}/config/icon.ico${nl}</echo>
 
     </target>
 
@@ -185,14 +307,22 @@
 
     <target name="launcher-mac" if="isMac">
 
-        <!-- CLI -->
-    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_01}${nl}</echo>
-    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_02}${nl}</echo>
-        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_03}${nl}</echo>
-    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_04}${nl}</echo>
-        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=-Dapp.init.mode=CLI${nl}</echo>
-        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=-Dinstance=${build.uuid}${nl}</echo>
-    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=-Dapp.version=${project.version}${nl}</echo>
+        <!-- CLI (java-options)-->
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_01} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_02} </echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_03} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_04} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">-javaagent:$APPDIR/mods/application-core.jar=CLI_INIT </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_09} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_06} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_07} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_08} </echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">-Dapp.init.mode=CLI </echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">-Dinstance=${build.uuid} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">-Dapp.version=${project.version} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">-Dapp.home=$APPDIR${nl}</echo>
+
+    	<!-- CLI (icon)-->
         <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">icon=${basedir}/config/icon.icns${nl}</echo>
 
     </target>
@@ -262,15 +392,23 @@
 
     <target name="launcher-linux" if="isLinux">
 
-        <!-- CLI -->
-    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_01}${nl}</echo>
-    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_02}${nl}</echo>
-        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_03}${nl}</echo>
-    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_04}${nl}</echo>
-        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=-Dapp.init.mode=CLI${nl}</echo>
-        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=-Dinstance=${build.uuid}${nl}</echo>
-    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=-Dapp.version=${project.version}${nl}</echo>
-        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">icon=${basedir}/config/icon.png${nl}</echo>
+    	<!-- CLI (java-options)-->
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">java-options=${vmoption_01} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_02} </echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_03} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_04} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">-javaagent:$APPDIR/mods/application-core.jar=CLI_INIT </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_09} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_06} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_07} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">${vmoption_08} </echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">-Dapp.init.mode=CLI </echo>
+        <echo file="${cli_launcher_file}" append="true" encoding="UTF-8">-Dinstance=${build.uuid} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">-Dapp.version=${project.version} </echo>
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">-Dapp.home=$APPDIR${nl}</echo>
+
+    	<!-- CLI (icon)-->
+    	<echo file="${cli_launcher_file}" append="true" encoding="UTF-8">icon=${basedir}/config/icon.png${nl}</echo>
 
     </target>
 
@@ -372,11 +510,11 @@
             <fileset dir="${basedir}/../core/target/library">
                 <include name="h2-2.3.232.jar"/>
             </fileset>
-            <fileset dir="${project.build.directory}">
-                <include name="application.jar"/>
+        	<fileset dir="${project.build.directory}/deps">
+            	<include name="picocli*.jar"/>
             </fileset>
         </copy>
-    	
+
     	<!-- license -->
         <copy todir="${project.build.directory}/dist/license">
             <fileset dir="${basedir}/../">
@@ -432,31 +570,31 @@
             depends="
                 archive-windows,
                 archive-unix"/>
-	
+
 	<!-- ===================================================== -->
     <!-- staging -->
     <!-- ===================================================== -->
-	
+
 	<!-- Windows -->
 	<target name="staging-windows" if="isWindows">
 		<exec executable="${project.build.directory}/release/Kagerow.exe" failonerror="true"/>
 	</target>
-	
+
 	<!-- Linux -->
 	<target name="staging-linux" if="isLinux">
 		<exec executable="${project.build.directory}/release/Kagerow" failonerror="true"/>
 	</target>
-	
+
 	<!-- Mac -->
 	<target name="staging-mac" if="isMac">
 			<exec executable="${project.build.directory}/release/Kagerow.app/Contents/MacOS/Kagerow" failonerror="true"/>
 	</target>
-	
+
 	<!-- 実行 -->
 	<target name="staging" if="isRunApp">
 
 		<echo message="[------- アプリケーション起動 -------]"/>
-		
+
 		<antcall target="staging-windows"/>
 		<antcall target="staging-linux"/>
 		<antcall target="staging-mac"/>

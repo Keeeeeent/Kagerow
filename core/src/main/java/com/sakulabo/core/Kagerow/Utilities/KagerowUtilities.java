@@ -12,7 +12,9 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.crypto.SecretKey;
 import javax.naming.Binding;
+import javax.naming.CompositeName;
 import javax.naming.CompoundName;
 import javax.naming.Context;
 import javax.naming.InvalidNameException;
@@ -23,13 +25,17 @@ import com.sakulabo.core.Common.AppPathUtils;
 import com.sakulabo.core.Common.StringUtils;
 import com.sakulabo.core.Kagerow.KagerowApplication;
 import com.sakulabo.core.Kagerow.Contents.KagerowPluginContent;
+import com.sakulabo.core.Kagerow.Contents.KagerowSecurityContent;
 import com.sakulabo.core.Kagerow.Contents.KagerowSettingContent;
 import com.sakulabo.core.Kagerow.Contents.Impl.KagerowPluginContentImpl;
+import com.sakulabo.core.Kagerow.Contents.KagerowSecurityContent.SecureObject;
 import com.sakulabo.core.Kagerow.Context.KagerowContexts;
 import com.sakulabo.core.Kagerow.Context.KagerowPluginContext;
 import com.sakulabo.core.Kagerow.Context.KagerowPluginPackageContext;
+import com.sakulabo.core.Kagerow.Context.KagerowSecurityContext;
 import com.sakulabo.core.Kagerow.Context.KagerowSettingContext;
 import com.sakulabo.core.Kagerow.Context.Impl.KagerowPluginPackageContextImpl;
+import com.sakulabo.core.Kagerow.Context.Impl.KagerowSecurityContextImpl;
 import com.sakulabo.core.Kagerow.Context.Impl.KagerowSettingContextImpl;
 import com.sakulabo.core.Processor.aop.CommonAOPInvocationHandlProcessor;
 import com.sakulabo.core.Processor.plugin.PluginParamParser;
@@ -40,7 +46,7 @@ import com.sakulabo.regulation.spi.PluginAdapter.PluginValidationException;
 
 /**
  * Kagerowアプリケーションの汎用クラスです
- * 
+ *
  * @author keeeeeent
  */
 public final class KagerowUtilities {
@@ -58,9 +64,10 @@ public final class KagerowUtilities {
 
 	/**
 	 * Beanコンテキストから取得します
+	 *
 	 * @param <T>
 	 * @param target 取得対象の型情報
-	 * @param name Beanの名称、名称はnullの場合defaultとして解釈されます
+	 * @param name   Beanの名称、名称はnullの場合defaultとして解釈されます
 	 * @return 取得結果
 	 */
 	public static <T> Optional<T> getBean(Class<T> target, String name) {
@@ -81,6 +88,7 @@ public final class KagerowUtilities {
 	/**
 	 * プロキシーインスタンスから元となったインスタンスを取得します<br/>
 	 * 対象のインスタンスがプロキシではなかった場合、インスタンス自体をそのまま返却します
+	 *
 	 * @param <T>
 	 * @param proxy 対象インスタンス
 	 * @return 元になったインスタンス
@@ -100,6 +108,7 @@ public final class KagerowUtilities {
 
 	/**
 	 * 指定された名称に関連するデフォルトプラグインを取得します
+	 *
 	 * @param name デフォルトプラグイン名称
 	 * @return プラグインインスタンス
 	 * @throws NamingException プラグイン取得失敗
@@ -113,18 +122,16 @@ public final class KagerowUtilities {
 
 	/**
 	 * 指定された名称に関連するプラグインを取得します
+	 *
 	 * @param packageName パッケージ名称
-	 * @param name プラグイン名称
+	 * @param name        プラグイン名称
 	 * @return プラグインインスタンス
 	 * @throws NamingException プラグイン取得失敗
 	 */
-	public static KagerowPluginContent getPlugin(
-			Name packageName,
-			String name)
-			throws NamingException {
+	public static KagerowPluginContent getPlugin(Name packageName, String name) throws NamingException {
 		// プラグインパッケージコンテキストを取得
-		KagerowPluginPackageContext ctx = (KagerowPluginPackageContext) KagerowApplication.getInstance()
-				.getContext().lookup(KagerowPluginPackageContext._NAME);
+		KagerowPluginPackageContext ctx = (KagerowPluginPackageContext) KagerowApplication.getInstance().getContext()
+				.lookup(KagerowPluginPackageContext._NAME);
 		// 名称インスタンスの正規化
 		packageName = new CompoundName(packageName.toString(), KagerowPluginPackageContextImpl.PROPS);
 		// プラグインコンテキストを取得
@@ -135,14 +142,13 @@ public final class KagerowUtilities {
 
 	/**
 	 * バージョニング管理されたプラグインパッケージ名称を生成します
+	 *
 	 * @param packageName パッケージ名称
-	 * @param version バージョン番号
+	 * @param version     バージョン番号
 	 * @return 名称インスタンス
 	 * @throws NamingException プラグイン取得失敗
 	 */
-	public static Name createVersioningPluginPkgName(
-			String packageName,
-			String version) throws NamingException {
+	public static Name createVersioningPluginPkgName(String packageName, String version) throws NamingException {
 		// パラメータ正規化
 		if (Objects.nonNull(version)) {
 			version = version.strip();
@@ -181,32 +187,27 @@ public final class KagerowUtilities {
 
 	/**
 	 * バージョニング管理されたプラグインパッケージ名称を生成します
+	 *
 	 * @param packageName パッケージ名称
-	 * @param major メジャーバージョン番号
-	 * @param minor マイナーバージョン番号
-	 * @param patch パッチバージョン番号
+	 * @param major       メジャーバージョン番号
+	 * @param minor       マイナーバージョン番号
+	 * @param patch       パッチバージョン番号
 	 * @return 名称インスタンス
 	 * @throws NamingException プラグイン取得失敗
 	 */
-	public static Name createVersioningPluginPkgName(
-			String packageName,
-			int major,
-			int minor,
-			int patch) throws NamingException {
+	public static Name createVersioningPluginPkgName(String packageName, int major, int minor, int patch)
+			throws NamingException {
 		// ルックアップキー生成
-		Name lookupKey = new CompoundName(MessageFormat.format("{0}/{1}/{2}/{3}",
-				packageName,
-				major,
-				minor,
-				patch),
+		Name lookupKey = new CompoundName(MessageFormat.format("{0}/{1}/{2}/{3}", packageName, major, minor, patch),
 				KagerowPluginPackageContextImpl.PROPS);
 		return lookupKey;
 	}
 
 	/**
 	 * 指定されたネームスペースに関連づけられた設定値を取得します
+	 *
 	 * @param namespace ネームスペース
-	 * @param name 設定値名称
+	 * @param name      設定値名称
 	 * @return 設定値
 	 */
 	public static String getSetting(String namespace, String name) {
@@ -214,8 +215,8 @@ public final class KagerowUtilities {
 		String setting = null;
 		try {
 			// セッテイングコンテキストを取得
-			KagerowSettingContext ctx = (KagerowSettingContext) KagerowApplication.getInstance()
-					.getContext().lookup(KagerowSettingContext._NAME);
+			KagerowSettingContext ctx = (KagerowSettingContext) KagerowApplication.getInstance().getContext()
+					.lookup(KagerowSettingContext._NAME);
 			// セッテイングコンテンツ取得
 			KagerowSettingContent content = ctx.lookup(namespace);
 			// 設定値取得
@@ -227,10 +228,10 @@ public final class KagerowUtilities {
 	}
 
 	/**
-	 * 指定されたネームスペースに関連づけられた設定値を取得します
-	 * 値が関連付けされていない場合、デフォルト値を返却します
-	 * @param namespace ネームスペース
-	 * @param name 設定値名称
+	 * 指定されたネームスペースに関連づけられた設定値を取得します 値が関連付けされていない場合、デフォルト値を返却します
+	 *
+	 * @param namespace    ネームスペース
+	 * @param name         設定値名称
 	 * @param defaultValue デフォルト値
 	 * @return 設定値
 	 */
@@ -246,10 +247,10 @@ public final class KagerowUtilities {
 	}
 
 	/**
-	 * 指定されたネームスペースに関連づけられた設定値を取得します
-	 * 値が関連付けされていない場合、デフォルト値を登録し返却します
-	 * @param namespace ネームスペース
-	 * @param name 設定値名称
+	 * 指定されたネームスペースに関連づけられた設定値を取得します 値が関連付けされていない場合、デフォルト値を登録し返却します
+	 *
+	 * @param namespace    ネームスペース
+	 * @param name         設定値名称
 	 * @param defaultValue デフォルト値
 	 * @return 設定値
 	 * @throws NamingException セッテイングコンテキストが見つからない場合
@@ -266,15 +267,16 @@ public final class KagerowUtilities {
 
 	/**
 	 * 指定されたネームスペースに設定値を関連づけます
+	 *
 	 * @param namespace ネームスペース
-	 * @param name 設定値名称
-	 * @param value 設定値
+	 * @param name      設定値名称
+	 * @param value     設定値
 	 * @throws NamingException セッテイングコンテキストが見つからない場合
 	 */
 	public static void setSetting(String namespace, String name, String value) throws NamingException {
 		// セッテイングコンテキストを取得
-		KagerowSettingContext ctx = (KagerowSettingContext) KagerowApplication.getInstance()
-				.getContext().lookup(KagerowSettingContext._NAME);
+		KagerowSettingContext ctx = (KagerowSettingContext) KagerowApplication.getInstance().getContext()
+				.lookup(KagerowSettingContext._NAME);
 		// セッテイングコンテキスト初期化
 		KagerowSettingContent content;
 		try {
@@ -291,8 +293,9 @@ public final class KagerowUtilities {
 
 	/**
 	 * 指定されたコンテキストに関連付けされた環境変数を取得します
-	 * @param contextName コンテキスト名称 
-	 * @param envName 環境変数名
+	 *
+	 * @param contextName コンテキスト名称
+	 * @param envName     環境変数名
 	 * @return 環境変数
 	 * @throws NamingException コンテキスト取得失敗
 	 */
@@ -306,14 +309,14 @@ public final class KagerowUtilities {
 
 	/**
 	 * プラグインコンテキストに関連付けされた環境変数を取得します
+	 *
 	 * @param envName 環境変数名
 	 * @return 環境変数
 	 * @throws NamingException コンテキスト取得失敗
 	 */
 	public static String getPluginENV(String envName) throws NamingException {
 		// コンテキストを取得
-		Context ctx = (Context) KagerowApplication.getInstance().getContext()
-				.lookup(KagerowPluginPackageContext._NAME);
+		Context ctx = (Context) KagerowApplication.getInstance().getContext().lookup(KagerowPluginPackageContext._NAME);
 		// サブコンテキストを取得
 		Context subCtx = (Context) ctx.lookup(StringUtils.DEFAULT);
 		// 環境変数返却
@@ -323,6 +326,7 @@ public final class KagerowUtilities {
 
 	/**
 	 * 指定されたコンテキストを返却します
+	 *
 	 * @param <T>
 	 * @param target 対象コンテキスト名称
 	 * @return 取得コンテキスト
@@ -336,20 +340,17 @@ public final class KagerowUtilities {
 	/**
 	 * 指定されたデフォルトプラグインのパラメーターをバインドします<br/>
 	 * 返却されるインスタンスはシャローコピーにて新規作成されます
-	 * 
-	 * @param pluginName バインドするデフォルトプラグインの名称
-	 * @param type 入出力モード
+	 *
+	 * @param pluginName    バインドするデフォルトプラグインの名称
+	 * @param type          入出力モード
 	 * @param baseParamList バインド元のマップ
 	 * @return バインド済みマップ
 	 * @throws PluginValidationException 必須チェックエラー
-	 * @throws NamingException プラグインが見つからなかった場合
-	 * @throws InvalidNameException 名称オブジェクト生成失敗
+	 * @throws NamingException           プラグインが見つからなかった場合
+	 * @throws InvalidNameException      名称オブジェクト生成失敗
 	 */
-	public static Map<String, String> bindPluginParam(
-			String pluginName,
-			PluginType type,
-			Map<String, String> baseParamList)
-			throws PluginValidationException, NamingException, InvalidNameException {
+	public static Map<String, String> bindPluginParam(String pluginName, PluginType type,
+			Map<String, String> baseParamList) throws PluginValidationException, NamingException, InvalidNameException {
 		return bindPluginParam(StringUtils.DEFAULT, pluginName, type, baseParamList);
 
 	}
@@ -357,22 +358,18 @@ public final class KagerowUtilities {
 	/**
 	 * 指定されたプラグインのパラメーターをバインドします<br/>
 	 * 返却されるインスタンスはシャローコピーにて新規作成されます
-	 * 
-	 * @param packageName パッケージ名称
-	 * @param pluginName バインドするプラグインの名称
-	 * @param type 入出力モード
+	 *
+	 * @param packageName   パッケージ名称
+	 * @param pluginName    バインドするプラグインの名称
+	 * @param type          入出力モード
 	 * @param baseParamList バインド元のマップ
 	 * @return バインド済みマップ
 	 * @throws PluginValidationException 必須チェックエラー
-	 * @throws NamingException プラグインが見つからなかった場合
-	 * @throws InvalidNameException 名称オブジェクト生成失敗
+	 * @throws NamingException           プラグインが見つからなかった場合
+	 * @throws InvalidNameException      名称オブジェクト生成失敗
 	 */
-	public static Map<String, String> bindPluginParam(
-			String packageName,
-			String pluginName,
-			PluginType type,
-			Map<String, String> baseParamList)
-			throws PluginValidationException, NamingException, InvalidNameException {
+	public static Map<String, String> bindPluginParam(String packageName, String pluginName, PluginType type,
+			Map<String, String> baseParamList) throws PluginValidationException, NamingException, InvalidNameException {
 
 		// 名称生成
 		Name pkgName = new CompoundName(packageName, KagerowPluginPackageContextImpl.PROPS);
@@ -395,23 +392,22 @@ public final class KagerowUtilities {
 
 	/**
 	 * 指定したデフォルトプラグインが指定した入出力モードをサポートしているか判定します
-	 * 
+	 *
 	 * @param pluginName プラグイン名称
-	 * @param type 入出力モード
+	 * @param type       入出力モード
 	 * @return 判定結果
 	 * @throws NamingException プラグインが見つからなかった場合
 	 */
-	public static boolean isSupportPluginType(String pluginName, PluginType type)
-			throws NamingException {
+	public static boolean isSupportPluginType(String pluginName, PluginType type) throws NamingException {
 		return isSupportPluginType(StringUtils.DEFAULT, pluginName, type);
 	}
 
 	/**
 	 * 指定したプラグインが指定した入出力モードをサポートしているか判定します
-	 * 
+	 *
 	 * @param packageName パッケージ名称
-	 * @param pluginName プラグイン名称
-	 * @param type 入出力モード
+	 * @param pluginName  プラグイン名称
+	 * @param type        入出力モード
 	 * @return 判定結果
 	 * @throws NamingException プラグインが見つからなかった場合
 	 */
@@ -428,12 +424,12 @@ public final class KagerowUtilities {
 	/**
 	 * 指定されたデフォルトプラグインのパラメーターを生成します<br/>
 	 * 返却されるインスタンスはシャローコピーにて新規作成されます
-	 * 
+	 *
 	 * @param pluginName バインドするデフォルトプラグインの名称
-	 * @param type 入出力モード
+	 * @param type       入出力モード
 	 * @return 初期化パラメータ
 	 * @throws InvalidNameException 名称オブジェクト生成失敗
-	 * @throws NamingException プラグイン取得失敗
+	 * @throws NamingException      プラグイン取得失敗
 	 */
 	public static Map<String, String> createPluginParam(String pluginName, PluginType type)
 			throws InvalidNameException, NamingException {
@@ -443,13 +439,13 @@ public final class KagerowUtilities {
 	/**
 	 * 指定されたプラグインのパラメーターを生成します<br/>
 	 * 返却されるインスタンスはシャローコピーにて新規作成されます
-	 * 
+	 *
 	 * @param packageName パッケージ名称
-	 * @param pluginName バインドするプラグインの名称
-	 * @param type 入出力モード
+	 * @param pluginName  バインドするプラグインの名称
+	 * @param type        入出力モード
 	 * @return 初期化パラメータ
 	 * @throws InvalidNameException 名称オブジェクト生成失敗
-	 * @throws NamingException プラグイン取得失敗
+	 * @throws NamingException      プラグイン取得失敗
 	 */
 	public static Map<String, String> createPluginParam(String packageName, String pluginName, PluginType type)
 			throws InvalidNameException, NamingException {
@@ -476,6 +472,7 @@ public final class KagerowUtilities {
 	/**
 	 * コンフィグを読み込みセキュアネームスペースがあるかを判定します<br/>
 	 * 取得結果はKagerowがセキュア起動有無と同義です
+	 *
 	 * @return 判定結果
 	 */
 	public static boolean isSecure() {
@@ -484,8 +481,9 @@ public final class KagerowUtilities {
 
 	/**
 	 * ランタイムパスに対応するパスをファイル名から生成します
+	 *
 	 * @param fileName ファイル名
-	 * @param delete 削除フラグ
+	 * @param delete   削除フラグ
 	 * @return ランタイムパス
 	 * @throws IllegalStateException 既にファイルが存在する場合
 	 */
@@ -503,8 +501,8 @@ public final class KagerowUtilities {
 	}
 
 	/**
-	 * ランタイムパスに対応するパスをファイル名から生成します
-	 * 本メソッドから生成されたパスに対応するファイルはシステム終了時削除されません
+	 * ランタイムパスに対応するパスをファイル名から生成します 本メソッドから生成されたパスに対応するファイルはシステム終了時削除されません
+	 *
 	 * @param fileName ファイル名
 	 * @return ランタイムパス
 	 * @throws IllegalStateException 既にファイルが存在する場合
@@ -515,6 +513,7 @@ public final class KagerowUtilities {
 
 	/**
 	 * ランタイムパスに既に同盟ファイルが存在するか判定します
+	 *
 	 * @param fileName ファイル名称
 	 * @return 判定結果
 	 */
@@ -526,8 +525,9 @@ public final class KagerowUtilities {
 
 	/**
 	 * 一時ファイルパスを生成します
+	 *
 	 * @param fileName ファイル名
-	 * @param delete 削除フラグ
+	 * @param delete   削除フラグ
 	 * @return ランタイムパス
 	 * @throws IllegalStateException 既にファイルが存在する場合
 	 */
@@ -545,8 +545,8 @@ public final class KagerowUtilities {
 	}
 
 	/**
-	 * 一時ファイルパスを生成します
-	 * 本メソッドから生成されたパスに対応するファイルはシステム終了時削除されません
+	 * 一時ファイルパスを生成します 本メソッドから生成されたパスに対応するファイルはシステム終了時削除されません
+	 *
 	 * @param fileName ファイル名
 	 * @return ランタイムパス
 	 * @throws IllegalStateException 既にファイルが存在する場合
@@ -557,6 +557,7 @@ public final class KagerowUtilities {
 
 	/**
 	 * 一時ファイルパスに既に同盟ファイルが存在するか判定します
+	 *
 	 * @param fileName ファイル名称
 	 * @return 判定結果
 	 */
@@ -568,10 +569,73 @@ public final class KagerowUtilities {
 
 	/**
 	 * アプリケーションがインストールされているホームディレクトリのパスを生成します
+	 *
 	 * @return 生成されたパス
 	 */
 	public static Path createAppDirPath() {
 		return AppPathUtils.createAppDirPath();
+	}
+
+	/**
+	 * 一時フォルダパスを生成します
+	 *
+	 * @return 生成されたパス
+	 */
+	public static Path createTemporaryDirPath() {
+		return AppPathUtils.createTemporaryDirPath();
+	}
+
+	/**
+	 * アプリケーションが管理しているホームディレクトリのパスを生成します
+	 *
+	 * @return 生成されたパス
+	 */
+	public static Path createKagerowHomePath() {
+		return AppPathUtils.createKagerowHomePath();
+	}
+
+	/**
+	 * 秘密鍵をシステム管理下で保管します
+	 * @param name 秘密鍵名称
+	 * @param secretKey 秘密鍵
+	 * @return 保存パスワード
+	 * @throws NamingException セキュアブートを行っていない場合
+	 */
+	public static Optional<String> registSecretKey(String name, SecretKey secretKey) throws NamingException {
+		// コンテキスト取得
+		KagerowSecurityContextImpl ctx = (KagerowSecurityContextImpl) getContext(KagerowSecurityContext._NAME);
+		// コンテンツ取得
+		if (ctx.getMasterKey().isEmpty()) {
+			return Optional.empty();
+		}
+		KagerowSecurityContent cnt = ctx.getMasterKey().get();
+		// 秘密鍵登録
+		String pass = cnt.bind(name, secretKey);
+		return Optional.of(pass);
+	}
+
+	/**
+	 * システム管理の秘密鍵を取得します
+	 * @param name 秘密鍵名称
+	 * @param pass 保存パスワード
+	 * @return 秘密鍵
+	 * @throws NamingException セキュアブートを行っていない場合
+	 */
+	public static Optional<SecretKey> selectSecretKey(String name, String pass) throws NamingException {
+		// コンテキスト取得
+		KagerowSecurityContextImpl ctx = (KagerowSecurityContextImpl) getContext(KagerowSecurityContext._NAME);
+		// コンテンツ取得
+		if (ctx.getMasterKey().isEmpty()) {
+			return Optional.empty();
+		}
+		KagerowSecurityContent cnt = ctx.getMasterKey().get();
+		// 検索キー生成
+		CompositeName key = new CompositeName(String.join(StringUtils.SLASH_DELIMIT, name, pass));
+		// 秘密鍵取得
+		SecureObject secretKey = cnt.lookup(key);
+		// 秘密鍵返却
+		SecretKey secKey = (SecretKey) secretKey.resultKey();
+		return Optional.of(secKey);
 	}
 
 }

@@ -9,7 +9,7 @@ import com.sakulabo.core.Kagerow.Exception.ApplicationError;
 
 /**
  * Kagerowアプリケーション専用エラーメッセージ生成クラスです
- * 
+ *
  * @author keeeeeent
  */
 public enum ErrorMessage {
@@ -86,6 +86,8 @@ public enum ErrorMessage {
 	CODE_035(StringUtils.EMPTY),
 	/** プラグインファイルを指定してください 【対象】: {0} */
 	CODE_036(StringUtils.EMPTY),
+	/** 既にセッションは終了しています 【対象】: {0} */
+	CODE_037(StringUtils.EMPTY),
 
 	// スクリプトコンパイル時のエラーメッセージ群
 

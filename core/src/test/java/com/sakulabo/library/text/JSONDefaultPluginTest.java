@@ -39,9 +39,8 @@ import com.sakulabo.regulation.annotation.KagerowPlugin.PluginType;
 import com.sakulabo.regulation.spi.PluginAdapter.KagerowRowSet;
 
 /**
- * TSV出力プラグインのテストクラスです 
+ * TSV出力プラグインのテストクラスです
  */
-@SuppressWarnings("javadoc")
 public class JSONDefaultPluginTest extends BaseTest<JSONDefaultPlugin> {
 
 	/** テスト対象 */
@@ -79,12 +78,12 @@ public class JSONDefaultPluginTest extends BaseTest<JSONDefaultPlugin> {
 	}
 
 	/**
-	 * [試験観点]      : 通常JSONファイル
+	 * [試験観点] : 通常JSONファイル
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・ファイルの内容が正しく出力できていること
-	 *                  ・複数行
-	 *                  ・日付フォーマット未指定
+	 * ・正常終了すること
+	 * ・ファイルの内容が正しく出力できていること
+	 * ・複数行
+	 * ・日付フォーマット未指定
 	 */
 	@Test
 	public void Test001() throws Throwable {
@@ -174,12 +173,12 @@ public class JSONDefaultPluginTest extends BaseTest<JSONDefaultPlugin> {
 	}
 
 	/**
-	 * [試験観点]      : 通常JSONファイル
+	 * [試験観点] : 通常JSONファイル
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・ファイルの内容が正しく出力できていること
-	 *                  ・複数行
-	 *                  ・日付フォーマット指定
+	 * ・正常終了すること
+	 * ・ファイルの内容が正しく出力できていること
+	 * ・複数行
+	 * ・日付フォーマット指定
 	 */
 	@Test
 	public void Test002() throws Throwable {
@@ -269,11 +268,11 @@ public class JSONDefaultPluginTest extends BaseTest<JSONDefaultPlugin> {
 	}
 
 	/**
-	 * [試験観点]      : 出力バリデーションチェック
+	 * [試験観点] : 出力バリデーションチェック
 	 * [期待される結果] : 以下である
-	 *                  ・存在しないパス
-	 *                  ・バリデーションエラーが発生する
-	 *                  ・メッセージが期待通りであること
+	 * ・存在しないパス
+	 * ・バリデーションエラーが発生する
+	 * ・メッセージが期待通りであること
 	 */
 	@Test
 	public void Test003() throws Throwable {
@@ -299,11 +298,11 @@ public class JSONDefaultPluginTest extends BaseTest<JSONDefaultPlugin> {
 	}
 
 	/**
-	 * [試験観点]      : 出力バリデーションチェック
+	 * [試験観点] : 出力バリデーションチェック
 	 * [期待される結果] : 以下である
-	 *                  ・不正パス
-	 *                  ・バリデーションエラーが発生する
-	 *                  ・メッセージが期待通りであること
+	 * ・不正パス
+	 * ・バリデーションエラーが発生する
+	 * ・メッセージが期待通りであること
 	 */
 	@Test
 	public void Test004() throws Throwable {

@@ -17,15 +17,14 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowDBMode;
 import com.sakulabo.core.Kagerow.Utilities.KagerowScriptAccessor;
 
 /**
- * Kagerowスクリプトファイル解析のテストクラスです 
+ * Kagerowスクリプトファイル解析のテストクラスです
  */
-@SuppressWarnings("javadoc")
 public class KsqlFileReaderTest extends BaseTest<KagerowScriptAccessor> {
 
 	/** テスト対象 */
 	private KagerowScriptAccessor testTarget;
 
-	/** 
+	/**
 	 * デフォルトコンストラクタ
 	 */
 	protected KsqlFileReaderTest() {
@@ -41,10 +40,10 @@ public class KsqlFileReaderTest extends BaseTest<KagerowScriptAccessor> {
 	}
 
 	/**
-	 * [試験観点]      : 通常KSQLファイル
+	 * [試験観点] : 通常KSQLファイル
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・ファイルの内容が正しく読み込みていること
+	 * ・正常終了すること
+	 * ・ファイルの内容が正しく読み込みていること
 	 */
 	@Test
 	public void Test001() throws Throwable {
@@ -178,12 +177,12 @@ public class KsqlFileReaderTest extends BaseTest<KagerowScriptAccessor> {
 	}
 
 	/**
-	 * [試験観点]      : 通常KSQLファイル
+	 * [試験観点] : 通常KSQLファイル
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・ファイルの内容が正しく読み込みていること
-	 *                  ・プラグインタグなし
-	 *                  ・コマンドタグなし
+	 * ・正常終了すること
+	 * ・ファイルの内容が正しく読み込みていること
+	 * ・プラグインタグなし
+	 * ・コマンドタグなし
 	 */
 	@Test
 	public void Test002() throws Throwable {
@@ -247,12 +246,12 @@ public class KsqlFileReaderTest extends BaseTest<KagerowScriptAccessor> {
 	}
 
 	/**
-	 * [試験観点]      : 通常KSQLファイル
+	 * [試験観点] : 通常KSQLファイル
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・ファイルの内容が正しく読み込みていること
-	 *                  ・プラグインタグ(Inputのみ、デフォルト)
-	 *                  ・コマンドタグなし
+	 * ・正常終了すること
+	 * ・ファイルの内容が正しく読み込みていること
+	 * ・プラグインタグ(Inputのみ、デフォルト)
+	 * ・コマンドタグなし
 	 */
 	@Test
 	public void Test003() throws Throwable {
@@ -341,12 +340,12 @@ public class KsqlFileReaderTest extends BaseTest<KagerowScriptAccessor> {
 	}
 
 	/**
-	 * [試験観点]      : 通常KSQLファイル
+	 * [試験観点] : 通常KSQLファイル
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・ファイルの内容が正しく読み込みていること
-	 *                  ・プラグインタグ(outputのみ)
-	 *                  ・コマンドタグなし
+	 * ・正常終了すること
+	 * ・ファイルの内容が正しく読み込みていること
+	 * ・プラグインタグ(outputのみ)
+	 * ・コマンドタグなし
 	 */
 	@Test
 	public void Test004() throws Throwable {
@@ -435,12 +434,12 @@ public class KsqlFileReaderTest extends BaseTest<KagerowScriptAccessor> {
 	}
 
 	/**
-	 * [試験観点]      : 通常KSQLファイル
+	 * [試験観点] : 通常KSQLファイル
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・ファイルの内容が正しく読み込みていること
-	 *                  ・コマンドタグあり
-	 *                  ・環境変数指定なし
+	 * ・正常終了すること
+	 * ・ファイルの内容が正しく読み込みていること
+	 * ・コマンドタグあり
+	 * ・環境変数指定なし
 	 */
 	@Test
 	public void Test005() throws Throwable {
@@ -463,10 +462,10 @@ public class KsqlFileReaderTest extends BaseTest<KagerowScriptAccessor> {
 	}
 
 	/**
-	 * [試験観点]      : 異常KSQLファイル
+	 * [試験観点] : 異常KSQLファイル
 	 * [期待される結果] : 以下である
-	 *                  ・異常終了すること
-	 *                  ・スクリプト名称指定なし
+	 * ・異常終了すること
+	 * ・スクリプト名称指定なし
 	 */
 	@Test
 	public void Test006() throws Throwable {
@@ -488,10 +487,10 @@ public class KsqlFileReaderTest extends BaseTest<KagerowScriptAccessor> {
 	}
 
 	/**
-	 * [試験観点]      : 異常KSQLファイル
+	 * [試験観点] : 異常KSQLファイル
 	 * [期待される結果] : 以下である
-	 *                  ・異常終了すること
-	 *                  ・概要指定なし
+	 * ・異常終了すること
+	 * ・概要指定なし
 	 */
 	@Test
 	public void Test007() throws Throwable {
@@ -513,10 +512,10 @@ public class KsqlFileReaderTest extends BaseTest<KagerowScriptAccessor> {
 	}
 
 	/**
-	 * [試験観点]      : 異常KSQLファイル
+	 * [試験観点] : 異常KSQLファイル
 	 * [期待される結果] : 以下である
-	 *                  ・異常終了すること
-	 *                  ・概要指定なし
+	 * ・異常終了すること
+	 * ・概要指定なし
 	 */
 	@Test
 	public void Test008() throws Throwable {

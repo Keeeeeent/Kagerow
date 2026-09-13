@@ -17,7 +17,6 @@ import com.sakulabo.core.Processor.database.impl.PostgreSQLDDLCreater;
 /**
  * PostgreSQLモード向けのDDLを生成テストです
  */
-@SuppressWarnings("javadoc")
 public class PostgreSQLDDLCreaterTest extends BaseTest<PostgreSQLDDLCreater> {
 
 	/** テスト対象 */
@@ -39,7 +38,7 @@ public class PostgreSQLDDLCreaterTest extends BaseTest<PostgreSQLDDLCreater> {
 	}
 
 	/**
-	 * [試験観点]      : チャンク読み取り
+	 * [試験観点] : チャンク読み取り
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test

@@ -16,9 +16,8 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowExecutionPlanAccessor;
 import com.sakulabo.core.Kagerow.Utilities.KagerowVirtualFileCreater;
 
 /**
- * Kagerowスクリプトファイル実行のテストクラスです 
+ * Kagerowスクリプトファイル実行のテストクラスです
  */
-@SuppressWarnings("javadoc")
 public class BasicExecutionPlanTest extends BaseTest<BasicExecutionPlan> {
 
 	/** テスト対象 */
@@ -53,10 +52,10 @@ public class BasicExecutionPlanTest extends BaseTest<BasicExecutionPlan> {
 	}
 
 	/**
-	 * [試験観点]      : 通常KSQLファイル,Oracleモード
+	 * [試験観点] : 通常KSQLファイル,Oracleモード
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・ファイルの内容が正しく読み込みていること
+	 * ・正常終了すること
+	 * ・ファイルの内容が正しく読み込みていること
 	 */
 	@Test
 	public void Test001() throws Throwable {
@@ -64,7 +63,8 @@ public class BasicExecutionPlanTest extends BaseTest<BasicExecutionPlan> {
 		try {
 			// データインポート
 			Path testData = testDir.resolve("test1.csv");
-			KagerowVirtualFileCreater.constructionKDB(ChunkCreateMode.CSV, "test", testData, StandardCharsets.UTF_8, false,
+			KagerowVirtualFileCreater.constructionKDB(ChunkCreateMode.CSV, "test", testData, StandardCharsets.UTF_8,
+					false,
 					"Test002", false);
 		} catch (Exception e) {
 			;
@@ -79,10 +79,10 @@ public class BasicExecutionPlanTest extends BaseTest<BasicExecutionPlan> {
 	}
 
 	/**
-	 * [試験観点]      : 通常KSQLファイル,MySQLモード
+	 * [試験観点] : 通常KSQLファイル,MySQLモード
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・ファイルの内容が正しく読み込みていること
+	 * ・正常終了すること
+	 * ・ファイルの内容が正しく読み込みていること
 	 */
 	@Test
 	public void Test002() throws Throwable {
@@ -96,10 +96,10 @@ public class BasicExecutionPlanTest extends BaseTest<BasicExecutionPlan> {
 	}
 
 	/**
-	 * [試験観点]      : 通常KSQLファイル,PostgreSQLモード
+	 * [試験観点] : 通常KSQLファイル,PostgreSQLモード
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・ファイルの内容が正しく読み込みていること
+	 * ・正常終了すること
+	 * ・ファイルの内容が正しく読み込みていること
 	 */
 	@Test
 	public void Test003() throws Throwable {
@@ -113,10 +113,10 @@ public class BasicExecutionPlanTest extends BaseTest<BasicExecutionPlan> {
 	}
 
 	/**
-	 * [試験観点]      : 通常KSQLファイル,H2モード
+	 * [試験観点] : 通常KSQLファイル,H2モード
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・ファイルの内容が正しく読み込みていること
+	 * ・正常終了すること
+	 * ・ファイルの内容が正しく読み込みていること
 	 */
 	@Test
 	public void Test004() throws Throwable {

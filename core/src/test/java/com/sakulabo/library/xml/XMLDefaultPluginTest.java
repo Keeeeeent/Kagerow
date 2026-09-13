@@ -31,9 +31,8 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowDBMode;
 import com.sakulabo.regulation.spi.PluginAdapter.KagerowRowSet;
 
 /**
- * XML出力プラグインのテストクラスです 
+ * XML出力プラグインのテストクラスです
  */
-@SuppressWarnings("javadoc")
 public class XMLDefaultPluginTest extends BaseTest<XMLDefaultPlugin> {
 
 	/** テスト対象 */
@@ -69,11 +68,11 @@ public class XMLDefaultPluginTest extends BaseTest<XMLDefaultPlugin> {
 	}
 
 	/**
-	 * [試験観点]      : 通常出力
+	 * [試験観点] : 通常出力
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・ファイルの内容が正しく読み込みていること
-	 *                  ・XMLが正しく生成されていること
+	 * ・正常終了すること
+	 * ・ファイルの内容が正しく読み込みていること
+	 * ・XMLが正しく生成されていること
 	 */
 	@Test
 	public void Test001() throws Throwable {

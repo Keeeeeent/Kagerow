@@ -13,3 +13,13 @@ EPL 1.0 OR MPL 2.0
 https://h2database.com
 
 ------------------------------------------------------------
+
+picocli
+Copyright (c) Remko Popma
+
+License:
+Apache License 2.0
+
+https://picocli.info
+
+------------------------------------------------------------

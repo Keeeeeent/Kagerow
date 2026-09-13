@@ -17,12 +17,11 @@ import org.junit.platform.suite.api.Suite;
 })
 @ExcludePackages({
 })
-//@SelectClasses({
-//})
+// @SelectClasses({
+// })
 @ExcludeClassNamePatterns({
-//"com.sakulabo.core.Provides.LoardDIBeansProviderTest"
+// "com.sakulabo.core.Provides.LoardDIBeansProviderTest"
 })
-@SuppressWarnings("javadoc")
 public class AllTest {
 
 }

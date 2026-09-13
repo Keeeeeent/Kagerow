@@ -20,9 +20,8 @@ import com.sakulabo.core.Common.URINameParser;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowDataType;
 
 /**
- * ハッシュパスを生成するファクトリクラスのテストクラスです 
+ * ハッシュパスを生成するファクトリクラスのテストクラスです
  */
-@SuppressWarnings("javadoc")
 public class HashPathCreaterTest extends BaseTest<HashPathCreater> {
 
 	/** テスト対象 */
@@ -45,7 +44,7 @@ public class HashPathCreaterTest extends BaseTest<HashPathCreater> {
 	}
 
 	/**
-	 * [試験観点]      : hash生成
+	 * [試験観点] : hash生成
 	 * [期待される結果] : 正常終了すること、ハッシュ値が生成されること
 	 */
 	@Test
@@ -59,7 +58,7 @@ public class HashPathCreaterTest extends BaseTest<HashPathCreater> {
 	}
 
 	/**
-	 * [試験観点]      : 空のリスト
+	 * [試験観点] : 空のリスト
 	 * [期待される結果] : 正常終了すること、ハッシュ値が生成されること
 	 */
 	@Test
@@ -73,7 +72,7 @@ public class HashPathCreaterTest extends BaseTest<HashPathCreater> {
 	}
 
 	/**
-	 * [試験観点]      : 型情報にnullを含むのリスト
+	 * [試験観点] : 型情報にnullを含むのリスト
 	 * [期待される結果] : 例外が発生すること、メッセージが期待通りである
 	 */
 	@Test
@@ -91,7 +90,7 @@ public class HashPathCreaterTest extends BaseTest<HashPathCreater> {
 	}
 
 	/**
-	 * [試験観点]      : ヘッダー情報にnullを含むのリスト
+	 * [試験観点] : ヘッダー情報にnullを含むのリスト
 	 * [期待される結果] : 例外が発生すること、メッセージが期待通りである
 	 */
 	@Test
@@ -110,7 +109,7 @@ public class HashPathCreaterTest extends BaseTest<HashPathCreater> {
 	}
 
 	/**
-	 * [試験観点]      : nullをコンストラクタで指定
+	 * [試験観点] : nullをコンストラクタで指定
 	 * [期待される結果] : 例外が発生すること、メッセージが期待通りである
 	 */
 	@Test
@@ -125,7 +124,7 @@ public class HashPathCreaterTest extends BaseTest<HashPathCreater> {
 	}
 
 	/**
-	 * [試験観点]      : 不正なアルゴリズムをコンストラクタで指定
+	 * [試験観点] : 不正なアルゴリズムをコンストラクタで指定
 	 * [期待される結果] : 例外が発生すること、メッセージが期待通りである
 	 */
 	@Test
@@ -140,7 +139,7 @@ public class HashPathCreaterTest extends BaseTest<HashPathCreater> {
 	}
 
 	/**
-	 * [試験観点]      : URI変換
+	 * [試験観点] : URI変換
 	 * [期待される結果] : 正常終了すること、URIが生成されること
 	 */
 	@Test

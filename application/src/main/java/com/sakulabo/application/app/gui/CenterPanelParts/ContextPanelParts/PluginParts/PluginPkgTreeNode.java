@@ -10,7 +10,7 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 
 /**
  * プラグインパッケージノードクラスです
- * 
+ *
  * @author keeeeeent
  */
 public class PluginPkgTreeNode extends CommonTreeNode {
@@ -63,7 +63,7 @@ public class PluginPkgTreeNode extends CommonTreeNode {
 		// 右クリックか判定
 		if (e.isPopupTrigger()) {
 			// デフォルトパッケージか判定
-			boolean isDefault = KagerowPluginPackageContext.DEFAULT_PKG_NAME.equals(lookUpName);
+			boolean isDefault = KagerowPluginPackageContext.isDefault(lookUpName);
 			// 追加するコンポーネント生成
 			PluginPkgContextPanel panel = new PluginPkgContextPanel(lookUpName, isDefault);
 			// システムスキーマでない場合アクション実行

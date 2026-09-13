@@ -14,7 +14,7 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 
 /**
  * プラグインノードクラスです
- * 
+ *
  * @author keeeeeent
  */
 public class PluginSubTreeNode extends CommonTreeNode {
@@ -39,7 +39,7 @@ public class PluginSubTreeNode extends CommonTreeNode {
 	protected PluginSubTreeNode(PluginContextInfo pluginInfo) {
 		super(pluginInfo.pluginName());
 		// デフォルトパッケージか判定
-		isDefault = KagerowPluginPackageContext.DEFAULT_PKG_NAME.equals(pluginInfo.packageName());
+		isDefault = KagerowPluginPackageContext.isDefault(pluginInfo.packageName());
 		try {
 			// パッケージコンテキスト取得
 			KagerowPluginPackageContext pctx = KagerowUtilities.getContext(KagerowPluginPackageContext._NAME);

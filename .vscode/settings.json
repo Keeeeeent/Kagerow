@@ -1,0 +1,73 @@
+{
+    "java.jdt.ls.java.home": "${workspaceFolder}/public/openjdk/inuse/jdk-25.jdk/Contents/Home",
+    "java.jdt.ls.vmargs": "-Xmx2G --add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.jvm=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED",
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.format.enabled": true,
+    "java.compile.nullAnalysis.mode": "disabled",
+    "maven.executable.preferMavenWrapper": true,
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true,
+    "workbench.colorTheme": "Eclipse Dark (Java)",
+    "java.format.settings.url": "${workspaceFolder}/.vscode/pleiades-formatter.xml",
+    "java.format.settings.profile": "Pleiades [カスタム]",
+    "java.saveActions.organizeImports": true,
+    "java.configuration.runtimes": [
+        {
+           "name": "JavaSE-25",
+            "path": "${workspaceFolder}/public/openjdk/inuse/jdk-25.jdk/Contents/Home",
+            "default": true
+        }
+    ],
+    "java.test.config": [
+        {
+            "name": "Kagerow JUnit 5",
+            "vmArgs": [
+
+                "--add-opens=com.sakulabo.core/com.sakulabo.core.Processor.aop=ALL-UNNAMED",
+                "--add-opens=com.sakulabo.core/com.sakulabo.core.Processor.archive=ALL-UNNAMED",
+                "--add-opens=com.sakulabo.core/com.sakulabo.core.Processor.database=ALL-UNNAMED",
+                "--add-opens=com.sakulabo.core/com.sakulabo.core.Processor.migration=ALL-UNNAMED",
+                "--add-opens=com.sakulabo.core/com.sakulabo.core.Processor.plan=ALL-UNNAMED",
+                "--add-opens=com.sakulabo.core/com.sakulabo.core.Processor.plugin=ALL-UNNAMED",
+                "--add-opens=com.sakulabo.core/com.sakulabo.core.Processor.script=ALL-UNNAMED",
+                "--add-opens=com.sakulabo.core/com.sakulabo.core.Provides=ALL-UNNAMED",
+
+                "--add-opens=com.sakulabo.core/com.sakulabo.library.csv=ALL-UNNAMED",
+                "--add-opens=com.sakulabo.core/com.sakulabo.library.sql=ALL-UNNAMED",
+                "--add-opens=com.sakulabo.core/com.sakulabo.library.text=ALL-UNNAMED",
+                "--add-opens=com.sakulabo.core/com.sakulabo.library.tsv=ALL-UNNAMED",
+                "--add-opens=com.sakulabo.core/com.sakulabo.library.xml=ALL-UNNAMED",
+
+                "-Duser.home=${workspaceFolder}",
+                "-Dapp.logs.dir=.kagerow/logs",
+                "-Dapp.io.archivedatadir=${workspaceFolder}/.kagerow/database",
+                "-Dapp.io.tmpdir=${workspaceFolder}/.kagerow/tmp",
+                "-Djava.io.tmpdir=${workspaceFolder}/.kagerow/tmp",
+                "-Dapp.class.pool.size=100"
+            ]
+        }
+    ],
+    "java.test.defaultConfig": "Kagerow JUnit 5",
+    "[java]": {
+        "editor.defaultFormatter": "redhat.java",
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "editor.formatOnPaste": true,
+        "editor.quickSuggestions": {
+            "other": true,
+            "comments": false,
+            "strings": false
+        },
+        "editor.suggestOnTriggerCharacters": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+    "cSpell.words": [
+        "Kagerow",
+        "kagerow",
+        "keeeeeent",
+        "sakulabo",
+    ]
+}

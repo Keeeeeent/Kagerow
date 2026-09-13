@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 import com.sakulabo.core.Common.VMOption;
@@ -20,7 +21,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /**
  * DIのBeanロード実装を提供する規定クラスです
  * @author keeeeeent
- * @param <K> 
+ * @param <K>
  */
 public final class LoardDIBeans<K> implements ClassFileTransformer, Runnable {
 
@@ -40,6 +41,8 @@ public final class LoardDIBeans<K> implements ClassFileTransformer, Runnable {
 	private static final String end = "\u001b[00m";
 	/** 出力ログフォーマット(形式) */
 	private static final String format = "[%sINIT%s] DIProsesser<%s> --> %s";
+	/** ログ表示フラグ */
+	public static final AtomicBoolean SHOW_LOG_FLAG = new AtomicBoolean(true);
 
 	/**
 	 * Beanインスタンス生成用レコードクラス
@@ -129,9 +132,11 @@ public final class LoardDIBeans<K> implements ClassFileTransformer, Runnable {
 			message = "Running";
 		}
 		// ログ出力
-		final Object[] param = { start, end, prefix, message };
-		String msg = String.format(format, param);
-		System.out.println(msg);
+		if (SHOW_LOG_FLAG.get()) {
+			final Object[] param = { start, end, prefix, message };
+			String msg = String.format(format, param);
+			System.out.println(msg);
+		}
 		// アダプターを返却
 		return transformer.adapter;
 	}
@@ -142,6 +147,9 @@ public final class LoardDIBeans<K> implements ClassFileTransformer, Runnable {
 	 */
 	@SuppressWarnings("deprecation")
 	private void printLog(LoardDIBeansAdapter<?> target) {
+		if (!SHOW_LOG_FLAG.get()) {
+			return;
+		}
 		String preFix = "EmptyRun";
 		String message = LoardDIBeansAdapter.DEFAULT_ADAPTER.toString();
 		if (LoardDIBeansAdapter.DEFAULT_ADAPTER != target) {

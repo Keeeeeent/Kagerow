@@ -30,10 +30,10 @@ import com.sakulabo.core.Processor.plan.SecureExecutionPlan;
 
 /**
  * Kagerowスクリプトの実行計画アクセッサインターフェイスです
- * 
+ *
  * @author keeeeeent
  */
-public sealed interface KagerowExecutionPlanAccessor permits ExecutionPlan {
+public sealed interface KagerowExecutionPlanAccessor extends AutoCloseable permits ExecutionPlan {
 
 	/**
 	 * 現在の実行計画履歴にアクセス可能なアクセッサーを生成します
@@ -96,6 +96,13 @@ public sealed interface KagerowExecutionPlanAccessor permits ExecutionPlan {
 	 * @return 判定結果
 	 */
 	boolean isIgnoreCashe();
+
+	/**
+	 * 現在のセッションをクローズします
+	 * クローズ後、スクリプトの実行要求は受付不可となります
+	 */
+	@Override
+	public void close() throws AppLogicException, NamingException;
 
 	/**
 	 * Kagerowで定められた実行順序によって処理を開始します

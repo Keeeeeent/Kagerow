@@ -17,7 +17,6 @@ import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowDataT
  * 
  * @author keeeeeent
  */
-@SuppressWarnings("javadoc")
 public class DataTypeHandlerTest extends BaseTest<DataTypeHandlerTest> {
 
 	/**
@@ -39,9 +38,10 @@ public class DataTypeHandlerTest extends BaseTest<DataTypeHandlerTest> {
 	private DataTypeHandler testTarget;
 
 	/**
-	 * [試験観点]      : データ初期化
+	 * [試験観点] : データ初期化
 	 * [期待される結果] : 正常終了すること、タイプが全てNULLであること、要素が5つであること
-	 * @throws Throwable 
+	 * 
+	 * @throws Throwable
 	 */
 	@Test
 	public void Test001() throws Throwable {
@@ -57,9 +57,10 @@ public class DataTypeHandlerTest extends BaseTest<DataTypeHandlerTest> {
 	}
 
 	/**
-	 * [試験観点]      : データ初期化、真偽値文字列
+	 * [試験観点] : データ初期化、真偽値文字列
 	 * [期待される結果] : 正常終了すること、タイプがBOOLEANであること、要素が5つであること
-	 * @throws Throwable 
+	 * 
+	 * @throws Throwable
 	 */
 	@Test
 	public void Test002() throws Throwable {
@@ -81,9 +82,10 @@ public class DataTypeHandlerTest extends BaseTest<DataTypeHandlerTest> {
 	}
 
 	/**
-	 * [試験観点]      : データ初期化、数値文字列
+	 * [試験観点] : データ初期化、数値文字列
 	 * [期待される結果] : 正常終了すること、タイプがNUMBERであること、要素が5つであること
-	 * @throws Throwable 
+	 * 
+	 * @throws Throwable
 	 */
 	@Test
 	public void Test003() throws Throwable {
@@ -106,9 +108,10 @@ public class DataTypeHandlerTest extends BaseTest<DataTypeHandlerTest> {
 	}
 
 	/**
-	 * [試験観点]      : データ初期化、数値文字列（先頭0を含む）
+	 * [試験観点] : データ初期化、数値文字列（先頭0を含む）
 	 * [期待される結果] : 正常終了すること、タイプがNUMBERであること、先頭0の文字列はタイプがVARCHARであること
-	 * @throws Throwable 
+	 * 
+	 * @throws Throwable
 	 */
 	@Test
 	public void Test004() throws Throwable {
@@ -131,9 +134,10 @@ public class DataTypeHandlerTest extends BaseTest<DataTypeHandlerTest> {
 	}
 
 	/**
-	 * [試験観点]      : データ初期化、少数文字列
+	 * [試験観点] : データ初期化、少数文字列
 	 * [期待される結果] : 正常終了すること、タイプがDECIMALであること
-	 * @throws Throwable 
+	 * 
+	 * @throws Throwable
 	 */
 	@Test
 	public void Test005() throws Throwable {
@@ -156,9 +160,10 @@ public class DataTypeHandlerTest extends BaseTest<DataTypeHandlerTest> {
 	}
 
 	/**
-	 * [試験観点]      : データ初期化、少数文字列(少数点から開始の文字列)
+	 * [試験観点] : データ初期化、少数文字列(少数点から開始の文字列)
 	 * [期待される結果] : 正常終了すること、タイプがDECIMALであること
-	 * @throws Throwable 
+	 * 
+	 * @throws Throwable
 	 */
 	@Test
 	public void Test006() throws Throwable {
@@ -181,9 +186,10 @@ public class DataTypeHandlerTest extends BaseTest<DataTypeHandlerTest> {
 	}
 
 	/**
-	 * [試験観点]      : データ初期化、日付文字列(共通フォーマット)
+	 * [試験観点] : データ初期化、日付文字列(共通フォーマット)
 	 * [期待される結果] : 正常終了すること、タイプがDATEであること
-	 * @throws Throwable 
+	 * 
+	 * @throws Throwable
 	 */
 	@Test
 	public void Test007() throws Throwable {
@@ -244,9 +250,10 @@ public class DataTypeHandlerTest extends BaseTest<DataTypeHandlerTest> {
 	}
 
 	/**
-	 * [試験観点]      : データ初期化、日付文字列(英語フォーマット)
+	 * [試験観点] : データ初期化、日付文字列(英語フォーマット)
 	 * [期待される結果] : 正常終了すること、タイプがDATEであること
-	 * @throws Throwable 
+	 * 
+	 * @throws Throwable
 	 */
 	@Test
 	public void Test008() throws Throwable {
@@ -276,9 +283,10 @@ public class DataTypeHandlerTest extends BaseTest<DataTypeHandlerTest> {
 	}
 
 	/**
-	 * [試験観点]      : データ初期化、日付文字列(日本語フォーマット)
+	 * [試験観点] : データ初期化、日付文字列(日本語フォーマット)
 	 * [期待される結果] : 正常終了すること、タイプがDATEであること
-	 * @throws Throwable 
+	 * 
+	 * @throws Throwable
 	 */
 	@Test
 	public void Test009() throws Throwable {
@@ -289,7 +297,7 @@ public class DataTypeHandlerTest extends BaseTest<DataTypeHandlerTest> {
 		// yyyy年M月d日[ H時m分[s秒]]形式
 		// 和文日付
 		data[0] = "2025年7月31日";
-		// 	和文時間付き
+		// 和文時間付き
 		data[1] = "2025年7月31日 14時30分";
 		// 和文時間 + 秒
 		data[2] = "2025年7月31日 14時30分59秒";
@@ -330,9 +338,10 @@ public class DataTypeHandlerTest extends BaseTest<DataTypeHandlerTest> {
 	}
 
 	/**
-	 * [試験観点]      : データ更新
+	 * [試験観点] : データ更新
 	 * [期待される結果] : 正常終了すること、タイプが更新されていないこと。
-	 * @throws Throwable 
+	 * 
+	 * @throws Throwable
 	 */
 	@Test
 	public void Test010() throws Throwable {
@@ -370,9 +379,10 @@ public class DataTypeHandlerTest extends BaseTest<DataTypeHandlerTest> {
 	}
 
 	/**
-	 * [試験観点]      : データ更新
+	 * [試験観点] : データ更新
 	 * [期待される結果] : 正常終了すること、タイプが更新されていること
-	 * @throws Throwable 
+	 * 
+	 * @throws Throwable
 	 */
 	@Test
 	public void Test011() throws Throwable {
@@ -410,9 +420,10 @@ public class DataTypeHandlerTest extends BaseTest<DataTypeHandlerTest> {
 	}
 
 	/**
-	 * [試験観点]      : データ更新、不正
+	 * [試験観点] : データ更新、不正
 	 * [期待される結果] : 例外が発生すること
-	 * @throws Throwable 
+	 * 
+	 * @throws Throwable
 	 */
 	@Test
 	public void Test012() throws Throwable {
