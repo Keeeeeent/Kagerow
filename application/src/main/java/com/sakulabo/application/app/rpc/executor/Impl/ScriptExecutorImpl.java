@@ -19,7 +19,7 @@ import com.sakulabo.application.app.rpc.RpcSetting;
 import com.sakulabo.application.app.rpc.datatype.receive.BooleanReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.receive.PathReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.receive.StringReceiveDataType;
-import com.sakulabo.application.app.rpc.exception.RpcRuntmeException;
+import com.sakulabo.application.app.rpc.exception.RpcRuntimeException;
 import com.sakulabo.application.app.rpc.executor.ScriptExecutor;
 import com.sakulabo.application.app.rpc.filters.CertificationFilter;
 import com.sakulabo.core.Kagerow.Adapter.KagerowExecutionPlanBaseAdapter;
@@ -55,6 +55,7 @@ public class ScriptExecutorImpl implements ScriptExecutor {
 
 		/**
 		 * コンストラクタ
+		 * 
 		 * @param env スクリプト環境変数
 		 */
 		private KagerowExecutionPlanAdapterImpl(List<String> env) {
@@ -73,6 +74,7 @@ public class ScriptExecutorImpl implements ScriptExecutor {
 
 		/**
 		 * 有効期限内か判定します
+		 * 
 		 * @return 判定結果
 		 */
 		public boolean isValid() {
@@ -115,7 +117,7 @@ public class ScriptExecutorImpl implements ScriptExecutor {
 				// パスを取得
 				Optional<Path> filePath = path.getRawType();
 				if (filePath.isEmpty()) {
-					throw new RpcRuntmeException("Please specify the path to the script file");
+					throw new RpcRuntimeException("Please specify the path to the script file");
 				}
 				// アダプター生成
 				adapter = new KagerowExecutionPlanAdapterImpl(new ArrayList<>());
@@ -134,14 +136,14 @@ public class ScriptExecutorImpl implements ScriptExecutor {
 					sessions.remove(key);
 					adapter.plan.close();
 					// 例外スロー
-					throw new RpcRuntmeException("This session has already ended");
+					throw new RpcRuntimeException("This session has already ended");
 				}
 				// 有効期限内の場合スクリプト実行
 				adapter.plan.execute();
 			}
 
 		} catch (Exception e) {
-			throw new RpcRuntmeException("Script Execution Failed", e);
+			throw new RpcRuntimeException("Script Execution Failed", e);
 		}
 	}
 }

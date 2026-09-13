@@ -1,5 +1,6 @@
 {
     "java.jdt.ls.java.home": "${workspaceFolder}/public/openjdk/inuse/jdk-25.jdk/Contents/Home",
+    "java.jdt.ls.vmargs": "-Xmx2G --add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.jvm=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED",
     "java.configuration.updateBuildConfiguration": "automatic",
     "java.format.enabled": true,
     "java.compile.nullAnalysis.mode": "disabled",
@@ -48,17 +49,6 @@
     ],
     "java.test.defaultConfig": "Kagerow JUnit 5",
     "[java]": {
-        "editor.quickSuggestions": {
-            "other": true,
-            "comments": false,
-            "strings": false
-        },
-        "editor.suggestOnTriggerCharacters": true,
-        "editor.formatOnSave": true,
-        "editor.formatOnType": true,
-        "editor.formatOnPaste": true
-    },
-    "[java]": {
         "editor.defaultFormatter": "redhat.java",
         "editor.formatOnSave": true,
         "editor.formatOnType": true,
@@ -68,7 +58,10 @@
             "comments": false,
             "strings": false
         },
-        "editor.suggestOnTriggerCharacters": true
+        "editor.suggestOnTriggerCharacters": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
     },
     "cSpell.words": [
         "Kagerow",

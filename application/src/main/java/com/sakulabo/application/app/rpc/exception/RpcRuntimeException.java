@@ -5,7 +5,7 @@ import java.net.HttpURLConnection;
 /**
  * RPCエンドポイントで発生制した想定外自称を表す例外クラスです
  */
-public class RpcRuntmeException extends BaseServerException {
+public class RpcRuntimeException extends BaseServerException {
 
 	/**
 	 * デフォルトコンストラクタ
@@ -13,7 +13,7 @@ public class RpcRuntmeException extends BaseServerException {
 	 * @param message 送信メッセージ
 	 * @param cause   原因例外
 	 */
-	public RpcRuntmeException(String message, Throwable cause) {
+	public RpcRuntimeException(String message, Throwable cause) {
 		super(message, HttpURLConnection.HTTP_INTERNAL_ERROR, cause);
 	}
 
@@ -22,7 +22,7 @@ public class RpcRuntmeException extends BaseServerException {
 	 *
 	 * @param message 送信メッセージ
 	 */
-	public RpcRuntmeException(String message) {
+	public RpcRuntimeException(String message) {
 		super(message, HttpURLConnection.HTTP_INTERNAL_ERROR, null);
 	}
 

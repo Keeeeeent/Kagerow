@@ -1,7 +1,10 @@
 package com.sakulabo.application.app.cli.subcommand;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import javax.naming.Binding;
@@ -9,6 +12,10 @@ import javax.naming.Name;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 
+import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Fail;
+import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Success;
+import com.sakulabo.application.app.rpc.datatype.receive.ArrayReceiveDataType;
+import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowVirtualFileObject;
 import com.sakulabo.core.Kagerow.Context.KagerowVirtualDirContext;
@@ -59,7 +66,7 @@ public class TableCommand {
 	 * テーブル一覧確認コマンド
 	 */
 	@Command(name = "list")
-	public static class TableListCommand implements Callable<Integer> {
+	public static class TableListCommand extends AuthRemoteCommand implements Callable<Integer> {
 
 		/** スキーマ名称 */
 		@Option(names = { "--schema", "-s" }, required = true)
@@ -73,7 +80,7 @@ public class TableCommand {
 
 		/** {@inheritDoc} */
 		@Override
-		public Integer call() throws Exception {
+		protected Integer local() throws Exception {
 			try {
 				KagerowVirtualFileContext ctx = KagerowUtilities.getContext(KagerowVirtualFileContext._NAME);
 				KagerowVirtualDirContext dirCtx = ctx.lookup(schemaName);
@@ -98,19 +105,54 @@ public class TableCommand {
 			return Integer.valueOf(0);
 		}
 
+		/** {@inheritDoc} */
+		@Override
+		protected Integer remote() throws Exception {
+			// メソッド呼び出し
+			RpcResult result = null;
+			if (Objects.isNull(tableName)) {
+				result = doRpcMethodCall("list", "/rpc/table", () -> {
+					return new HashMap<>() {
+						{
+							put("schemaName", new StringSendDataType(schemaName));
+						}
+					};
+				});
+			}
+			// 結果処理
+			return switch (result) {
+				case Success success: {
+					ArrayReceiveDataType list = new ArrayReceiveDataType(success.response().get("list"));
+					Optional<List<String>> schemaList = list.getRawType();
+					schemaList.ifPresent(li -> {
+						System.out.printf("%-17s %s%n", "Logical Name", "Physical Name");
+						System.out.println("────────────────────────────────────────────────");
+						li.stream().forEach(System.out::println);
+					});
+					yield Integer.valueOf(0);
+				}
+				case Fail fail: {
+					System.err
+							.println(String.format("StatusCode : %d ResponseText", fail.statusCode(), fail.response()));
+					yield Integer.valueOf(1);
+				}
+			};
+		}
+
 		/**
 		 * テーブルの世代情報を出力します
-		 * @param dirCtx テーブルリスト
+		 * 
+		 * @param dirCtx   テーブルリスト
 		 * @param synonyms シノニム設定一覧
 		 * @throws NamingException コンテキスト取得失敗
 		 */
 		private void printTableGeneration(KagerowVirtualDirContext dirCtx, Map<String, String> synonyms)
 				throws NamingException {
 			KagerowVirtualFileContent cnt = dirCtx.lookup(tableName);
-			String physicaTableName = "?????";
+			String physicalTableName = "?????";
 			for (Map.Entry<String, String> entry : synonyms.entrySet()) {
 				if (entry.getValue().equals(tableName)) {
-					physicaTableName = entry.getKey();
+					physicalTableName = entry.getKey();
 					break;
 				}
 			}
@@ -130,13 +172,14 @@ public class TableCommand {
 						i,
 						formatSize(fileObject.datSize().longValue()),
 						fileObject.createTime().toString(),
-						String.format("${%s[%d]}", physicaTableName, i));
+						String.format("${%s[%d]}", physicalTableName, i));
 			}
 		}
 
 		/**
 		 * テーブルの情報を出力します
-		 * @param dirCtx テーブルリスト
+		 * 
+		 * @param dirCtx   テーブルリスト
 		 * @param synonyms シノニム設定一覧
 		 * @throws NamingException コンテキスト取得失敗
 		 */

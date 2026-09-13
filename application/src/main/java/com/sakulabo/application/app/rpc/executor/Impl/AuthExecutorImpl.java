@@ -11,7 +11,7 @@ import com.sakulabo.application.app.rpc.datatype.send.Base64SendDataType;
 import com.sakulabo.application.app.rpc.datatype.send.DateTimeSendDataType;
 import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
 import com.sakulabo.application.app.rpc.exception.IllegalCertificationException;
-import com.sakulabo.application.app.rpc.exception.RpcRuntmeException;
+import com.sakulabo.application.app.rpc.exception.RpcRuntimeException;
 import com.sakulabo.application.app.rpc.executor.AuthExecutor;
 import com.sakulabo.application.service.Rpc.AuthService;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
@@ -35,7 +35,7 @@ public class AuthExecutorImpl implements AuthExecutor {
 		String user = userName.getRawType().get();
 		// サービス実行
 		com.sakulabo.application.service.Rpc.AuthService.Challenge result = service.nonce(user).orElseThrow(() -> {
-			return new RpcRuntmeException("Failed to generate a nonce");
+			return new RpcRuntimeException("Failed to generate a nonce");
 		});
 		// 返却インスタンス生成
 		Base64SendDataType nonce = new Base64SendDataType(result.nonce());

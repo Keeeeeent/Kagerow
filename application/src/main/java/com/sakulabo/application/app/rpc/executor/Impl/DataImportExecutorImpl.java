@@ -22,7 +22,7 @@ import com.sakulabo.application.app.rpc.datatype.receive.PathReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.receive.StringReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
 import com.sakulabo.application.app.rpc.exception.RpcIllegalArgumentException;
-import com.sakulabo.application.app.rpc.exception.RpcRuntmeException;
+import com.sakulabo.application.app.rpc.exception.RpcRuntimeException;
 import com.sakulabo.application.app.rpc.executor.DataImportExecutor;
 import com.sakulabo.application.app.rpc.filters.CertificationFilter;
 import com.sakulabo.core.Kagerow.Exception.VirtualFileConstructionFailException;
@@ -50,7 +50,7 @@ public class DataImportExecutorImpl implements DataImportExecutor {
 			@RpcMethodParam("isHeader") BooleanReceiveDataType paramIsHeader,
 			@RpcMethodParam("synonym") StringReceiveDataType paramSynonym,
 			@RpcMethodParam("isSecure") BooleanReceiveDataType paramIsSecure)
-			throws RpcRuntmeException {
+			throws RpcRuntimeException {
 
 		try {
 
@@ -88,7 +88,7 @@ public class DataImportExecutorImpl implements DataImportExecutor {
 
 		} catch (NameAlreadyBoundException | IOException | VirtualFileConstructionFailException e) {
 			// 例外翻訳
-			throw new RpcRuntmeException(e.getMessage());
+			throw new RpcRuntimeException(e.getMessage());
 		}
 
 	}
@@ -103,7 +103,7 @@ public class DataImportExecutorImpl implements DataImportExecutor {
 			@RpcMethodParam("charset") CharsetReceiveDataType paramCharset,
 			@RpcMethodParam("isHeader") BooleanReceiveDataType paramIsHeader,
 			@RpcMethodParam("synonym") StringReceiveDataType paramSynonym,
-			@RpcMethodParam("isSecure") BooleanReceiveDataType paramIsSecure) throws RpcRuntmeException {
+			@RpcMethodParam("isSecure") BooleanReceiveDataType paramIsSecure) throws RpcRuntimeException {
 
 		try {
 			// データを一時ファイル化
@@ -123,7 +123,7 @@ public class DataImportExecutorImpl implements DataImportExecutor {
 				Files.delete(path);
 			}
 		} catch (IOException e) {
-			throw new RpcRuntmeException("Failed to create a temporary file", e);
+			throw new RpcRuntimeException("Failed to create a temporary file", e);
 		}
 
 	}

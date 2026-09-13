@@ -9,6 +9,7 @@
         "donjayamanne.githistory",
         "spmeesseman.vscode-taskexplorer",
         "esbenp.prettier-vscode",
-        "rudrapatel.prettier-plugin-java-vscode"
+        "rudrapatel.prettier-plugin-java-vscode",
+        "adamraichu.zip-viewer"
     ]
 }

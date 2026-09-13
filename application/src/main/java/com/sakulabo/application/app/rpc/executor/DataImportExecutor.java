@@ -7,7 +7,7 @@ import com.sakulabo.application.app.rpc.datatype.receive.CharsetReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.receive.PathReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.receive.StringReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
-import com.sakulabo.application.app.rpc.exception.RpcRuntmeException;
+import com.sakulabo.application.app.rpc.exception.RpcRuntimeException;
 import com.sakulabo.application.common.spi.RpcTarget;
 
 /**
@@ -19,6 +19,7 @@ public interface DataImportExecutor extends RpcTarget {
 
 	/**
 	 * データ取り込み結果返却用データ構造
+	 * 
 	 * @param uri KagerowURI
 	 */
 	public static record ImportResult(
@@ -34,7 +35,7 @@ public interface DataImportExecutor extends RpcTarget {
 	 * @param paramSynonym  テーブル名称のシノニム
 	 * @param paramIsSecure セキュアフラグ
 	 * @return 取り込み結果
-	 * @throws RpcRuntmeException メソッド実行失敗
+	 * @throws RpcRuntimeException メソッド実行失敗
 	 */
 	public ImportResult dataImport(
 			StringReceiveDataType paramMode,
@@ -44,7 +45,7 @@ public interface DataImportExecutor extends RpcTarget {
 			BooleanReceiveDataType paramIsHeader,
 			StringReceiveDataType paramSynonym,
 			BooleanReceiveDataType paramIsSecure)
-			throws RpcRuntmeException;
+			throws RpcRuntimeException;
 
 	/**
 	 * @param paramMode     実行モード
@@ -55,7 +56,7 @@ public interface DataImportExecutor extends RpcTarget {
 	 * @param paramSynonym  テーブル名称のシノニム
 	 * @param paramIsSecure セキュアフラグ
 	 * @return 取り込み結果
-	 * @throws RpcRuntmeException メソッド実行失敗
+	 * @throws RpcRuntimeException メソッド実行失敗
 	 */
 	public ImportResult binarydataImport(
 			StringReceiveDataType paramMode,
@@ -65,6 +66,6 @@ public interface DataImportExecutor extends RpcTarget {
 			BooleanReceiveDataType paramIsHeader,
 			StringReceiveDataType paramSynonym,
 			BooleanReceiveDataType paramIsSecure)
-			throws RpcRuntmeException;
+			throws RpcRuntimeException;
 
 }

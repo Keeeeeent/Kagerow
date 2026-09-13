@@ -113,6 +113,31 @@
             "windows": {
                 "command": "${workspaceFolder}/application/target/release/Kagerow.exe"
             },
+        },
+        {
+            "label": "エージェントアプリケーション起動",
+            "type": "shell",
+            "command": "${workspaceFolder}/application/target/release/Kagerow.app/Contents/MacOS/Kagerow-cli",
+            "args": [
+                "agent",
+                "start",
+                "--port",
+                "8080",
+                "--host",
+                "localhost"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {}
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "windows": {
+                "command": "${workspaceFolder}/application/target/release/Kagerow.exe"
+            },
         }
     ]
 }
