@@ -8,6 +8,7 @@
     "editor.tabSize": 4,
     "editor.insertSpaces": true,
     "editor.formatOnSave": true,
+    "workbench.colorTheme": "Eclipse Dark (Java)",
     "java.format.settings.url": "${workspaceFolder}/.vscode/pleiades-formatter.xml",
     "java.format.settings.profile": "Pleiades [カスタム]",
     "java.saveActions.organizeImports": true,

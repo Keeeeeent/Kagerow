@@ -10,6 +10,7 @@
         "spmeesseman.vscode-taskexplorer",
         "esbenp.prettier-vscode",
         "rudrapatel.prettier-plugin-java-vscode",
-        "adamraichu.zip-viewer"
+        "adamraichu.zip-viewer",
+        "metosco.eclipse-dark-java-theme"
     ]
 }
