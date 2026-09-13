@@ -69,6 +69,20 @@ public final class ArchiveDataCleanner implements InitProcessor, FileVisitor<Pat
 	public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 		// zipファイルを対象とする
 		if (!Objects.toString(file.getFileName()).endsWith(".zip")) {
+			// lockファイルの有効性チェック
+			if (Objects.toString(file.getFileName()).endsWith(".lock")) {
+				// 元zipファイルパスを生成
+				Path filename = file.getFileName();
+				if (Objects.nonNull(filename)) {
+					String name = filename.toString();
+					name = name.substring(0, name.length() - ".lock".length());
+					Path dir = file.getParent();
+					// 元zipファイルパスが存在しない場合、削除対象のlockファイルとする
+					if (Objects.nonNull(dir) && Files.notExists(dir.resolve(name))) {
+						Files.delete(file);
+					}
+				}
+			}
 			return FileVisitResult.CONTINUE;
 		}
 		// ファイルのバックアップを取得

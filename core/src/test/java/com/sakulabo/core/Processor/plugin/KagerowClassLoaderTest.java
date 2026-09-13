@@ -20,9 +20,8 @@ import com.sakulabo.BaseTest;
 import com.sakulabo.core.Kagerow.Exception.ApplicationError;
 
 /**
- * アプリケーション共通で使用されるプラグイン専用クラスローダーのテストクラスです 
+ * アプリケーション共通で使用されるプラグイン専用クラスローダーのテストクラスです
  */
-@SuppressWarnings("javadoc")
 public class KagerowClassLoaderTest extends BaseTest<KagerowClassLoader> {
 
 	/**
@@ -41,10 +40,10 @@ public class KagerowClassLoaderTest extends BaseTest<KagerowClassLoader> {
 	}
 
 	/**
-	 * [試験観点]      : karファイル読み込み
+	 * [試験観点] : karファイル読み込み
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・クラスロードができていること
+	 * ・正常終了すること
+	 * ・クラスロードができていること
 	 */
 	@Test
 	@Disabled
@@ -59,7 +58,7 @@ public class KagerowClassLoaderTest extends BaseTest<KagerowClassLoader> {
 	}
 
 	/**
-	 * [試験観点]      : karファイル読み込み
+	 * [試験観点] : karファイル読み込み
 	 * [期待される結果] : リソースが正常に読み込めること
 	 */
 	@Test
@@ -87,11 +86,11 @@ public class KagerowClassLoaderTest extends BaseTest<KagerowClassLoader> {
 	}
 
 	/**
-	 * [試験観点]      : スレッドの生成
+	 * [試験観点] : スレッドの生成
 	 * [期待される結果] : 以下の状態でスレッドが生成できている
-	 *                ・デーモンスレッドで生成されている
-	 *                ・スレッドの名称が期待通り
-	 *                ・クラスローダーが期待通り
+	 * ・デーモンスレッドで生成されている
+	 * ・スレッドの名称が期待通り
+	 * ・クラスローダーが期待通り
 	 */
 	@Test
 	@Disabled
@@ -110,7 +109,7 @@ public class KagerowClassLoaderTest extends BaseTest<KagerowClassLoader> {
 	}
 
 	/**
-	 * [試験観点]      : ファイル読み取り失敗
+	 * [試験観点] : ファイル読み取り失敗
 	 * [期待される結果] : アプリケーションエラーがスローされる
 	 */
 	@Test

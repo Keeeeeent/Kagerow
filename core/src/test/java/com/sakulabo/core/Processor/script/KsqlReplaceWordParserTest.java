@@ -14,9 +14,8 @@ import org.junit.jupiter.api.Test;
 import com.sakulabo.BaseTest;
 
 /**
- *  KSQLに存在する置換文字列を処理するスクリプトのテストクラスです 
+ * KSQLに存在する置換文字列を処理するスクリプトのテストクラスです
  */
-@SuppressWarnings("javadoc")
 public class KsqlReplaceWordParserTest extends BaseTest<KsqlReplaceWordParser> {
 
 	/** テスト対象 */
@@ -38,10 +37,10 @@ public class KsqlReplaceWordParserTest extends BaseTest<KsqlReplaceWordParser> {
 	}
 
 	/**
-	 * [試験観点]      : 置換対象なし
+	 * [試験観点] : 置換対象なし
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・文字列に変化がないこと
+	 * ・正常終了すること
+	 * ・文字列に変化がないこと
 	 */
 	@Test
 	public void Test001() throws Throwable {
@@ -62,10 +61,10 @@ public class KsqlReplaceWordParserTest extends BaseTest<KsqlReplaceWordParser> {
 	}
 
 	/**
-	 * [試験観点]      : 置換対象あり
+	 * [試験観点] : 置換対象あり
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・対象文字列が置換されていること(単一ワード)
+	 * ・正常終了すること
+	 * ・対象文字列が置換されていること(単一ワード)
 	 */
 	@Test
 	public void Test002() throws Throwable {
@@ -81,7 +80,7 @@ public class KsqlReplaceWordParserTest extends BaseTest<KsqlReplaceWordParser> {
 				SELECT * FROM @{target};
 				""";
 
-		//　期待値
+		// 期待値
 		String exp = """
 				SELECT * FROM DUAL;
 				""";
@@ -95,10 +94,10 @@ public class KsqlReplaceWordParserTest extends BaseTest<KsqlReplaceWordParser> {
 	}
 
 	/**
-	 * [試験観点]      : 置換対象あり
+	 * [試験観点] : 置換対象あり
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・対象文字列が置換されていること(複数単一ワード)
+	 * ・正常終了すること
+	 * ・対象文字列が置換されていること(複数単一ワード)
 	 */
 	@Test
 	public void Test003() throws Throwable {
@@ -114,7 +113,7 @@ public class KsqlReplaceWordParserTest extends BaseTest<KsqlReplaceWordParser> {
 				SELECT * FROM @{target} INNER JOIN @{target} USIND(X);
 				""";
 
-		//　期待値
+		// 期待値
 		String exp = """
 				SELECT * FROM DUAL INNER JOIN DUAL USIND(X);
 				""";
@@ -128,10 +127,10 @@ public class KsqlReplaceWordParserTest extends BaseTest<KsqlReplaceWordParser> {
 	}
 
 	/**
-	 * [試験観点]      : 置換対象あり
+	 * [試験観点] : 置換対象あり
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・対象文字列が置換されていること(複数ワード)
+	 * ・正常終了すること
+	 * ・対象文字列が置換されていること(複数ワード)
 	 */
 	@Test
 	public void Test004() throws Throwable {
@@ -148,7 +147,7 @@ public class KsqlReplaceWordParserTest extends BaseTest<KsqlReplaceWordParser> {
 				SELECT * FROM @{target1} INNER JOIN @{target2} USIND(X);
 				""";
 
-		//　期待値
+		// 期待値
 		String exp = """
 				SELECT * FROM DUAL1 INNER JOIN DUAL2 USIND(X);
 				""";

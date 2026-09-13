@@ -22,9 +22,8 @@ import com.sakulabo.core.Kagerow.KagerowApplication;
 import com.sakulabo.core.Kagerow.Utilities.KagerowDBMode;
 
 /**
- * DDL実行プラグインのテストクラスです 
+ * DDL実行プラグインのテストクラスです
  */
-@SuppressWarnings("javadoc")
 public class DDLDefaultPluginTest extends BaseTest<DDLDefaultPlugin> {
 
 	/** テスト対象 */
@@ -55,11 +54,11 @@ public class DDLDefaultPluginTest extends BaseTest<DDLDefaultPlugin> {
 	}
 
 	/**
-	 * [試験観点]      : 通常DDL
+	 * [試験観点] : 通常DDL
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・SQLの内容が正しく読み込みていること
-	 *                  ・DDLが正しく生成されていること
+	 * ・正常終了すること
+	 * ・SQLの内容が正しく読み込みていること
+	 * ・DDLが正しく生成されていること
 	 */
 	@Test
 	public void Test001() throws Throwable {

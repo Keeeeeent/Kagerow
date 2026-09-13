@@ -13,9 +13,8 @@ import org.junit.jupiter.api.Test;
 import com.sakulabo.BaseTest;
 
 /**
- * TSVファイルのボディー読み取り実装提供クラスのテストクラスです 
+ * TSVファイルのボディー読み取り実装提供クラスのテストクラスです
  */
-@SuppressWarnings("javadoc")
 public class TSVFileBodyReaderTest extends BaseTest<TSVFileBodyReader> {
 
 	/** テスト対象 */
@@ -37,7 +36,7 @@ public class TSVFileBodyReaderTest extends BaseTest<TSVFileBodyReader> {
 	}
 
 	/**
-	 * [試験観点]      : データ読み取り、ヘッダーなしファイル、最終行改行なし
+	 * [試験観点] : データ読み取り、ヘッダーなしファイル、最終行改行なし
 	 * [期待される結果] : 正常終了すること、最終行まで読み込めてること
 	 */
 	@Test
@@ -56,7 +55,7 @@ public class TSVFileBodyReaderTest extends BaseTest<TSVFileBodyReader> {
 	}
 
 	/**
-	 * [試験観点]      : ヘッダーありファイル、最終行改行あり、ダブルクオーテーションあり
+	 * [試験観点] : ヘッダーありファイル、最終行改行あり、ダブルクオーテーションあり
 	 * [期待される結果] : ヘッダーが含まれていないこと、最終行まで読み込めてること、ダブルクオーテーションが含まれていないこと
 	 */
 	@Test
@@ -86,7 +85,7 @@ public class TSVFileBodyReaderTest extends BaseTest<TSVFileBodyReader> {
 	}
 
 	/**
-	 * [試験観点]      : ヘッダーありファイル、ダブルクオーテーションあり、エスケープあり
+	 * [試験観点] : ヘッダーありファイル、ダブルクオーテーションあり、エスケープあり
 	 * [期待される結果] : カラム名が正しく生成されること、エスケープ処理がされていること
 	 */
 	@Test
@@ -106,7 +105,7 @@ public class TSVFileBodyReaderTest extends BaseTest<TSVFileBodyReader> {
 	}
 
 	/**
-	 * [試験観点]      : ダブルクオーテーションあり、エスケープあり、改行あり
+	 * [試験観点] : ダブルクオーテーションあり、エスケープあり、改行あり
 	 * [期待される結果] : カラムが正しく生成されていること、改行含めたヘッダーになっていること
 	 */
 	@Test
@@ -126,7 +125,7 @@ public class TSVFileBodyReaderTest extends BaseTest<TSVFileBodyReader> {
 	}
 
 	/**
-	 * [試験観点]      : ヘッダー生成、ヘッダーありファイル、ダブルクオーテーションありを含む
+	 * [試験観点] : ヘッダー生成、ヘッダーありファイル、ダブルクオーテーションありを含む
 	 * [期待される結果] : タブが含まれた状態でヘッダーが生成されること
 	 */
 	@Test
@@ -146,7 +145,7 @@ public class TSVFileBodyReaderTest extends BaseTest<TSVFileBodyReader> {
 	}
 
 	/**
-	 * [試験観点]      : ヘッダーありファイル、最終行改行あり、ダブルクオーテーションあり、最終フィールドが空文字
+	 * [試験観点] : ヘッダーありファイル、最終行改行あり、ダブルクオーテーションあり、最終フィールドが空文字
 	 * [期待される結果] : ヘッダーが含まれていないこと、最終行まで読み込めてること、ダブルクオーテーションが含まれていないこと
 	 */
 	@Test

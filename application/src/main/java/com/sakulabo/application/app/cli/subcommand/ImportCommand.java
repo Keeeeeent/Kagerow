@@ -1,0 +1,177 @@
+package com.sakulabo.application.app.cli.subcommand;
+
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.function.Consumer;
+
+import javax.naming.NameAlreadyBoundException;
+
+import com.sakulabo.application.app.cli.converter.ExistingFilePathConverter;
+import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Fail;
+import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Success;
+import com.sakulabo.application.app.rpc.datatype.receive.Base64ReceiveDataType;
+import com.sakulabo.application.app.rpc.datatype.send.BooleanSendDataType;
+import com.sakulabo.application.app.rpc.datatype.send.CharsetSendDataType;
+import com.sakulabo.application.app.rpc.datatype.send.PathSendDataType;
+import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
+import com.sakulabo.application.model.Data.DataImportModel;
+import com.sakulabo.application.service.Data.DataService;
+import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
+
+import com.sakulabo.core.Kagerow.Utilities.KagerowChunkCreater.ChunkCreateMode;
+import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
+
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+
+/**
+ * データ取り込み機能実装クラスです
+ *
+ * @author keeeeeent
+ */
+@Command(name = "import")
+public class ImportCommand extends AuthRemoteCommand {
+
+	/** セキュアモード */
+	@Option(names = { "--secure", "-s" }, negatable = true, description = "Secure mode. Default: ${DEFAULT-VALUE}")
+	public boolean isSecure = false;
+	/** KagerowChunkCreater実行モード */
+	@Option(names = { "--mode", "-m" }, description = "Chunk create mode. Default: ${DEFAULT-VALUE}")
+	public ChunkCreateMode mode = ChunkCreateMode.CSV;
+	/** 格納先スキーマ */
+	@Option(names = { "--schema", "-d" }, required = true, description = "Destination schema.")
+	public String schema;
+	/** インポートファイルパス */
+	@Option(names = { "--path",
+			"-p" }, required = true, description = "Import file path.", converter = ExistingFilePathConverter.class)
+	public Path path;
+	/** インポートファイル文字コード */
+	@Option(names = { "--charset", "-c" }, description = "Import file charset. Default: ${DEFAULT-VALUE}")
+	public Charset charset = StandardCharsets.UTF_8;
+	/** インポートファイルヘッダーフラグ */
+	@Option(names = { "--header",
+			"-h" }, negatable = true, description = "The import file has a header. Default: ${DEFAULT-VALUE}")
+	public boolean isHeader = true;
+	/** インポートデータシノニム */
+	@Option(names = { "--synonym", "-n" }, required = true, description = "Import data synonym.")
+	public String synonym;
+
+	/**
+	 * 取り込み実行モデル
+	 */
+	private class model extends DataImportModel implements Consumer<Double> {
+
+		/**
+		 * デフォルトコンストラクタ
+		 * @throws UnsupportedEncodingException TUIメインフレーム作成失敗
+		 */
+		model() throws UnsupportedEncodingException {
+			// フィールド初期化
+			this.isSecure = ImportCommand.this.isSecure;
+			this.mode = ImportCommand.this.mode;
+			this.schema = ImportCommand.this.schema;
+			this.path = ImportCommand.this.path;
+			this.charset = ImportCommand.this.charset;
+			this.isHeader = ImportCommand.this.isHeader;
+			this.synonym = ImportCommand.this.synonym;
+			this.observer = this;
+		}
+
+		/** {@inheritDoc} */
+		@Override
+		public void accept(Double t) {
+			int percent = t.intValue();
+			int width = 31;
+			int completed = width * percent / 100;
+			String progressBar = String.format(
+					"[%-30s] %3d%%",
+					"=".repeat(completed),
+					percent).replace(" ", "-");
+			System.out.print("\r" + progressBar);
+		}
+
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	protected Integer local() throws Exception {
+		try {
+			model instance = new model();
+			DataService service = KagerowUtilities.getBean(DataService.class, null).get();
+			service.importData(instance);
+			System.out.println();
+			return Integer.valueOf(0);
+		} catch (NameAlreadyBoundException _) {
+			System.err.print("\r" + "This file has already been imported");
+			System.out.println();
+			return Integer.valueOf(2);
+		} catch (Exception e) {
+			System.out.print("\r");
+			KagerowLogger.newAppLogger().err(e);
+			return Integer.valueOf(1);
+		}
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	protected Integer remote() throws Exception {
+		// リクエスト実行
+		String hostname = InetAddress.getLoopbackAddress().getHostName();
+		RpcResult result = null;
+		// ローカル実行かリモート実行か判定
+		if (hostname.equals(super.remote.getHost())) {
+			// リクエスト送信
+			result = doRpcMethodCall("import", "/rpc/data", () -> {
+				return new HashMap<>() {
+					{
+						put("mode", new StringSendDataType(mode.name()));
+						put("schema", new StringSendDataType(schema));
+						put("path", new PathSendDataType(path.toString()));
+						put("charset", new CharsetSendDataType(charset.name()));
+						put("isHeader", new BooleanSendDataType(Boolean.toString(isHeader)));
+						put("synonym", new StringSendDataType(synonym));
+						put("isSecure", new BooleanSendDataType(Boolean.toString(isSecure)));
+					}
+				};
+			});
+		} else {
+			try (ByteArrayOutputStream output = new ByteArrayOutputStream();
+					InputStream input = Files.newInputStream(path)) {
+				// データをバイトストリームに変換
+				input.transferTo(output);
+				// リクエスト送信
+				result = doRpcMethodCall("binarydataImport", "/rpc/data", () -> {
+					return new HashMap<>() {
+						{
+							put("mode", new StringSendDataType(mode.name()));
+							put("schema", new StringSendDataType(schema));
+							put("data", new Base64ReceiveDataType(output.toByteArray()));
+							put("charset", new CharsetSendDataType(charset.name()));
+							put("isHeader", new BooleanSendDataType(Boolean.toString(isHeader)));
+							put("synonym", new StringSendDataType(synonym));
+							put("isSecure", new BooleanSendDataType(Boolean.toString(isSecure)));
+						}
+					};
+				});
+			}
+		}
+		// 結果処理
+		return switch (result) {
+		case Success _: {
+			yield Integer.valueOf(0);
+		}
+		case Fail res: {
+			System.err.println(String.format("StatusCode : %d ResponseText", res.statusCode(), res.response()));
+			yield Integer.valueOf(1);
+		}
+		};
+	}
+
+}

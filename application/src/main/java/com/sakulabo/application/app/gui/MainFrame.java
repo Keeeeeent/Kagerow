@@ -32,7 +32,7 @@ import com.sakulabo.regulation.annotation.KagerowInject;
 
 /**
  * GUIアプリケーションのメインフレーム実装クラスです
- * 
+ *
  * @author keeeeeent
  */
 @KagerowComponent
@@ -126,13 +126,8 @@ public class MainFrame extends WindowAdapter implements ViewRunner, JFrameMixin 
 		// フレームクローズ
 		frame.dispose();
 		// サブレームクローズ
-		for (AppTabPanel tabPanel : new AppTabPanel[] {
-				fileSchemaTabPanel,
-				fileTableTabPanel,
-				pluginTabPanel,
-				pkgTabPanel,
-				cacheTabPanel
-		}) {
+		for (AppTabPanel tabPanel : new AppTabPanel[] { fileSchemaTabPanel, fileTableTabPanel, pluginTabPanel,
+				pkgTabPanel, cacheTabPanel }) {
 			if (tabPanel.frame.isDisplayable()) {
 				tabPanel.frame.dispose();
 			}
@@ -159,9 +154,7 @@ public class MainFrame extends WindowAdapter implements ViewRunner, JFrameMixin 
 		}
 
 		// GUI初期化
-		AppPanel[] panelList = {
-				menuPanel, noticePanel, centerPanel
-		};
+		AppPanel[] panelList = { menuPanel, noticePanel, centerPanel };
 		for (AppPanel panel : panelList) {
 			panel.initialize();
 		}
@@ -202,6 +195,7 @@ public class MainFrame extends WindowAdapter implements ViewRunner, JFrameMixin 
 
 	/**
 	 * 免責事項ダイアログをクローズします
+	 *
 	 * @throws IllegalAccessException ダイアログインスタンス未初期化の場合
 	 */
 	public void closeDialog() throws IllegalAccessException {

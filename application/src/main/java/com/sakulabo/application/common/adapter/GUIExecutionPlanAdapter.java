@@ -11,7 +11,7 @@ import com.sakulabo.core.Kagerow.Adapter.KagerowExecutionPlanAdapter;
 
 /**
  * 実行計画のライフサイクルフックのGUI向け実装を提供するクラスです
- * 
+ *
  * @author keeeeeent
  */
 public class GUIExecutionPlanAdapter implements KagerowExecutionPlanAdapter {
@@ -42,7 +42,7 @@ public class GUIExecutionPlanAdapter implements KagerowExecutionPlanAdapter {
 		if (Objects.isNull(startTime) || Objects.isNull(endTime)) {
 			return GUIExecutionPlanAdapterText.PROP_001.toString();
 		}
-		// 実行時間の総量取得	
+		// 実行時間の総量取得
 		Duration time = Duration.between(startTime, endTime);
 		// 秒以下の時間を算出
 		double rowSec = time.toSecondsPart() + (double) time.toMillisPart() / 1000;
@@ -123,7 +123,7 @@ public class GUIExecutionPlanAdapter implements KagerowExecutionPlanAdapter {
 
 	/** {@inheritDoc} */
 	@Override
-	public void startDoKsqlIndividual() {
+	public void startDoKsqlIndividual(String id) {
 	}
 
 	/** {@inheritDoc} */

@@ -10,6 +10,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.crypto.Cipher;
@@ -17,6 +18,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.naming.CannotProceedException;
 import javax.naming.CompositeName;
+import javax.naming.InvalidNameException;
 import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.NotContextException;
@@ -32,6 +34,7 @@ import com.sakulabo.core.Kagerow.Contents.Impl.KagerowSecurityContentImpl.Kagero
 import com.sakulabo.core.Kagerow.Context.KagerowSecurityContext;
 import com.sakulabo.core.Kagerow.Context.KagerowSettingContext;
 import com.sakulabo.core.Kagerow.Exception.ApplicationError;
+import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 import com.sakulabo.core.Processor.config.ContextConfigurationLorder;
 import com.sakulabo.core.Processor.jmx.AppJMX;
@@ -431,6 +434,22 @@ public final class KagerowSecurityContextImpl extends BaseKagerowContext<Kagerow
 		// Base64エンコード変換
 		encPass = Base64.getEncoder().encode(encPass);
 		return new String(encPass);
+	}
+
+	/**
+	 * マスターキーを取得します
+	 * @return マスターキー
+	 */
+	public Optional<KagerowSecurityContent> getMasterKey() {
+		try {
+			// マスターコンテンツ取得
+			KagerowSecurityContent securityContent = _CONTEXT
+					.get(new CompositeName(KagerowMasterSecurityContentImpl.MASTER_KEY));
+			return Optional.of(securityContent);
+		} catch (InvalidNameException e) {
+			KagerowLogger.newAppLogger().err(e);
+			return Optional.empty();
+		}
 	}
 
 }

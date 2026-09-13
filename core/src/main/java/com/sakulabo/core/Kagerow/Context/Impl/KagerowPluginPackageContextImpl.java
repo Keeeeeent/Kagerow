@@ -255,7 +255,9 @@ public final class KagerowPluginPackageContextImpl
 	public void bind(Name name, Object obj) throws NamingException {
 		// クラスローダーチェック
 		checkClassLoader();
-		super.bind(name, obj);
+		// 名称を正規化
+		Name named = getVersioningMap(name);
+		super.bind(named, obj);
 	}
 
 	/** {@inheritDoc} */
@@ -264,7 +266,9 @@ public final class KagerowPluginPackageContextImpl
 	public void bind(String name, Object obj) throws NamingException {
 		// クラスローダーチェック
 		checkClassLoader();
-		super.bind(new CompoundName(name, PROPS), obj);
+		// 名称を正規化
+		Name named = getVersioningMap(new CompoundName(name, PROPS));
+		super.bind(named, obj);
 	}
 
 	/** {@inheritDoc} */
@@ -273,7 +277,9 @@ public final class KagerowPluginPackageContextImpl
 	public void rebind(Name name, Object obj) throws NamingException {
 		// クラスローダーチェック
 		checkClassLoader();
-		super.rebind(name, obj);
+		// 名称を正規化
+		Name named = getVersioningMap(name);
+		super.rebind(named, obj);
 	}
 
 	/** {@inheritDoc} */
@@ -282,7 +288,9 @@ public final class KagerowPluginPackageContextImpl
 	public void rebind(String name, Object obj) throws NamingException {
 		// クラスローダーチェック
 		checkClassLoader();
-		super.rebind(new CompoundName(name, PROPS), obj);
+		// 名称を正規化
+		Name named = getVersioningMap(new CompoundName(name, PROPS));
+		super.rebind(named, obj);
 	}
 
 	/** {@inheritDoc} */
@@ -291,7 +299,9 @@ public final class KagerowPluginPackageContextImpl
 	public void unbind(Name name) throws NamingException {
 		// クラスローダーチェック
 		checkClassLoader();
-		super.unbind(name);
+		// 名称を正規化
+		Name named = getVersioningMap(name);
+		super.unbind(named);
 	}
 
 	/** {@inheritDoc} */
@@ -300,7 +310,9 @@ public final class KagerowPluginPackageContextImpl
 	public void unbind(String name) throws NamingException {
 		// クラスローダーチェック
 		checkClassLoader();
-		super.unbind(new CompoundName(name, PROPS));
+		// 名称を正規化
+		Name named = getVersioningMap(new CompoundName(name, PROPS));
+		super.unbind(named);
 	}
 
 	/** {@inheritDoc} */
@@ -488,8 +500,8 @@ public final class KagerowPluginPackageContextImpl
 			disablePluginPkgList.add(name);
 			unbind(name);
 		} else {
-			Object target = disablePluginPkgList.remove(name);
-			if (Objects.nonNull(target)) {
+			boolean target = disablePluginPkgList.remove(name);
+			if (!target) {
 				// 無効化されていない場合、例外をスロー
 				throw new NameNotFoundException(name);
 			}

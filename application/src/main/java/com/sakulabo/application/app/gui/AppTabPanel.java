@@ -42,6 +42,7 @@ public abstract class AppTabPanel extends AppPanel implements JTabbedPaneMixin, 
 
 	/**
 	 * デフォルトコンストラクタ
+	 * 
 	 * @param size パネル最大サイズ
 	 */
 	protected AppTabPanel(int size) {
@@ -60,7 +61,6 @@ public abstract class AppTabPanel extends AppPanel implements JTabbedPaneMixin, 
 	/*
 	 * タブレイアウト制御パネル
 	 */
-	@SuppressWarnings("javadoc")
 	@JPanelMixin.Setting(layout = Layout.FlowLayout)
 	private class ClosableTabComponent extends JPanel implements JButtonMixin {
 
@@ -72,7 +72,7 @@ public abstract class AppTabPanel extends AppPanel implements JTabbedPaneMixin, 
 		final JButton closeButton = new JButton();
 
 		/**
-		 * デフォルトコンストラクタ 
+		 * デフォルトコンストラクタ
 		 */
 		ClosableTabComponent() {
 
@@ -142,6 +142,7 @@ public abstract class AppTabPanel extends AppPanel implements JTabbedPaneMixin, 
 
 	/**
 	 * タブを追加します
+	 * 
 	 * @param title タブタイトル
 	 * @param panel 追加パネル
 	 * @return 追加結果
@@ -187,6 +188,7 @@ public abstract class AppTabPanel extends AppPanel implements JTabbedPaneMixin, 
 
 	/**
 	 * タブを削除します
+	 * 
 	 * @param title タブタイトル
 	 * @return 削除結果
 	 */

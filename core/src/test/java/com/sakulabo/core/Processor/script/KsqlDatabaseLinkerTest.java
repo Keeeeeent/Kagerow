@@ -27,9 +27,8 @@ import com.sakulabo.core.Kagerow.Context.Impl.KagerowVirtualDirContextImpl;
 import com.sakulabo.core.Kagerow.Context.Impl.KagerowVirtualFileContextImpl;
 
 /**
- *  KSQLに存在するリンク可能文字列を処理するスクリプトのテストクラスです 
+ * KSQLに存在するリンク可能文字列を処理するスクリプトのテストクラスです
  */
-@SuppressWarnings("javadoc")
 public class KsqlDatabaseLinkerTest extends BaseTest<KsqlDatabaseLinker> {
 
 	/** テスト対象 */
@@ -62,10 +61,10 @@ public class KsqlDatabaseLinkerTest extends BaseTest<KsqlDatabaseLinker> {
 	}
 
 	/**
-	 * [試験観点]      : 対象対象なし
+	 * [試験観点] : 対象対象なし
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・文字列に変化がないこと
+	 * ・正常終了すること
+	 * ・文字列に変化がないこと
 	 */
 	@Test
 	public void Test001() throws Throwable {
@@ -89,10 +88,10 @@ public class KsqlDatabaseLinkerTest extends BaseTest<KsqlDatabaseLinker> {
 	}
 
 	/**
-	 * [試験観点]      : 置対象あり
+	 * [試験観点] : 置対象あり
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・対象が置換されていること(単一)
+	 * ・正常終了すること
+	 * ・対象が置換されていること(単一)
 	 */
 	@Test
 	public void Test002() throws Throwable {
@@ -124,7 +123,7 @@ public class KsqlDatabaseLinkerTest extends BaseTest<KsqlDatabaseLinker> {
 				SELECT * FROM ${target[1]};
 				""";
 
-		//　期待値
+		// 期待値
 		String exp = """
 				SELECT * FROM test."KDB_BINARYNAME";
 				""";
@@ -138,10 +137,10 @@ public class KsqlDatabaseLinkerTest extends BaseTest<KsqlDatabaseLinker> {
 	}
 
 	/**
-	 * [試験観点]      : 置対象あり
+	 * [試験観点] : 置対象あり
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・対象が置換されていること(単一複数箇所)
+	 * ・正常終了すること
+	 * ・対象が置換されていること(単一複数箇所)
 	 */
 	@Test
 	public void Test003() throws Throwable {
@@ -173,7 +172,7 @@ public class KsqlDatabaseLinkerTest extends BaseTest<KsqlDatabaseLinker> {
 				SELECT * FROM ${target[1]} LEFT OUTER JOIN ${target[1]} USING(COL);
 				""";
 
-		//　期待値
+		// 期待値
 		String exp = """
 				SELECT * FROM test."KDB_BINARYNAME" LEFT OUTER JOIN test."KDB_BINARYNAME" USING(COL);
 				""";
@@ -187,12 +186,12 @@ public class KsqlDatabaseLinkerTest extends BaseTest<KsqlDatabaseLinker> {
 	}
 
 	/**
-	 * [試験観点]      : 置対象あり
+	 * [試験観点] : 置対象あり
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・対象が置換されていること(単一複数箇所)
-	 *                  ・エスケープなし
-	 *                  ・シングルクオートあり
+	 * ・正常終了すること
+	 * ・対象が置換されていること(単一複数箇所)
+	 * ・エスケープなし
+	 * ・シングルクオートあり
 	 */
 	@Test
 	public void Test004() throws Throwable {
@@ -225,7 +224,7 @@ public class KsqlDatabaseLinkerTest extends BaseTest<KsqlDatabaseLinker> {
 					WHERE COL_NM = 'ID_${target[1]}_001';
 				""";
 
-		//　期待値
+		// 期待値
 		String exp = """
 				SELECT COL AS "test."KDB_BINARYNAME"" FROM test."KDB_BINARYNAME" LEFT OUTER JOIN test."KDB_BINARYNAME" USING(COL)
 					WHERE COL_NM = 'ID_${target[1]}_001';
@@ -240,12 +239,12 @@ public class KsqlDatabaseLinkerTest extends BaseTest<KsqlDatabaseLinker> {
 	}
 
 	/**
-	 * [試験観点]      : 置対象あり
+	 * [試験観点] : 置対象あり
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・対象が置換されていること(単一複数箇所)
-	 *                  ・エスケープあり
-	 *                  ・シングルクオートあり
+	 * ・正常終了すること
+	 * ・対象が置換されていること(単一複数箇所)
+	 * ・エスケープあり
+	 * ・シングルクオートあり
 	 */
 	@Test
 	public void Test005() throws Throwable {
@@ -278,7 +277,7 @@ public class KsqlDatabaseLinkerTest extends BaseTest<KsqlDatabaseLinker> {
 					WHERE COL_NM = 'ID_''${target[1]}_001';
 				""";
 
-		//　期待値
+		// 期待値
 		String exp = """
 				SELECT COL AS "test."KDB_BINARYNAME"" FROM test."KDB_BINARYNAME" LEFT OUTER JOIN test."KDB_BINARYNAME" USING(COL)
 					WHERE COL_NM = 'ID_''${target[1]}_001';
@@ -293,12 +292,12 @@ public class KsqlDatabaseLinkerTest extends BaseTest<KsqlDatabaseLinker> {
 	}
 
 	/**
-	 * [試験観点]      : 置対象あり
+	 * [試験観点] : 置対象あり
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・対象が置換されていること(複数)
-	 *                  ・エスケープあり
-	 *                  ・シングルクオートあり
+	 * ・正常終了すること
+	 * ・対象が置換されていること(複数)
+	 * ・エスケープあり
+	 * ・シングルクオートあり
 	 */
 	@Test
 	public void Test006() throws Throwable {
@@ -345,7 +344,7 @@ public class KsqlDatabaseLinkerTest extends BaseTest<KsqlDatabaseLinker> {
 					WHERE COL_NM = 'ID_''${target[1]}_001';
 				""";
 
-		//　期待値
+		// 期待値
 		String exp = """
 				SELECT COL FROM test."KDB_BINARYNAME1" LEFT OUTER JOIN test2."KDB_BINARYNAME2" USING(COL)
 					WHERE COL_NM = 'ID_''${target[1]}_001';
@@ -360,12 +359,12 @@ public class KsqlDatabaseLinkerTest extends BaseTest<KsqlDatabaseLinker> {
 	}
 
 	/**
-	 * [試験観点]      : 置対象あり、範囲指定含む
+	 * [試験観点] : 置対象あり、範囲指定含む
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・対象が置換されていること(単一複数箇所)
-	 *                  ・エスケープなし
-	 *                  ・シングルクオートあり
+	 * ・正常終了すること
+	 * ・対象が置換されていること(単一複数箇所)
+	 * ・エスケープなし
+	 * ・シングルクオートあり
 	 */
 	@Test
 	public void Test007() throws Throwable {
@@ -398,7 +397,7 @@ public class KsqlDatabaseLinkerTest extends BaseTest<KsqlDatabaseLinker> {
 					WHERE COL_NM = '${target[0..1]}_001';
 				""";
 
-		//　期待値
+		// 期待値
 		String exp = """
 				SELECT COL AS "test.KV_target_0_1" FROM test."KDB_BINARYNAME" LEFT OUTER JOIN test.KV_target_0_1 USING(COL)
 					WHERE COL_NM = '${target[0..1]}_001';

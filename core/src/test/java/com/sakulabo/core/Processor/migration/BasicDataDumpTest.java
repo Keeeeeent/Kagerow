@@ -8,10 +8,9 @@ import com.sakulabo.core.Common.AppPathUtils;
 
 /**
  * Kagerowアプリケーション専用データ移行テストクラスです
- * 
+ *
  * @author keeeeeent
  */
-@SuppressWarnings("javadoc")
 public class BasicDataDumpTest extends BaseTest<BasicDataDump> {
 
 	/** テスト対象 */
@@ -33,20 +32,20 @@ public class BasicDataDumpTest extends BaseTest<BasicDataDump> {
 	}
 
 	/**
-	 * [試験観点]      : データバックアップ
+	 * [試験観点] : データバックアップ
 	 * [期待される結果] : 正常終了すること
 	 */
-	//	@Test
+	// @Test
 	public void Test001() throws Throwable {
 		testTarget = new BasicDataDump();
 		testTarget.exportDump(AppPathUtils.createKagerowHomePath().resolve("test.backup"));
 	}
 
 	/**
-	 * [試験観点]      : データ復元
+	 * [試験観点] : データ復元
 	 * [期待される結果] : 正常終了すること
 	 */
-	//	@Test
+	// @Test
 	public void Test002() throws Throwable {
 		testTarget = new BasicDataDump();
 		testTarget.importDump(AppPathUtils.createKagerowHomePath().resolve("test.backup"));

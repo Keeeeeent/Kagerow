@@ -35,13 +35,15 @@ import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 
 import com.sakulabo.core.Common.StringUtils;
+import com.sakulabo.core.Kagerow.KagerowApplication;
+import com.sakulabo.core.Kagerow.KagerowApplication.Mode;
 import com.sakulabo.core.Kagerow.Exception.AppLogicException;
 import com.sakulabo.core.Kagerow.Utilities.KagerowJMX;
 import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
 
 /**
  * JMX監視設定初期化実装クラス
- * 
+ *
  * @author keeeeeent
  */
 @AppJMX(name = "Notification", options = { "type=AppJMXInitializer" })
@@ -151,7 +153,8 @@ public final class AppJMXInitializer extends NotificationBroadcasterSupport
 					jmxThread.start();
 
 					// JMXログ
-					KagerowLogger.newSystemLogger().log(Level.INFO, "JMX Binding Port " + port);
+					if (KagerowApplication.getApplicationMode() != Mode.CLI)
+						KagerowLogger.newSystemLogger().log(Level.INFO, "JMX Binding Port " + port);
 
 					// 監視インスタンス生成
 					AppJMXInitializer appJMXInitializer = new AppJMXInitializer(cs, registry);
@@ -262,7 +265,8 @@ public final class AppJMXInitializer extends NotificationBroadcasterSupport
 
 		try {
 			// 開始ログ出力
-			KagerowLogger.newSystemLogger().log(Level.INFO, "GCMonitor For JMX Start");
+			if (KagerowApplication.getApplicationMode() != Mode.CLI)
+				KagerowLogger.newSystemLogger().log(Level.INFO, "GCMonitor For JMX Start");
 			while (true) {
 				// ガベージコレクション対象取得
 				Reference<?> ref = REF_QUE.remove();
@@ -292,7 +296,8 @@ public final class AppJMXInitializer extends NotificationBroadcasterSupport
 			}
 		} catch (Exception e) {
 			// 終了ログ出力
-			KagerowLogger.newSystemLogger().log(Level.INFO, "GCMonitor For JMX Stop");
+			if (KagerowApplication.getApplicationMode() != Mode.CLI)
+				KagerowLogger.newSystemLogger().log(Level.INFO, "GCMonitor For JMX Stop");
 			throw e;
 		}
 

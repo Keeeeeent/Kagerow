@@ -29,13 +29,13 @@ public class InitProcessFailedException extends Exception {
 		/** 終了時に返却するリターンコード */
 		private int exit;
 
-		@SuppressWarnings("javadoc")
 		FailType(int exit) {
 			this.exit = exit;
 		}
 
 		/**
 		 * プログラム終了コードを取得します
+		 * 
 		 * @return 終了コード値
 		 */
 		public int getExitCode() {
@@ -60,7 +60,7 @@ public class InitProcessFailedException extends Exception {
 
 	/**
 	 * @param error エラーメッセージ
-	 * @param type 例外処理タイプ
+	 * @param type  例外処理タイプ
 	 */
 	public InitProcessFailedException(String error, FailType type) {
 		super(error);
@@ -71,7 +71,7 @@ public class InitProcessFailedException extends Exception {
 	 * 初期化例外生成コンストラクタ
 	 * 
 	 * @param cause 原因となった例外クラス
-	 * @param type 例外処理タイプ
+	 * @param type  例外処理タイプ
 	 */
 	public InitProcessFailedException(Throwable cause, FailType type) {
 		super(cause);
@@ -82,8 +82,8 @@ public class InitProcessFailedException extends Exception {
 	 * 初期化例外生成コンストラクタ
 	 * 
 	 * @param cause 原因となった例外クラス
-	 * @param type 例外処理タイプ
-	 * @param flug 個別例外フラグ
+	 * @param type  例外処理タイプ
+	 * @param flug  個別例外フラグ
 	 */
 	public InitProcessFailedException(Throwable cause, FailType type, Object flug) {
 		super(cause);
@@ -96,7 +96,7 @@ public class InitProcessFailedException extends Exception {
 	 * 
 	 * @param error エラーメッセージ
 	 * @param cause 原因となった例外クラス
-	 * @param type 例外処理タイプ
+	 * @param type  例外処理タイプ
 	 */
 	public InitProcessFailedException(String error, Throwable cause, FailType type) {
 		super(error, cause);
@@ -105,6 +105,7 @@ public class InitProcessFailedException extends Exception {
 
 	/**
 	 * 例外処理タイプを返却します
+	 * 
 	 * @return 例外処理タイプ
 	 */
 	public final FailType getType() {
@@ -113,6 +114,7 @@ public class InitProcessFailedException extends Exception {
 
 	/**
 	 * 呼び出し元クラスを返却します
+	 * 
 	 * @return 呼び出し元クラス情報
 	 */
 	public final Class<?> getThrowClass() {
@@ -121,6 +123,7 @@ public class InitProcessFailedException extends Exception {
 
 	/**
 	 * 個別エラーフラグを返却します
+	 * 
 	 * @return 個別エラーフラグ
 	 */
 	public final Object getFlug() {

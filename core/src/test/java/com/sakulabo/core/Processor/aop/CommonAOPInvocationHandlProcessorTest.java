@@ -12,9 +12,8 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowAOP;
 import com.sakulabo.core.Kagerow.Utilities.KagerowAOPProcessors;
 
 /**
- * Proxyのハンドラ実装を提供するクラスのテストクラスです 
+ * Proxyのハンドラ実装を提供するクラスのテストクラスです
  */
-@SuppressWarnings("javadoc")
 public class CommonAOPInvocationHandlProcessorTest {
 
 	/** テスト対象 */
@@ -47,7 +46,7 @@ public class CommonAOPInvocationHandlProcessorTest {
 	}
 
 	/**
-	 * [試験観点]      : AOP対象インスタンスを指定、返却値がnull以外
+	 * [試験観点] : AOP対象インスタンスを指定、返却値がnull以外
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
@@ -63,9 +62,9 @@ public class CommonAOPInvocationHandlProcessorTest {
 
 		// テスト対象クラス生成
 		try {
-			
+
 			this.processor = new CommonAOPInvocationHandlProcessor(mock);
-		}catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -87,7 +86,7 @@ public class CommonAOPInvocationHandlProcessorTest {
 	}
 
 	/**
-	 * [試験観点]      : AOP対象インスタンスを指定、返却値がnull
+	 * [試験観点] : AOP対象インスタンスを指定、返却値がnull
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
@@ -117,7 +116,7 @@ public class CommonAOPInvocationHandlProcessorTest {
 	}
 
 	/**
-	 * [試験観点]      : AOP対象インスタンスを指定、例外が発生
+	 * [試験観点] : AOP対象インスタンスを指定、例外が発生
 	 * [期待される結果] : ログが出力され例外が発生すること
 	 */
 	@Test
@@ -150,7 +149,7 @@ public class CommonAOPInvocationHandlProcessorTest {
 	}
 
 	/**
-	 * [試験観点]      : AOP対象インスタンスを指定、引数あり
+	 * [試験観点] : AOP対象インスタンスを指定、引数あり
 	 * [期待される結果] : 引数が認識されていること
 	 */
 	@Test
@@ -180,7 +179,7 @@ public class CommonAOPInvocationHandlProcessorTest {
 	}
 
 	/**
-	 * [試験観点]      : AOP停止（スタート）
+	 * [試験観点] : AOP停止（スタート）
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
@@ -210,7 +209,7 @@ public class CommonAOPInvocationHandlProcessorTest {
 	}
 
 	/**
-	 * [試験観点]      : AOP停止（エンド）
+	 * [試験観点] : AOP停止（エンド）
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
@@ -240,7 +239,7 @@ public class CommonAOPInvocationHandlProcessorTest {
 	}
 
 	/**
-	 * [試験観点]      : AOP停止（エラー）
+	 * [試験観点] : AOP停止（エラー）
 	 * [期待される結果] : ログが出力され例外が発生すること
 	 */
 	@Test

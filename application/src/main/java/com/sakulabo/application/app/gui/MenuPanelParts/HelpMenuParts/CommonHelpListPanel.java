@@ -43,7 +43,7 @@ import com.sakulabo.regulation.annotation.KagerowInject;
 @AppMixin.Size(width = 450, height = 260)
 @JPanelMixin.Setting(backgroudColor = 0xFFFFFF, layout = Layout.BorderLayout)
 public class CommonHelpListPanel extends AppPanel
-		implements AppMixin, JButtonMixin, JPanelMixin, JLabelMixin, AutoCloseable {
+		implements JButtonMixin, JPanelMixin, JLabelMixin, AutoCloseable {
 
 	/** ロガー */
 	@KagerowInject
@@ -61,8 +61,9 @@ public class CommonHelpListPanel extends AppPanel
 
 	/**
 	 * JList向け内部データ構造
+	 * 
 	 * @param title リストタイトル
-	 * @param text 表示内容
+	 * @param text  表示内容
 	 */
 	private static record ListData(String title, CharSequence text) {
 
@@ -143,7 +144,8 @@ public class CommonHelpListPanel extends AppPanel
 
 	/**
 	 * デフォルトコンストラクタ
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
 	public CommonHelpListPanel() throws Exception {
 
@@ -177,8 +179,9 @@ public class CommonHelpListPanel extends AppPanel
 
 	/**
 	 * ダイアログを生成します
+	 * 
 	 * @param dialog ダイアログインスタンス
-	 * @param title ダイアログタイトル
+	 * @param title  ダイアログタイトル
 	 * @return パネル
 	 */
 	public JPanel getComponent(JDialog dialog, String title) {
@@ -193,8 +196,9 @@ public class CommonHelpListPanel extends AppPanel
 
 	/**
 	 * リストにデータを追加します
+	 * 
 	 * @param title リストタイトル
-	 * @param text 表示内容
+	 * @param text  表示内容
 	 */
 	public void addList(String title, CharSequence text) {
 		ListData data = new ListData(title, text);

@@ -2,7 +2,7 @@ package com.sakulabo.core.Kagerow.Adapter;
 
 /**
  * 実行計画のライフサイクルフックのデフォルトの実装を提供する基底クラスです
- * 
+ *
  * @author keeeeeent
  */
 public abstract class KagerowExecutionPlanBaseAdapter implements KagerowExecutionPlanAdapter {
@@ -69,7 +69,7 @@ public abstract class KagerowExecutionPlanBaseAdapter implements KagerowExecutio
 
 	/** {@inheritDoc} */
 	@Override
-	public void startDoKsqlIndividual() {
+	public void startDoKsqlIndividual(String id) {
 		;
 	}
 

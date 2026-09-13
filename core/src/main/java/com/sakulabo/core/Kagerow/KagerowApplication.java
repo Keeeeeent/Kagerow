@@ -285,8 +285,6 @@ public final class KagerowApplication {
 								// // 想定外の例外が発生した場合、ログ書き込み
 								AppLogger.getLogger().err(e);
 							}
-							// アプリケーション終了
-							throw new ApplicationError(e);
 						} finally {
 							// JMX監視停止
 							KagerowApplication.getJMX().stop();

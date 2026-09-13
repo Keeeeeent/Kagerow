@@ -9,6 +9,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -18,8 +19,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
 
 import com.sakulabo.core.Common.AppPathUtils;
+import com.sakulabo.core.Common.ErrorMessage;
 import com.sakulabo.core.Common.StringUtils;
 import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
 import com.sakulabo.core.Kagerow.Utilities.KagerowTransaction;
@@ -28,7 +31,7 @@ import com.sakulabo.core.Provides.ArchiveSystemProvider;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * 仮想ファイルシステムのトランザクション管理をするクラスです 
+ * 仮想ファイルシステムのトランザクション管理をするクラスです
  */
 @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 public final class FileTransaction implements KagerowTransaction {
@@ -207,7 +210,12 @@ public final class FileTransaction implements KagerowTransaction {
 				// まだクローズ処理がされていない場合、クローズする
 				target.close();
 			} catch (IOException e) {
-				KagerowLogger.newAppLogger().err(e);
+				if (e instanceof NoSuchFileException) {
+					KagerowLogger.newAppLogger().log(Level.WARNING,
+							ErrorMessage.CODE_005.getMessage(zipFilePath.toString()), new Object[0]);
+				} else {
+					KagerowLogger.newAppLogger().err(e);
+				}
 			} finally {
 				// 場合によってはネイティブメモリにファイルキャッシュが残ってしまう
 				// 防止策として強制的にGCの要求をJVMへ行う
@@ -218,18 +226,6 @@ public final class FileTransaction implements KagerowTransaction {
 				} catch (Throwable e) {
 					KagerowLogger.newAppLogger().err(e);
 				}
-			}
-		}
-
-		// ロックファイル存在確認と削除すみか確認
-		if (Objects.nonNull(lockFile)) {
-			try {
-				// まだ削除されていない場合、削除を行う
-				if (Files.exists(lockFile)) {
-					Files.delete(lockFile);
-				}
-			} catch (IOException e) {
-				KagerowLogger.newAppLogger().err(e);
 			}
 		}
 

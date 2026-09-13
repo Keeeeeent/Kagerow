@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug JCTree",
+            "request": "launch",
+            "mainClass": "example.Main",
+            "vmArgs": [
+                "--add-exports=jdk.compiler/com.sun.tools.javac.tree=com.sakulabo.application",
+                "--add-exports=jdk.compiler/com.sun.tools.javac.util=com.sakulabo.application"
+            ]
+        }
+    ]
+}

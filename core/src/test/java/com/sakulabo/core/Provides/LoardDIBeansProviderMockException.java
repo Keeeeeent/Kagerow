@@ -4,7 +4,6 @@ import com.sakulabo.core.Provides.LoardDIBeansProviderTest.LoardDIBeansProviderM
 import com.sakulabo.regulation.annotation.KagerowComponent;
 
 @KagerowComponent
-@SuppressWarnings("javadoc")
 public class LoardDIBeansProviderMockException implements LoardDIBeansProviderMockIF {
 
 	public LoardDIBeansProviderMockException() {

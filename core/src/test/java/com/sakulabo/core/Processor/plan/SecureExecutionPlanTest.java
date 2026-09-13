@@ -16,9 +16,8 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowExecutionPlanAccessor;
 import com.sakulabo.core.Kagerow.Utilities.KagerowVirtualFileCreater;
 
 /**
- * Kagerowセキュアスクリプトファイル実行のテストクラスです 
+ * Kagerowセキュアスクリプトファイル実行のテストクラスです
  */
-@SuppressWarnings("javadoc")
 public class SecureExecutionPlanTest extends BaseTest<SecureExecutionPlan> {
 
 	/** テスト対象 */
@@ -40,7 +39,7 @@ public class SecureExecutionPlanTest extends BaseTest<SecureExecutionPlan> {
 	void closeService() {
 	}
 
-	//	@BeforeAll
+	// @BeforeAll
 	public static void beforeAll() throws Throwable {
 
 		// コンテキストをリセット
@@ -55,12 +54,12 @@ public class SecureExecutionPlanTest extends BaseTest<SecureExecutionPlan> {
 	}
 
 	/**
-	 * [試験観点]      : 通常KSQLファイル
+	 * [試験観点] : 通常KSQLファイル
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・ファイルの内容が正しく読み込みていること
-	 *                  ・セキュアモード
-	 *                  ・暗号化ファイルが含まれない
+	 * ・正常終了すること
+	 * ・ファイルの内容が正しく読み込みていること
+	 * ・セキュアモード
+	 * ・暗号化ファイルが含まれない
 	 */
 	@Test
 	public void Test001() throws Throwable {
@@ -77,12 +76,12 @@ public class SecureExecutionPlanTest extends BaseTest<SecureExecutionPlan> {
 	}
 
 	/**
-	 * [試験観点]      : 通常KSQLファイル
+	 * [試験観点] : 通常KSQLファイル
 	 * [期待される結果] : 以下である
-	 *                  ・正常終了すること
-	 *                  ・ファイルの内容が正しく読み込みていること
-	 *                  ・セキュアモード
-	 *                  ・暗号化ファイルが含まれる
+	 * ・正常終了すること
+	 * ・ファイルの内容が正しく読み込みていること
+	 * ・セキュアモード
+	 * ・暗号化ファイルが含まれる
 	 */
 	@Test
 	public void Test002() throws Throwable {

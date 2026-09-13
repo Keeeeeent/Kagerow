@@ -64,7 +64,7 @@ public final class Main {
 	 * 初期化エージェントのエントリーです
 	 * @param arg 初期化オプション
 	 * @param inst JVM管理インスタンス
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
 	@SuppressWarnings("exports")
 	public static void premain(String arg, Instrumentation inst)
@@ -80,6 +80,7 @@ public final class Main {
 		case NO_INIT -> new Initer.EmptyInit();
 		case ALL_INIT -> new Initer.AllInit();
 		case GUI_INIT -> new GraphicalIniter();
+		case CLI_INIT -> new Initer.CommandIniter();
 		default -> new Initer.EmptyInit();
 		};
 		// 初期化処理実行

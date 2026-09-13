@@ -38,7 +38,7 @@ import com.sakulabo.regulation.annotation.KagerowInject;
 @GraphicComponent
 @AppMixin.Size(width = 330, height = 200)
 @JPanelMixin.Setting(backgroudColor = 0xFFFFFF, layout = Layout.BorderLayout)
-public final class DisclaimerPanel extends AppPanel implements AppMixin, JButtonMixin, JPanelMixin, JLabelMixin {
+public final class DisclaimerPanel extends AppPanel implements JButtonMixin, JPanelMixin, JLabelMixin {
 
 	/** ロガー */
 	@KagerowInject
@@ -131,7 +131,8 @@ public final class DisclaimerPanel extends AppPanel implements AppMixin, JButton
 
 	/**
 	 * デフォルトコンストラクタ
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
 	public DisclaimerPanel() throws Exception {
 
@@ -155,6 +156,7 @@ public final class DisclaimerPanel extends AppPanel implements AppMixin, JButton
 
 	/**
 	 * 免責事項文章を生成します
+	 * 
 	 * @return 生成された文章
 	 */
 	public String getDisclaimerText() {
@@ -177,6 +179,7 @@ public final class DisclaimerPanel extends AppPanel implements AppMixin, JButton
 
 	/**
 	 * 過去に免責事項に同意しているか判定します
+	 * 
 	 * @return 同意済みの場合true
 	 */
 	public boolean checkAgreeAction() {
