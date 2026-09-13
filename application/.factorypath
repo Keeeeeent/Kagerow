@@ -1,4 +1,0 @@
-<factorypath>
-    <factorypathentry kind="VARJAR" id="M2_REPO/com/sakulabo/application-core/1.0.0/application-core-1.0.0.jar" enabled="false" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/com/h2database/h2/2.3.232/h2-2.3.232.jar" enabled="true" runInBatchMode="false"/>
-</factorypath>
