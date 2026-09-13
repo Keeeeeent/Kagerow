@@ -20,7 +20,6 @@ import com.sakulabo.core.Processor.database.impl.OracleInfoAccesserImpl;
 /**
  * データベースオブジェクト実行情報生成テストです
  */
-@SuppressWarnings("javadoc")
 public class OracleInfoAccesserImplTest extends BaseTest<OracleInfoAccesserImpl> {
 
 	/**
@@ -39,7 +38,7 @@ public class OracleInfoAccesserImplTest extends BaseTest<OracleInfoAccesserImpl>
 	}
 
 	/**
-	 * [試験観点]      : Oracleモード
+	 * [試験観点] : Oracleモード
 	 * [期待される結果] : 生のSQL生成が期待通り動作すること、通常データオブジェクト
 	 */
 	@Test
@@ -94,7 +93,7 @@ public class OracleInfoAccesserImplTest extends BaseTest<OracleInfoAccesserImpl>
 	}
 
 	/**
-	 * [試験観点]      : Oracleモード
+	 * [試験観点] : Oracleモード
 	 * [期待される結果] : 整形済みSQL生成が期待通り動作すること、通常データオブジェクト
 	 */
 	@Test
@@ -148,7 +147,7 @@ public class OracleInfoAccesserImplTest extends BaseTest<OracleInfoAccesserImpl>
 	}
 
 	/**
-	 * [試験観点]      : Oracleモード
+	 * [試験観点] : Oracleモード
 	 * [期待される結果] : 変更可能タイプが期待値と一致すること、通常データオブジェクト
 	 */
 	@Test
@@ -201,7 +200,7 @@ public class OracleInfoAccesserImplTest extends BaseTest<OracleInfoAccesserImpl>
 	}
 
 	/**
-	 * [試験観点]      : Oracleモード
+	 * [試験観点] : Oracleモード
 	 * [期待される結果] : 変更可能タイプ一覧が期待値と一致すること、通常データオブジェクト
 	 */
 	@Test
@@ -287,7 +286,7 @@ public class OracleInfoAccesserImplTest extends BaseTest<OracleInfoAccesserImpl>
 	}
 
 	/**
-	 * [試験観点]      : Oracleモード
+	 * [試験観点] : Oracleモード
 	 * [期待される結果] : 生のSQL生成が期待通り動作すること、セキュアデータオブジェクト
 	 */
 	@Test
@@ -344,7 +343,7 @@ public class OracleInfoAccesserImplTest extends BaseTest<OracleInfoAccesserImpl>
 	}
 
 	/**
-	 * [試験観点]      : Oracleモード
+	 * [試験観点] : Oracleモード
 	 * [期待される結果] : 整形済みSQL生成が期待通り動作すること、セキュアデータオブジェクト
 	 */
 	@Test
@@ -400,7 +399,7 @@ public class OracleInfoAccesserImplTest extends BaseTest<OracleInfoAccesserImpl>
 	}
 
 	/**
-	 * [試験観点]      : Oracleモード
+	 * [試験観点] : Oracleモード
 	 * [期待される結果] : 変更可能タイプが期待値と一致すること、セキュアデータオブジェクト
 	 */
 	@Test
@@ -455,7 +454,7 @@ public class OracleInfoAccesserImplTest extends BaseTest<OracleInfoAccesserImpl>
 	}
 
 	/**
-	 * [試験観点]      : Oracleモード
+	 * [試験観点] : Oracleモード
 	 * [期待される結果] : 変更可能タイプ一覧が期待値と一致すること、セキュアデータオブジェクト
 	 */
 	@Test

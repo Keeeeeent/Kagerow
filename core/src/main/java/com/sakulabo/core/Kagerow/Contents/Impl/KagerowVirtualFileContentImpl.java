@@ -187,17 +187,14 @@ public final class KagerowVirtualFileContentImpl extends BaseKagerowContent impl
 
 		}
 
-		@SuppressWarnings("javadoc")
 		private void readObject(ObjectInputStream stream) throws InvalidObjectException {
 			throw new UnsupportedOperationException();
 		}
 
-		@SuppressWarnings("javadoc")
 		private Object writeReplace() {
 			return new SecureFileObjectProxy__Impl__(this.data, this.iv);
 		}
 
-		@SuppressWarnings("javadoc")
 		private final static class SecureFileObjectProxy__Impl__ implements Serializable {
 
 			/** シリアライズID */

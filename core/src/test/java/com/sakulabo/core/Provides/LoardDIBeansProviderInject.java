@@ -5,7 +5,6 @@ import com.sakulabo.regulation.annotation.KagerowComponent;
 import com.sakulabo.regulation.annotation.KagerowInject;
 
 @KagerowComponent("mock")
-@SuppressWarnings("javadoc")
 public class LoardDIBeansProviderInject implements LoardDIBeansProviderMockIF {
 
 	@KagerowInject
@@ -15,7 +14,7 @@ public class LoardDIBeansProviderInject implements LoardDIBeansProviderMockIF {
 	public String Test() {
 		return target1.Test();
 	}
-	
+
 	@Override
 	public String Error(String args) {
 		return target1.Error(args);

@@ -24,6 +24,7 @@ import com.sakulabo.launcher.Initer.Impl.InitLockFile;
 
 /**
  * GUIによる初期化処理の機能を提供する基底クラスです
+ * 
  * @author keeeeeent
  */
 public final class GraphicalIniter extends Initer implements Runnable {
@@ -38,7 +39,6 @@ public final class GraphicalIniter extends Initer implements Runnable {
 	private Initer initProcess = new AllInit();
 
 	// サイズ情報保管レコード
-	@SuppressWarnings("javadoc")
 	private static record Size(int width, int heigth) {
 
 		private static final Size FRAME = new Size(600, 400);
@@ -48,6 +48,7 @@ public final class GraphicalIniter extends Initer implements Runnable {
 
 		/**
 		 * dimensionにレコードを変換します
+		 * 
 		 * @return ディメンション
 		 */
 		@SuppressWarnings("unused")
@@ -175,6 +176,7 @@ public final class GraphicalIniter extends Initer implements Runnable {
 
 	/**
 	 * 重複起動時のダイアログを表示します
+	 * 
 	 * @param pid PID
 	 */
 	private void pringDialog(Object pid) {
@@ -193,6 +195,7 @@ public final class GraphicalIniter extends Initer implements Runnable {
 	/**
 	 * ダイアログインスタンスを生成します<br/>
 	 * このダイアログ表示が終了するとJVMを強制終了します
+	 * 
 	 * @param message ダイアログメッセージ
 	 */
 	private void createDialog(String message) {

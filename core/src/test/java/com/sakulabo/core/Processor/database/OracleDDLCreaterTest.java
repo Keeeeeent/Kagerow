@@ -17,7 +17,6 @@ import com.sakulabo.core.Processor.database.impl.OracleDDLCreater;
 /**
  * Oracleモード向けのDDLを生成テストです
  */
-@SuppressWarnings("javadoc")
 public class OracleDDLCreaterTest extends BaseTest<OracleDDLCreater> {
 
 	/** テスト対象 */
@@ -39,7 +38,7 @@ public class OracleDDLCreaterTest extends BaseTest<OracleDDLCreater> {
 	}
 
 	/**
-	 * [試験観点]      : チャンク読み取り
+	 * [試験観点] : チャンク読み取り
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test

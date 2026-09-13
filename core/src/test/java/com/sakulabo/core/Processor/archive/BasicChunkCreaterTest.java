@@ -21,9 +21,8 @@ import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowVirtu
 import com.sakulabo.core.Kagerow.Exception.AppLogicException;
 
 /**
- * バイナリファイル実装提供クラスのテストクラスです 
+ * バイナリファイル実装提供クラスのテストクラスです
  */
-@SuppressWarnings("javadoc")
 public class BasicChunkCreaterTest extends BaseTest<BasicChunkCreater> {
 
 	/**
@@ -47,7 +46,7 @@ public class BasicChunkCreaterTest extends BaseTest<BasicChunkCreater> {
 	private BasicChunkCreater testTarget;
 
 	/**
-	 * [試験観点]      : チャンク生成
+	 * [試験観点] : チャンク生成
 	 * [期待される結果] : 正常終了すること、ファイルが生成されること
 	 */
 	@Test
@@ -84,7 +83,7 @@ public class BasicChunkCreaterTest extends BaseTest<BasicChunkCreater> {
 	}
 
 	/**
-	 * [試験観点]      : 不正パス
+	 * [試験観点] : 不正パス
 	 * [期待される結果] : 例外が発生すること、エラーメッセージが期待通りである
 	 */
 	@Test

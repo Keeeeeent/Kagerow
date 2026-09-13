@@ -20,7 +20,6 @@ import com.sakulabo.core.Processor.database.impl.PostgreSQLInfoAccesserImpl;
 /**
  * データベースオブジェクト実行情報生成テストです
  */
-@SuppressWarnings("javadoc")
 public class PostgreSQLInfoAccesserImplTest extends BaseTest<PostgreSQLInfoAccesserImpl> {
 
 	/**
@@ -39,7 +38,7 @@ public class PostgreSQLInfoAccesserImplTest extends BaseTest<PostgreSQLInfoAcces
 	}
 
 	/**
-	 * [試験観点]      : PostgreSQLモード
+	 * [試験観点] : PostgreSQLモード
 	 * [期待される結果] : 生のSQL生成が期待通り動作すること、通常データオブジェクト
 	 */
 	@Test
@@ -93,7 +92,7 @@ public class PostgreSQLInfoAccesserImplTest extends BaseTest<PostgreSQLInfoAcces
 	}
 
 	/**
-	 * [試験観点]      : PostgreSQLモード
+	 * [試験観点] : PostgreSQLモード
 	 * [期待される結果] : 整形済みSQL生成が期待通り動作すること、通常データオブジェクト
 	 */
 	@Test
@@ -147,7 +146,7 @@ public class PostgreSQLInfoAccesserImplTest extends BaseTest<PostgreSQLInfoAcces
 	}
 
 	/**
-	 * [試験観点]      : PostgreSQLモード
+	 * [試験観点] : PostgreSQLモード
 	 * [期待される結果] : 変更可能タイプが期待値と一致すること、通常データオブジェクト
 	 */
 	@Test
@@ -200,7 +199,7 @@ public class PostgreSQLInfoAccesserImplTest extends BaseTest<PostgreSQLInfoAcces
 	}
 
 	/**
-	 * [試験観点]      : PostgreSQLモード
+	 * [試験観点] : PostgreSQLモード
 	 * [期待される結果] : 変更可能タイプ一覧が期待値と一致すること、通常データオブジェクト
 	 */
 	@Test
@@ -286,7 +285,7 @@ public class PostgreSQLInfoAccesserImplTest extends BaseTest<PostgreSQLInfoAcces
 	}
 
 	/**
-	 * [試験観点]      : PostgreSQLモード
+	 * [試験観点] : PostgreSQLモード
 	 * [期待される結果] : 生のSQL生成が期待通り動作すること、セキュアデータオブジェクト
 	 */
 	@Test
@@ -342,7 +341,7 @@ public class PostgreSQLInfoAccesserImplTest extends BaseTest<PostgreSQLInfoAcces
 	}
 
 	/**
-	 * [試験観点]      : PostgreSQLモード
+	 * [試験観点] : PostgreSQLモード
 	 * [期待される結果] : 整形済みSQL生成が期待通り動作すること、セキュアデータオブジェクト
 	 */
 	@Test
@@ -398,7 +397,7 @@ public class PostgreSQLInfoAccesserImplTest extends BaseTest<PostgreSQLInfoAcces
 	}
 
 	/**
-	 * [試験観点]      : PostgreSQLモード
+	 * [試験観点] : PostgreSQLモード
 	 * [期待される結果] : 変更可能タイプが期待値と一致すること、セキュアデータオブジェクト
 	 */
 	@Test
@@ -453,7 +452,7 @@ public class PostgreSQLInfoAccesserImplTest extends BaseTest<PostgreSQLInfoAcces
 	}
 
 	/**
-	 * [試験観点]      : Oracleモード
+	 * [試験観点] : Oracleモード
 	 * [期待される結果] : 変更可能タイプ一覧が期待値と一致すること、セキュアデータオブジェクト
 	 */
 	@Test

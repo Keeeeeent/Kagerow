@@ -17,7 +17,6 @@ import com.sakulabo.core.Processor.database.impl.DefaultDMLCreater;
 /**
  * DML生成テストです
  */
-@SuppressWarnings("javadoc")
 public class DefaultDMLCreaterTest extends BaseTest<DefaultDMLCreater> {
 
 	/** テスト対象 */
@@ -39,7 +38,7 @@ public class DefaultDMLCreaterTest extends BaseTest<DefaultDMLCreater> {
 	}
 
 	/**
-	 * [試験観点]      : チャンク読み取り
+	 * [試験観点] : チャンク読み取り
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test

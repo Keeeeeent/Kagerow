@@ -24,9 +24,8 @@ import com.sakulabo.BaseTest;
 import com.sakulabo.core.Kagerow.KagerowApplication;
 
 /**
- * JDBCプラグインのテストクラスです 
+ * JDBCプラグインのテストクラスです
  */
-@SuppressWarnings("javadoc")
 public class JDBCDefaultPluginTest extends BaseTest<JDBCDefaultPlugin> {
 
 	/** テスト対象 */
@@ -93,7 +92,7 @@ public class JDBCDefaultPluginTest extends BaseTest<JDBCDefaultPlugin> {
 	}
 
 	/**
-	 * [試験観点]      : テーブル生成
+	 * [試験観点] : テーブル生成
 	 * [期待される結果] : パラメータ指定、指定されたパラメータが返却されること
 	 */
 	@Test
@@ -115,7 +114,7 @@ public class JDBCDefaultPluginTest extends BaseTest<JDBCDefaultPlugin> {
 	}
 
 	/**
-	 * [試験観点]      : テーブル生成
+	 * [試験観点] : テーブル生成
 	 * [期待される結果] : パラメータ未指定、指定されたパラメータが返却されること
 	 */
 	@Test
@@ -137,7 +136,7 @@ public class JDBCDefaultPluginTest extends BaseTest<JDBCDefaultPlugin> {
 	}
 
 	/**
-	 * [試験観点]      : トランザクション制御レベル
+	 * [試験観点] : トランザクション制御レベル
 	 * [期待される結果] : パラメータにNONEを指定、Connection.TRANSACTION_NONEが返却されること
 	 */
 	@Test
@@ -159,8 +158,9 @@ public class JDBCDefaultPluginTest extends BaseTest<JDBCDefaultPlugin> {
 	}
 
 	/**
-	 * [試験観点]      : トランザクション制御レベル
-	 * [期待される結果] : パラメータにREAD_COMMITTEDを指定、Connection.TRANSACTION_READ_COMMITTEDが返却されること
+	 * [試験観点] : トランザクション制御レベル
+	 * [期待される結果] :
+	 * パラメータにREAD_COMMITTEDを指定、Connection.TRANSACTION_READ_COMMITTEDが返却されること
 	 */
 	@Test
 	public void Test004() throws Throwable {
@@ -181,8 +181,9 @@ public class JDBCDefaultPluginTest extends BaseTest<JDBCDefaultPlugin> {
 	}
 
 	/**
-	 * [試験観点]      : トランザクション制御レベル
-	 * [期待される結果] : パラメータにREAD_UNCOMMITTEDを指定、Connection.TRANSACTION_READ_UNCOMMITTEDが返却されること
+	 * [試験観点] : トランザクション制御レベル
+	 * [期待される結果] :
+	 * パラメータにREAD_UNCOMMITTEDを指定、Connection.TRANSACTION_READ_UNCOMMITTEDが返却されること
 	 */
 	@Test
 	public void Test005() throws Throwable {
@@ -203,8 +204,9 @@ public class JDBCDefaultPluginTest extends BaseTest<JDBCDefaultPlugin> {
 	}
 
 	/**
-	 * [試験観点]      : トランザクション制御レベル
-	 * [期待される結果] : パラメータにREPEATABLE_READを指定、Connection.TRANSACTION_REPEATABLE_READが返却されること
+	 * [試験観点] : トランザクション制御レベル
+	 * [期待される結果] :
+	 * パラメータにREPEATABLE_READを指定、Connection.TRANSACTION_REPEATABLE_READが返却されること
 	 */
 	@Test
 	public void Test006() throws Throwable {
@@ -225,7 +227,7 @@ public class JDBCDefaultPluginTest extends BaseTest<JDBCDefaultPlugin> {
 	}
 
 	/**
-	 * [試験観点]      : トランザクション制御レベル
+	 * [試験観点] : トランザクション制御レベル
 	 * [期待される結果] : パラメータにSERIALIZABLEを指定、Connection.TRANSACTION_SERIALIZABLEが返却されること
 	 */
 	@Test
@@ -247,7 +249,7 @@ public class JDBCDefaultPluginTest extends BaseTest<JDBCDefaultPlugin> {
 	}
 
 	/**
-	 * [試験観点]      : トランザクション制御レベル
+	 * [試験観点] : トランザクション制御レベル
 	 * [期待される結果] : パラメータ未指定、Connection.TRANSACTION_READ_COMMITTEDが返却されること
 	 */
 	@Test
@@ -268,7 +270,7 @@ public class JDBCDefaultPluginTest extends BaseTest<JDBCDefaultPlugin> {
 	}
 
 	/**
-	 * [試験観点]      : KDBファイル生成
+	 * [試験観点] : KDBファイル生成
 	 * [期待される結果] : 期待通りのバスが生成されること
 	 */
 	@Test

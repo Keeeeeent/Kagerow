@@ -21,9 +21,8 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowDBMode;
 import com.sakulabo.core.Processor.database.DDLConnectionHandler;
 
 /**
- * バイナリファイル読み取り実装提供クラスのテストクラスです 
+ * バイナリファイル読み取り実装提供クラスのテストクラスです
  */
-@SuppressWarnings("javadoc")
 public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 
 	/**
@@ -47,7 +46,7 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 	private BasicChunkLorder testTarget;
 
 	/**
-	 * [試験観点]      : チャンク読み取り
+	 * [試験観点] : チャンク読み取り
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
@@ -79,7 +78,7 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 	}
 
 	/**
-	 * [試験観点]      : チャンク読み取り,2コア
+	 * [試験観点] : チャンク読み取り,2コア
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
@@ -116,7 +115,7 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 	}
 
 	/**
-	 * [試験観点]      : チャンク読み取り,4コア
+	 * [試験観点] : チャンク読み取り,4コア
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
@@ -153,7 +152,7 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 	}
 
 	/**
-	 * [試験観点]      : チャンク読み取り,8コア
+	 * [試験観点] : チャンク読み取り,8コア
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
@@ -190,7 +189,7 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 	}
 
 	/**
-	 * [試験観点]      : チャンク読み取り,16コア
+	 * [試験観点] : チャンク読み取り,16コア
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
@@ -227,7 +226,7 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 	}
 
 	/**
-	 * [試験観点]      : チャンク読み取り,全てのパターンのデータ
+	 * [試験観点] : チャンク読み取り,全てのパターンのデータ
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test

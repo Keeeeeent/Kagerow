@@ -67,14 +67,14 @@ public class NonComponentPluginPopupEditPanel extends JPanel
 		/** 編集区画 */
 		private final JTextPane jTextPane;
 		/** テーブルキー */
-		@SuppressWarnings("javadoc")
 		private volatile int row, col;
 		/** 入力確定フラグ */
 		private final AtomicBoolean commited = new AtomicBoolean();
 
 		/**
 		 * デフォルトコンストラクタ
-		 * @param map データ
+		 * 
+		 * @param map       データ
 		 * @param jTextPane 編集区画
 		 */
 		public tableModel(Map<String, String> map, JTextPane jTextPane) {
@@ -167,9 +167,10 @@ public class NonComponentPluginPopupEditPanel extends JPanel
 
 	/**
 	 * デフォルトコンストラクタ
+	 * 
 	 * @param kagerowScriptAccessor スクリプトアクセッサー
 	 * @param kagerowPluginAccessor プラグインアクセッサー
-	 * @param parent 親コンポーネント
+	 * @param parent                親コンポーネント
 	 */
 	public NonComponentPluginPopupEditPanel(
 			KagerowScriptAccessor kagerowScriptAccessor,

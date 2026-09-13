@@ -27,6 +27,7 @@ public final class DataTypeHandler {
 
 	/**
 	 * デフォルトコンストラクタ
+	 * 
 	 * @param data 初回データリスト
 	 */
 	public DataTypeHandler(String[] data) {
@@ -37,6 +38,7 @@ public final class DataTypeHandler {
 
 	/**
 	 * データタイプ更新メソッド
+	 * 
 	 * @param data データリスト
 	 */
 	public void update(String[] data) {
@@ -56,6 +58,7 @@ public final class DataTypeHandler {
 
 	/**
 	 * 現時点でのDataTypeを取得します
+	 * 
 	 * @return DataType配列
 	 */
 	public KagerowDataType[] getDataType() {
@@ -70,12 +73,13 @@ public final class DataTypeHandler {
 	 * 文字列判定クラスです<br/>
 	 * 処理は以下のとおりチェーン方式で行われます
 	 * NULL->BOOLEAN->NUMBER(0から始まる文字列の場合)->TIMESTAMP->DATE->VARCHAR<br/>
-	 *            ... NUMBER(上記以外)             ->DECIMAL->TIMESTAMP->DATE->VARCHAR
+	 * ... NUMBER(上記以外) ->DECIMAL->TIMESTAMP->DATE->VARCHAR
 	 * 
 	 */
 	private interface checker {
 		/**
 		 * 判定した結果対応するフォーマットではなかった場合、後続のチェッカーへチェーン処理します。
+		 * 
 		 * @param target チェック対象
 		 * @return チェッカーインスタンス
 		 */
@@ -83,12 +87,14 @@ public final class DataTypeHandler {
 
 		/**
 		 * DataTypeを返却します
+		 * 
 		 * @return DataType
 		 */
 		KagerowDataType toDataType();
 
 		/**
 		 * nullチェックを行います
+		 * 
 		 * @param target 判定対象
 		 * @return 判定結果
 		 */
@@ -97,7 +103,6 @@ public final class DataTypeHandler {
 		}
 	}
 
-	@SuppressWarnings("javadoc")
 	private static class nullChecker implements checker {
 
 		/** {@inheritDoc} */
@@ -120,7 +125,6 @@ public final class DataTypeHandler {
 
 	}
 
-	@SuppressWarnings("javadoc")
 	private static class booleanChecker implements checker {
 
 		String falsy;
@@ -153,7 +157,6 @@ public final class DataTypeHandler {
 
 	}
 
-	@SuppressWarnings("javadoc")
 	private static class integerChecker implements checker {
 
 		/** アンチパターン */
@@ -195,7 +198,6 @@ public final class DataTypeHandler {
 
 	}
 
-	@SuppressWarnings("javadoc")
 	private static class decimalChecker implements checker {
 
 		/** 負の整数パターン */
@@ -229,7 +231,6 @@ public final class DataTypeHandler {
 
 	}
 
-	@SuppressWarnings("javadoc")
 	private static class timestampChecker implements checker {
 
 		/** {@inheritDoc} */
@@ -257,7 +258,6 @@ public final class DataTypeHandler {
 
 	}
 
-	@SuppressWarnings("javadoc")
 	private static class dateChecker implements checker {
 
 		/** {@inheritDoc} */
@@ -286,7 +286,6 @@ public final class DataTypeHandler {
 
 	}
 
-	@SuppressWarnings("javadoc")
 	private static class stringChecker implements checker {
 
 		/** {@inheritDoc} */

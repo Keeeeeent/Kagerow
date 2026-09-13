@@ -23,10 +23,9 @@ import com.sakulabo.core.Provides.LoardDIBeansProvider.Key;
 
 /**
  * DIのBeanロード実装を提供するプロバイダクラスのテストクラスです
- * 
+ *
  * @author keeeeeent
  */
-@SuppressWarnings("javadoc")
 public class LoardDIBeansProviderTest extends BaseTest<LoardDIBeansProvider> {
 
 	/**
@@ -75,7 +74,7 @@ public class LoardDIBeansProviderTest extends BaseTest<LoardDIBeansProvider> {
 	}
 
 	/**
-	 * [試験観点]      : Bean生成
+	 * [試験観点] : Bean生成
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
@@ -109,7 +108,7 @@ public class LoardDIBeansProviderTest extends BaseTest<LoardDIBeansProvider> {
 	}
 
 	/**
-	 * [試験観点]      : Bean検索(クラス検索)
+	 * [試験観点] : Bean検索(クラス検索)
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
@@ -137,7 +136,7 @@ public class LoardDIBeansProviderTest extends BaseTest<LoardDIBeansProvider> {
 	}
 
 	/**
-	 * [試験観点]      : Bean検索(インターフェイス検索)
+	 * [試験観点] : Bean検索(インターフェイス検索)
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
@@ -165,7 +164,7 @@ public class LoardDIBeansProviderTest extends BaseTest<LoardDIBeansProvider> {
 	}
 
 	/**
-	 * [試験観点]      : Bean検索(検索不可)
+	 * [試験観点] : Bean検索(検索不可)
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
@@ -193,9 +192,10 @@ public class LoardDIBeansProviderTest extends BaseTest<LoardDIBeansProvider> {
 	}
 
 	/**
-	 * [試験観点]      : Bean生成、名称付き、Bean内部初期化
+	 * [試験観点] : Bean生成、名称付き、Bean内部初期化
 	 * [期待される結果] : 正常終了すること
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
 	@Test
 	@SuppressWarnings("unchecked")
@@ -245,9 +245,10 @@ public class LoardDIBeansProviderTest extends BaseTest<LoardDIBeansProvider> {
 	}
 
 	/**
-	 * [試験観点]      : 重複Bean登録
+	 * [試験観点] : 重複Bean登録
 	 * [期待される結果] : アプリケーションが異常終了すること
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
 	@Test
 	@SuppressWarnings("unchecked")
@@ -273,9 +274,10 @@ public class LoardDIBeansProviderTest extends BaseTest<LoardDIBeansProvider> {
 	}
 
 	/**
-	 * [試験観点]      : Bean失敗登録
+	 * [試験観点] : Bean失敗登録
 	 * [期待される結果] : アプリケーションが異常終了すること
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
 	@Test
 	@SuppressWarnings("unchecked")
@@ -302,9 +304,10 @@ public class LoardDIBeansProviderTest extends BaseTest<LoardDIBeansProvider> {
 	}
 
 	/**
-	 * [試験観点]      : Bean生成、Bean対象外
+	 * [試験観点] : Bean生成、Bean対象外
 	 * [期待される結果] : 正常終了すること
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
 	@Test
 	@SuppressWarnings("unchecked")
@@ -322,9 +325,10 @@ public class LoardDIBeansProviderTest extends BaseTest<LoardDIBeansProvider> {
 	}
 
 	/**
-	 * [試験観点]      : Bean尊く、Bean対象外
+	 * [試験観点] : Bean尊く、Bean対象外
 	 * [期待される結果] : 正常終了すること
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
 	@Test
 	@SuppressWarnings("unchecked")
@@ -353,9 +357,10 @@ public class LoardDIBeansProviderTest extends BaseTest<LoardDIBeansProvider> {
 	}
 
 	/**
-	 * [試験観点]      : Bean生成中に例外発生
+	 * [試験観点] : Bean生成中に例外発生
 	 * [期待される結果] : 正常終了すること、空のOptionalが返却されること
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
 	@Test
 	public void Test010() throws Exception {
@@ -372,9 +377,10 @@ public class LoardDIBeansProviderTest extends BaseTest<LoardDIBeansProvider> {
 	}
 
 	/**
-	 * [試験観点]      : Key判定ロジックの妥当性
+	 * [試験観点] : Key判定ロジックの妥当性
 	 * [期待される結果] : 期待通り動作すること
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
 	@Test
 	public void Test011() throws Exception {

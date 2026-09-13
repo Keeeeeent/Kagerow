@@ -16,9 +16,8 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowFileHeaderReader;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 
 /**
- * CSVファイルのヘッダー読み取り実装提供クラスのテストクラスです 
+ * CSVファイルのヘッダー読み取り実装提供クラスのテストクラスです
  */
-@SuppressWarnings("javadoc")
 public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
 
 	/**
@@ -42,7 +41,7 @@ public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
 	private CSVFileHeaderReader testTarget;
 
 	/**
-	 * [試験観点]      : ヘッダー生成、ヘッダーなしファイル
+	 * [試験観点] : ヘッダー生成、ヘッダーなしファイル
 	 * [期待される結果] : 正常終了すること、デフォルトヘッダーが生成されること
 	 */
 	@Test
@@ -61,7 +60,7 @@ public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
 	}
 
 	/**
-	 * [試験観点]      : ヘッダー生成、ヘッダーありファイル、ダブルクオーテーションあり
+	 * [試験観点] : ヘッダー生成、ヘッダーありファイル、ダブルクオーテーションあり
 	 * [期待される結果] : ダブルクオーテーションが含まれていないこと
 	 */
 	@Test
@@ -80,7 +79,7 @@ public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
 	}
 
 	/**
-	 * [試験観点]      : ヘッダー生成、ヘッダーありファイル、ダブルクオーテーションあり、エスケープあり
+	 * [試験観点] : ヘッダー生成、ヘッダーありファイル、ダブルクオーテーションあり、エスケープあり
 	 * [期待される結果] : カラム名が正しく生成されること、エスケープ処理がされていること
 	 */
 	@Test
@@ -99,7 +98,7 @@ public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
 	}
 
 	/**
-	 * [試験観点]      : ヘッダー生成、ヘッダーありファイル、ダブルクオーテーションあり、エスケープあり、改行あり
+	 * [試験観点] : ヘッダー生成、ヘッダーありファイル、ダブルクオーテーションあり、エスケープあり、改行あり
 	 * [期待される結果] : カラムが正しく生成されていること、改行含めたヘッダーになっていること
 	 */
 	@Test
@@ -118,7 +117,7 @@ public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
 	}
 
 	/**
-	 * [試験観点]      : 複数回呼び出し
+	 * [試験観点] : 複数回呼び出し
 	 * [期待される結果] : 結果に変化がないこと
 	 */
 	@Test
@@ -142,7 +141,7 @@ public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
 	}
 
 	/**
-	 * [試験観点]      : ヘッダー生成、ヘッダーありファイル、ダブルクオーテーションありを含む
+	 * [試験観点] : ヘッダー生成、ヘッダーありファイル、ダブルクオーテーションありを含む
 	 * [期待される結果] : カンマが含まれた状態でヘッダーが生成されること
 	 */
 	@Test
@@ -161,7 +160,7 @@ public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
 	}
 
 	/**
-	 * [試験観点]      : ヘッダー生成、ヘッダーありファイル、ダブルクオーテーションありを含む、予約語を含む
+	 * [試験観点] : ヘッダー生成、ヘッダーありファイル、ダブルクオーテーションありを含む、予約語を含む
 	 * [期待される結果] : 予約語が変換されていること
 	 */
 	@Test
@@ -180,7 +179,7 @@ public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
 	}
 
 	/**
-	 * [試験観点]      : 予約語を含む、プレフィックス指定あり
+	 * [試験観点] : 予約語を含む、プレフィックス指定あり
 	 * [期待される結果] : 指定したプレフィックスで予約語が変換されていること
 	 */
 	@Test
