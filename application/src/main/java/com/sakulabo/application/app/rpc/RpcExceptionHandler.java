@@ -17,9 +17,9 @@ import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
@@ -91,6 +91,7 @@ public final class RpcExceptionHandler {
 							MethodType.methodType(BiConsumer.class, RpcExceptionHandler.class), methodType.erase(),
 							lookup.unreflect(exceptionHandler), methodType);
 					// ラムダインスタンス生成
+					@SuppressWarnings("unchecked")
 					BiConsumer<Throwable, HttpExchange> lamda = (BiConsumer<Throwable, HttpExchange>) callSite
 							.getTarget().invoke(RpcExceptionHandler.exceptionHandler);
 					// 例外ハンドラー登録
@@ -105,8 +106,9 @@ public final class RpcExceptionHandler {
 
 	/**
 	 * 例外ハンドリングを行います
+	 * 
 	 * @param exchange レスポンス
-	 * @param e 例外クラス
+	 * @param e        例外クラス
 	 * @throws IOException ハンドリング失敗
 	 */
 	public static void handleException(HttpExchange exchange, Throwable e) throws IOException {

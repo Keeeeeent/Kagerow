@@ -41,7 +41,7 @@ import com.sakulabo.regulation.annotation.KagerowInject;
 @AppMixin.Size(width = 330, height = 200)
 @JPanelMixin.Setting(backgroudColor = 0xFFFFFF, layout = Layout.BorderLayout)
 public final class CommonHelpPanel extends AppPanel
-		implements AppMixin, JButtonMixin, JPanelMixin, JLabelMixin, AutoCloseable {
+		implements JButtonMixin, JPanelMixin, JLabelMixin, AutoCloseable {
 
 	/** ロガー */
 	@KagerowInject
@@ -107,7 +107,8 @@ public final class CommonHelpPanel extends AppPanel
 
 	/**
 	 * デフォルトコンストラクタ
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
 	public CommonHelpPanel() throws Exception {
 
@@ -139,9 +140,10 @@ public final class CommonHelpPanel extends AppPanel
 
 	/**
 	 * ダイアログを生成します
+	 * 
 	 * @param dialog ダイアログインスタンス
-	 * @param title ダイアログタイトル
-	 * @param text ダイアログ表示テキスト
+	 * @param title  ダイアログタイトル
+	 * @param text   ダイアログ表示テキスト
 	 * @return パネル
 	 */
 	public JPanel getComponent(JDialog dialog, String title, CharSequence text) {

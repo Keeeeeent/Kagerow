@@ -8,7 +8,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.function.UnaryOperator;
 
 import com.sakulabo.application.app.cli.converter.ExistingFilePathConverter;
@@ -35,7 +34,7 @@ import picocli.CommandLine.Option;
  */
 @Command(name = "run")
 public class ExecuteCommand extends AuthRemoteCommand
-		implements Callable<Integer>, KagerowExecutionPlanAdapter, UnaryOperator<KagerowScriptAccessor> {
+		implements KagerowExecutionPlanAdapter, UnaryOperator<KagerowScriptAccessor> {
 
 	/** インポートファイルパス */
 	@Option(names = { "--path",
@@ -99,13 +98,13 @@ public class ExecuteCommand extends AuthRemoteCommand
 		});
 		// 結果処理
 		return switch (result) {
-		case Success _: {
-			yield Integer.valueOf(0);
-		}
-		case Fail res: {
-			System.err.println(String.format("StatusCode : %d ResponseText", res.statusCode(), res.response()));
-			yield Integer.valueOf(1);
-		}
+			case Success _: {
+				yield Integer.valueOf(0);
+			}
+			case Fail res: {
+				System.err.println(String.format("StatusCode : %d ResponseText", res.statusCode(), res.response()));
+				yield Integer.valueOf(1);
+			}
 		};
 	}
 

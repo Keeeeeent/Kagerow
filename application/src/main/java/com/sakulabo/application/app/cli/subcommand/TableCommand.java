@@ -66,7 +66,7 @@ public class TableCommand {
 	 * テーブル一覧確認コマンド
 	 */
 	@Command(name = "list")
-	public static class TableListCommand extends AuthRemoteCommand implements Callable<Integer> {
+	public static class TableListCommand extends AuthRemoteCommand {
 
 		/** スキーマ名称 */
 		@Option(names = { "--schema", "-s" }, required = true)

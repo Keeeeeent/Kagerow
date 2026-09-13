@@ -3,7 +3,6 @@ package com.sakulabo.application.app.cli.subcommand;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 import com.sakulabo.application.app.cli.converter.ExistingFilePathConverter;
@@ -18,7 +17,7 @@ import picocli.CommandLine.Option;
  *
  * @author keeeeeent
  */
-public abstract class AuthRemoteCommand extends RemoteCommand implements Callable<Integer> {
+public abstract class AuthRemoteCommand extends RemoteCommand {
 
 	/** リモート実行 */
 	@SuppressFBWarnings("MF_CLASS_MASKS_FIELD")
@@ -42,8 +41,8 @@ public abstract class AuthRemoteCommand extends RemoteCommand implements Callabl
 	 * RPCメソッド呼び出しを行います
 	 * このメソッドは常に認証済みリクエストを要求します
 	 *
-	 * @param methodName RPCメソッドパス
-	 * @param rpcPath RPCパス
+	 * @param methodName        RPCメソッドパス
+	 * @param rpcPath           RPCパス
 	 * @param createRequestBody リクエストXML生成関数
 	 * @return 呼び出し結果
 	 * @throws Exception リクエスト失敗

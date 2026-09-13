@@ -80,7 +80,7 @@ public class AgentCommand {
 	 * ログインコマンド
 	 */
 	@Command(name = "login")
-	public static class LoginAgentCommand extends RemoteCommand implements Callable<Integer> {
+	public static class LoginAgentCommand extends RemoteCommand {
 
 		/** ユーザ名称 */
 		@Option(names = "--name", description = "Please specify the user name for authentication", required = true)
@@ -156,15 +156,16 @@ public class AgentCommand {
 
 			// 結果処理
 			return switch (result) {
-			case Success success: {
-				String token = success.response().get("token");
-				System.out.println(token);
-				yield Integer.valueOf(0);
-			}
-			case Fail fail: {
-				System.err.println(String.format("StatusCode : %d ResponseText", fail.statusCode(), fail.response()));
-				yield Integer.valueOf(1);
-			}
+				case Success success: {
+					String token = success.response().get("token");
+					System.out.println(token);
+					yield Integer.valueOf(0);
+				}
+				case Fail fail: {
+					System.err
+							.println(String.format("StatusCode : %d ResponseText", fail.statusCode(), fail.response()));
+					yield Integer.valueOf(1);
+				}
 			};
 
 		}

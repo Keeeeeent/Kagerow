@@ -42,7 +42,7 @@ public class SchemaCommand {
 	 * スキーマ一覧確認コマンド
 	 */
 	@Command(name = "list")
-	public static class SchemaListCommand extends AuthRemoteCommand implements Callable<Integer> {
+	public static class SchemaListCommand extends AuthRemoteCommand {
 
 		/** {@inheritDoc} */
 		@Override
@@ -70,18 +70,19 @@ public class SchemaCommand {
 			RpcResult result = doRpcMethodCall("list", "/rpc/schema", HashMap::new);
 			// 結果処理
 			return switch (result) {
-			case Success success: {
-				ArrayReceiveDataType list = new ArrayReceiveDataType(success.response().get("list"));
-				Optional<List<String>> schemaList = list.getRawType();
-				schemaList.ifPresent(li -> {
-					li.stream().forEach(System.out::println);
-				});
-				yield Integer.valueOf(0);
-			}
-			case Fail fail: {
-				System.err.println(String.format("StatusCode : %d ResponseText", fail.statusCode(), fail.response()));
-				yield Integer.valueOf(1);
-			}
+				case Success success: {
+					ArrayReceiveDataType list = new ArrayReceiveDataType(success.response().get("list"));
+					Optional<List<String>> schemaList = list.getRawType();
+					schemaList.ifPresent(li -> {
+						li.stream().forEach(System.out::println);
+					});
+					yield Integer.valueOf(0);
+				}
+				case Fail fail: {
+					System.err
+							.println(String.format("StatusCode : %d ResponseText", fail.statusCode(), fail.response()));
+					yield Integer.valueOf(1);
+				}
 			};
 		}
 
@@ -93,7 +94,7 @@ public class SchemaCommand {
 	@Command(name = "delete")
 	public static class SchemaDeleteCommand implements Callable<Integer> {
 
-		/**　スキーマ名称 */
+		/** スキーマ名称 */
 		@Option(names = "--name", required = true)
 		private String schemaName;
 
