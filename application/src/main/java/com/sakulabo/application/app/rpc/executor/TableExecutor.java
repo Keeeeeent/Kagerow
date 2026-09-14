@@ -31,4 +31,15 @@ public interface TableExecutor extends RpcTarget {
      */
     public TableList getTableList(StringReceiveDataType schema) throws RpcRuntimeException;
 
+    /**
+     * テーブル世代一覧リストを取得します
+     *
+     * @param schema スキーマ名称
+     * @param table  テーブル名称
+     * @return 世代一覧リスト
+     * @throws RpcRuntimeException
+     */
+    public TableList getTableGeneration(StringReceiveDataType schema, StringReceiveDataType table)
+            throws RpcRuntimeException;
+
 }

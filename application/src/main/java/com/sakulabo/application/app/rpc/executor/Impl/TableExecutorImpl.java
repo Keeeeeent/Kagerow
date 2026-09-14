@@ -3,6 +3,7 @@ package com.sakulabo.application.app.rpc.executor.Impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import javax.naming.Binding;
 import javax.naming.Name;
@@ -17,6 +18,8 @@ import com.sakulabo.application.app.rpc.datatype.send.ArraySendDataType;
 import com.sakulabo.application.app.rpc.exception.RpcRuntimeException;
 import com.sakulabo.application.app.rpc.executor.TableExecutor;
 import com.sakulabo.application.app.rpc.filters.CertificationFilter;
+import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent;
+import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowVirtualFileObject;
 import com.sakulabo.core.Kagerow.Context.KagerowVirtualDirContext;
 import com.sakulabo.core.Kagerow.Context.KagerowVirtualFileContext;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
@@ -30,13 +33,6 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 @RpcFilter(filter = CertificationFilter.class, required = true)
 public class TableExecutorImpl implements TableExecutor {
 
-    /**
-     * テーブル一覧リストを取得します
-     *
-     * @param schema スキーマ名称
-     * @return 取得結果
-     * @throws RpcRuntimeException メソッド実行失敗
-     */
     /** {@inheritDoc} */
     @Override
     @RpcMethod("list")
@@ -66,9 +62,11 @@ public class TableExecutorImpl implements TableExecutor {
                     }
                 }
                 // フォーマット済み文字列生成
-                String formattedStr = String.format("%-17s %s%n", logicalName, physicalName);
+                StringJoiner joiner = new StringJoiner(",");
+                joiner.add(logicalName)
+                        .add(physicalName);
                 // リストに格納
-                resultList.add(formattedStr);
+                resultList.add(joiner.toString());
             }
             // 返却用インスタンス生成
             ArraySendDataType arraySendDataType = ArraySendDataType.getInstance(resultList);
@@ -77,6 +75,77 @@ public class TableExecutorImpl implements TableExecutor {
         } catch (Exception e) {
             throw new RpcRuntimeException("Failed to retrieve table information", e);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @RpcMethod("generation")
+    public TableList getTableGeneration(
+            @RpcMethodParam(value = "schemaName", required = true) StringReceiveDataType schema,
+            @RpcMethodParam(value = "tableName", required = true) StringReceiveDataType table)
+            throws RpcRuntimeException {
+
+        // 引数取得
+        String schemaName = schema.getRawType().get();
+        String tableName = table.getRawType().get();
+
+        // メイン処理呼び出し
+        try {
+            // コンテキスト取得
+            KagerowVirtualFileContext ctx = KagerowUtilities.getContext(KagerowVirtualFileContext._NAME);
+            // 対象テーブルコンテキスト取得
+            KagerowVirtualDirContext dirCtx = ctx.lookup(schemaName);
+            // シノニムリスト取得
+            Map<String, String> synonyms = dirCtx.getSynonymMapList();
+            // テーブル世代一覧取得
+            KagerowVirtualFileContent cnt = dirCtx.lookup(tableName);
+            String physicalTableName = "?????";
+            for (Map.Entry<String, String> entry : synonyms.entrySet()) {
+                if (entry.getValue().equals(tableName)) {
+                    physicalTableName = entry.getKey();
+                    break;
+                }
+            }
+            List<String> resultList = new ArrayList<>();
+            for (int i = 0; i < cnt.contentSize(); i++) {
+                StringJoiner joiner = new StringJoiner(",");
+                KagerowVirtualFileObject fileObject = cnt.get(i);
+                joiner.add(String.valueOf(i))
+                        .add(formatSize(fileObject.datSize().longValue()))
+                        .add(fileObject.createTime().toString())
+                        .add(String.format("${%s[%d]}", physicalTableName, i));
+                resultList.add(joiner.toString());
+            }
+            // 返却用インスタンス生成
+            ArraySendDataType arraySendDataType = ArraySendDataType.getInstance(resultList);
+            TableList tableList = new TableList(arraySendDataType);
+            return tableList;
+        } catch (Exception e) {
+            throw new RpcRuntimeException("Failed to retrieve table generation", e);
+        }
+
+    }
+
+    /**
+     * サイズフォーマット
+     *
+     * @param sizeBytes サイズ（バイト）
+     * @return フォーマット済みのサイズ
+     */
+    private static String formatSize(long sizeBytes) {
+        if (sizeBytes < 1024) {
+            return sizeBytes + " B";
+        }
+        double size = sizeBytes;
+        String[] units = { "KB", "MB", "GB", "TB", "PB", "EB" };
+        for (String unit : units) {
+            size /= 1024;
+
+            if (size < 1024) {
+                return String.format("%.1f %s", size, unit);
+            }
+        }
+        return String.format("%.1f ZB", size / 1024);
     }
 
 }

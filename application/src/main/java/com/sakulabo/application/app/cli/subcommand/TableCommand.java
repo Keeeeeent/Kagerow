@@ -118,17 +118,49 @@ public class TableCommand {
 						}
 					};
 				});
+			} else {
+				result = doRpcMethodCall("generation", "/rpc/table", () -> {
+					return new HashMap<>() {
+						{
+							put("schemaName", new StringSendDataType(schemaName));
+							put("tableName", new StringSendDataType(tableName));
+						}
+					};
+				});
 			}
 			// 結果処理
 			return switch (result) {
 				case Success success: {
 					ArrayReceiveDataType list = new ArrayReceiveDataType(success.response().get("list"));
 					Optional<List<String>> schemaList = list.getRawType();
-					schemaList.ifPresent(li -> {
-						System.out.printf("%-17s %s%n", "Logical Name", "Physical Name");
-						System.out.println("────────────────────────────────────────────────");
-						li.stream().forEach(System.out::println);
-					});
+					if (Objects.isNull(tableName)) {
+						schemaList.ifPresent(li -> {
+							System.out.printf("%-17s %s%n", "Logical Name", "Physical Name");
+							System.out.println("────────────────────────────────────────────────");
+							li.stream().map(line -> {
+								String[] tableItem = line.split(",");
+								return String.format("%-17s %s%n", tableItem[0], tableItem[1]);
+							}).forEach(System.out::println);
+						});
+					} else {
+						schemaList.ifPresent(li -> {
+							System.out.printf("%-17s %-17s %-30s %s%n",
+									"Index",
+									"Size",
+									"Created",
+									"Name");
+							System.out.println(
+									"────────────────────────────────────────────────────────────────────────────────────────────────");
+							li.stream().map(line -> {
+								String[] tableItem = line.split(",");
+								return String.format("%-17s %-17s %-30s %s%n",
+										tableItem[0],
+										tableItem[1],
+										tableItem[2],
+										tableItem[3]);
+							}).forEach(System.out::println);
+						});
+					}
 					yield Integer.valueOf(0);
 				}
 				case Fail fail: {
