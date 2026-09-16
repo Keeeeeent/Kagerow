@@ -64,10 +64,21 @@
             "source.organizeImports": "explicit"
         }
     },
+    "cSpell.diagnosticLevel": "Information",
+    "cSpell.enabled": true,
     "cSpell.words": [
         "Kagerow",
         "kagerow",
         "keeeeeent",
         "sakulabo",
+        "physicsname",
+        "sendphysicsname",
+        "tablename",
+        "Tablename",
+        "hamcrest",
+        "spotbugs",
+        "picocli",
+        "antrun",
+        "antfile"
     ]
 }

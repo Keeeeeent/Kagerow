@@ -1,9 +1,13 @@
 package com.sakulabo.application.app.rpc.executor.Impl;
 
+import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.stream.Stream;
 
 import javax.naming.Binding;
 import javax.naming.Name;
@@ -13,12 +17,17 @@ import com.sakulabo.application.app.rpc.RpcFilter;
 import com.sakulabo.application.app.rpc.RpcMethod;
 import com.sakulabo.application.app.rpc.RpcMethodParam;
 import com.sakulabo.application.app.rpc.RpcSetting;
+import com.sakulabo.application.app.rpc.datatype.receive.IntegerReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.receive.StringReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.send.ArraySendDataType;
+import com.sakulabo.application.app.rpc.datatype.send.DateTimeSendDataType;
+import com.sakulabo.application.app.rpc.datatype.send.IntegerSendDataType;
+import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
 import com.sakulabo.application.app.rpc.exception.RpcRuntimeException;
 import com.sakulabo.application.app.rpc.executor.TableExecutor;
 import com.sakulabo.application.app.rpc.filters.CertificationFilter;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent;
+import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowDataType;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowVirtualFileObject;
 import com.sakulabo.core.Kagerow.Context.KagerowVirtualDirContext;
 import com.sakulabo.core.Kagerow.Context.KagerowVirtualFileContext;
@@ -122,6 +131,54 @@ public class TableExecutorImpl implements TableExecutor {
             return tableList;
         } catch (Exception e) {
             throw new RpcRuntimeException("Failed to retrieve table generation", e);
+        }
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @RpcMethod("info")
+    public TableInfo getTableInfo(
+            @RpcMethodParam(value = "schemaName", required = true) StringReceiveDataType schema,
+            @RpcMethodParam(value = "tableName", required = true) StringReceiveDataType table,
+            @RpcMethodParam(value = "generation") IntegerReceiveDataType generation)
+            throws RpcRuntimeException {
+
+        // 引数取得
+        String schemaName = schema.getRawType().get();
+        String tableName = table.getRawType().get();
+        int generat = generation.getRawType().orElse(BigInteger.ZERO).intValue();
+
+        // メイン処理呼び出し
+        try {
+            // コンテキスト取得
+            KagerowVirtualFileContext ctx = KagerowUtilities.getContext(KagerowVirtualFileContext._NAME);
+            // 対象テーブルコンテキスト取得
+            KagerowVirtualDirContext dirCtx = ctx.lookup(schemaName);
+            // テーブル世代一覧取得
+            KagerowVirtualFileContent cnt = dirCtx.lookup(tableName);
+            // 返却用インスタンス生成
+            KagerowVirtualFileObject fileObject = cnt.get(generat);
+            StringSendDataType sendUri = new StringSendDataType(fileObject.uri().get());
+            StringSendDataType sendphysicsname = new StringSendDataType(schemaName);
+            StringSendDataType sendTablename = new StringSendDataType(tableName);
+            IntegerSendDataType sendSize = new IntegerSendDataType(fileObject.datSize());
+            DateTimeSendDataType sendCreated = new DateTimeSendDataType(
+                    LocalDateTime.ofInstant(fileObject.createTime(), ZoneId.systemDefault()));
+            ArraySendDataType arraySendHeader = ArraySendDataType.getInstance(fileObject.headerData());
+            ArraySendDataType arraySendDataType = ArraySendDataType
+                    .getInstance(Stream.of(fileObject.dataType()).map(KagerowDataType::name).toList());
+            TableInfo tableInfo = new TableInfo(
+                    sendUri,
+                    sendphysicsname,
+                    sendTablename,
+                    sendSize,
+                    sendCreated,
+                    arraySendHeader,
+                    arraySendDataType);
+            return tableInfo;
+        } catch (Exception e) {
+            throw new RpcRuntimeException("Failed to retrieve table information", e);
         }
 
     }
