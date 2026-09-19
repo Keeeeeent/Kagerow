@@ -40,7 +40,8 @@ import com.sakulabo.regulation.annotation.KagerowSpiModule;
 			com.sakulabo.application.app.rpc.executor.Impl.AuthExecutorImpl,
 			com.sakulabo.application.app.rpc.executor.Impl.SchemaExecutorImpl,
 			com.sakulabo.application.app.rpc.executor.Impl.ScriptExecutorImpl,
-			com.sakulabo.application.app.rpc.executor.Impl.TableExecutorImpl;
+			com.sakulabo.application.app.rpc.executor.Impl.TableExecutorImpl,
+			com.sakulabo.application.app.rpc.executor.Impl.PluginExecutorImpl;
 
 	// KagerowSPI
 	provides com.sakulabo.core.Kagerow.Spi.KagerowAutomaticStarter

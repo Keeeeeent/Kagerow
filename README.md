@@ -3,70 +3,64 @@
 ![License](https://img.shields.io/github/license/Keeeeeent/Kagerow)
 ![Java](https://img.shields.io/badge/Java-25-orange)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue)
-![KageriwLogo](core/src/main/resources/image/application.png)
+
+![KagerowLogo](core/src/main/resources/image/application.png)
 
 ## 🎁 概要  
-**Kagerow** は、CSV を SQL や Java で簡単に操作できるアプリケーションです。  </br>
-GUI/CLIアプリケーション、ライブラリなど幅広い範囲で使用可能となっています。
+Kagerowは、CSV/TSVなどのファイルデータを一時的なデータベース（KDB）へ取り込み、SQL（KSQL）を使って検索・加工・変換できるデータ処理ツールです。<br/>
+複数のCSVを結合したり、条件に応じてデータを抽出したり、SQL実行結果をCSV・JSON・Excelなどへ出力したりできます。<br/>
+GUIによる操作に加えて、KSQLファイルを利用した処理の自動化や、CLIからの実行にも対応しています。
 
-## 📖 目次  
-- [特徴](#-特徴)  
-- [使用技術](#-使用技術)  
-- [インストール](#-インストール)  
-- [使い方](#-使い方)  
-  - アプリケーションの起動
-  - スクリプト作成
-  - スクリプト保存
-  - データ取込
-    - 主な対応文字コード
-    - 自動ヘッダー付与について
-    - ヘッダーへのプレフィックス付与について
-    - データの世代管理について
-    - データの重複について
-    - 取込後のデータ型について
-    - 実際にデータを取り込んでみましょう
-  - スクリプト編集
-    - 共通設定（Common）
-      - 選択可能な実行モード
-      - スクリプト環境変数について
-      - キャッシュについて
-    - SQL設定（KSQL）
-      - 追加・削除
-      - 個別実行
-    - プラグイン設定（Plugin）
-      - デフォルトプラグイン一覧
-      - プラグインパラメータ設定
-    - 外部コマンド設定（Command）
-      - 実行モード一覧
-  - スクリプト実行
-  - KSQLファイル
-    - ファイル構成
-      - ルート要素
-      - configuration
-      - environment
-      - plugins
-        - plugin
-        - param
-      - ksqls
-        - ksql
-        - variable
-      - command
-        - スクリプト種別
-        - environmental-variables
-      - サンプルスクリプト
-- [developer](#-developer)  
+### こんなときに
+
+Kagerowは次のような用途に利用できます。
+
+- 複数のCSV/TSVをSQLで結合したい
+- 大量のCSVから必要なデータだけ抽出したい
+- CSVをSQLで集計・加工したい
+- SQLの実行結果をCSVやJSONへ出力したい
+- 定型的なCSV処理をスクリプト化したい
+- GUIでSQLを確認しながらデータを処理したい
+- CLIからKSQLを実行したい
+- JavaからKagerowの機能を利用したい
+- 独自のデータ入出力処理をプラグインとして追加したい
+
+### 処理フローイメージ
+
+```
+          CSV / TSV
+              │
+              ▼
+        Input Plugin
+              │
+              ▼
+        ┌──────────┐
+        │    KDB   │
+        └──────────┘
+              │
+              ▼
+            KSQL
+              │
+       ┌──────┴──────┐
+       ▼             ▼
+ Output Plugin     Command
+       │             │
+       ▼             ▼
+ CSV / JSON /     外部コマンド
+ Excel / HTML ...
+```
 
 ## 🚀 特徴  
 - **スクリプト**：専用形式のスクリプトファイルで複雑な処理が可能
 - **プラグイン**：JavaのSPIを経由して自作のカスタムプラグインを追加することが可能
-- **GUIアプリケーション**：Kagerowスクリプトを作成・編集・実行・管理を専用GUIから実施
-- **CLIアプリケーション**：Kagerowスクリプトを管理・実行を専用CLIから実施
-- **ライブラリ**：Java標準のアーカイブ形式のためJavaライブラリとして使用可能
+- **GUIアプリケーション**：Kagerowスクリプトの作成・編集・実行・管理を専用GUIから行えます
+- **CLIアプリケーション**：Kagerowスクリプトの管理・実行を専用CLIから行えます
+- **ライブラリ**：Java標準のアーカイブ形式で提供されるため、Javaライブラリとして利用できます
 
 ## 🛠️ 使用技術  
 - **言語**：JavaSE 25 (OpenJDK)
 - **ビルドツール**：Maven
-- **IDE**：Eclipse 2025
+- **IDE**：VSCode
 - **その他**：JDBC(H2)
 
 ## 🔧 インストール  
@@ -79,52 +73,95 @@ GUI/CLIアプリケーション、ライブラリなど幅広い範囲で使用�
       <tr>
         <th>OS</th>
         <th>ダウンロードリンク</th>
-        <th>パッケージング</th>
-        <th>容量 (MB)</th>
+        <th>配布形式</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td rowspan=1">Windous</td>
+        <td rowspan=1">Windows</td>
         <td><a href="https://github.com/Keeeeeent/Kagerow/releases/latest/download/Kagerow-windous.zip">取得</a></td>
         <td>zip</td>
-        <td>68.3</td>
       </tr>
        <tr>
-        <td rowspan="1">Mac OS</td>
+        <td rowspan="1">macOS</td>
         <td><a href="https://github.com/Keeeeeent/Kagerow/releases/latest/download/Kagerow-macos.tar.gz">取得</a></td>
         <td>tar</td>
-        <td>70.9</td>
       </tr>
       <tr>
         <td rowspan="1">Linux</td>
         <td>-</td>
         <td>tar</td>
-        <td>-</td>
       </tr>
       <tr>
         <td>LibraryOnly</td>
          <td><a href="https://github.com/Keeeeeent/Kagerow/releases/latest/download/application-core.jar">取得</a></td>
         <td>jar</td>
-        <td>1</td>
       </tr>
     </tbody>
 </table>
+
+## 対応環境・必要条件
+
+### 対応環境
+
+Kagerowは以下の環境を対象としています。
+
+| OS      | GUI | CLI | RPC |
+| ------- | --- | --- | --- |
+| Windows | 対応  | 対応  | 対応  |
+| macOS   | 対応  | 対応  | 対応  |
+| Linux   | —   | —   | —   |
+
+### 必要条件
+
+Kagerowの配布パッケージには、実行に必要な **JREが同梱されています**。<br/>
+そのため、配布パッケージを利用する場合、ユーザー自身でJavaをインストールする必要はありません。
+
+#### 一般ユーザー
+
+* 対応OS
+* Kagerowの配布パッケージ
+
+上記のみでKagerowを利用できます。
+
+#### 開発者
+
+Kagerowの開発には以下の環境が必要です。
+
+* Java 25 / OpenJDK 25
+* Maven
+* Git
+
+### Javaについて
+
+KagerowはJava 25を使用して開発されています。<br/>
+配布パッケージでは `jpackage` を使用してアプリケーションをパッケージ化し、実行に必要なJREを同梱しています。<br/>
+そのため、システムにインストールされているJavaのバージョンに依存せず、Kagerowに同梱されたJavaランタイムを使用して実行します。
 
 
 ## 👀 使い方  
 **Kagerow**の具体的な使い方について
 
 ### 用語
+Kagerowでは、CSV/TSVなどのデータを取り込み、Kagerow内部で一時的に管理しながらSQLによる検索・加工を行います。<br/>
+そのため、通常のデータベース製品とは異なるKagerow独自の用語が登場します。
 
 | 用語    | 説明 |
 | :-------- | :--------- |
-| KDB | Kagerow管理下の一時的なデータベースです。セッションクローズと共に削除されます。 |
-| KSQL | 標準的なSQLをKagerow独自に拡張したスクリプト言語です。各セクションに分かれたXMLとして保存します。 |
+| **KDB** | Kagerowがセッション中に管理する一時的なデータベースです。取り込んだCSV/TSVなどのデータをテーブルとして保持し、KSQLから検索・加工できます。通常はセッション終了時に削除されますが、キャッシュを有効にすることでデータを引き継ぐことができます。 |
+| **KSQL** | Kagerowで実行するSQLを管理するためのスクリプト形式です。標準的なSQLをベースに、Kagerow独自の変数やテーブル世代管理などの機能を利用できます。KSQLファイルはXML形式で構成され、設定、環境変数、プラグイン、SQL、外部コマンドなどを一つのスクリプトとして管理できます。 |
+| **KSQLファイル** | Kagerowが読み込んで実行するXML形式のスクリプトファイルです。`kagerow-script`をルート要素とし、`configuration`、`environment`、`plugins`、`ksqls`、`command`などのセクションで構成されます。 |
+| **セッション** | Kagerowがデータを取り込み、KSQLを実行する一連の実行単位です。セッションごとにKDBが構築され、セッション終了時に通常の一時データは破棄されます。 |
+| **プラグイン** | Kagerowの処理を拡張する仕組みです。CSV/TSVの入出力、JDBCによる外部DBからのデータ取得、JSONやExcelなどへの出力、DDL実行などを担当できます。JavaのSPIを利用して独自プラグインを追加することもできます。 |
+| **Input Plugin** | KDBへデータを入力するためのプラグインです。CSV、TSV、JDBC、DDLなどを利用してKDBにデータを取り込む際に使用します。 |
+| **Output Plugin** | KSQLの実行結果を外部へ出力するためのプラグインです。CSV、TSV、JSON、NDJSON、Excel、HTML、XMLなどの形式に対応できます。 |
+| **Command** | KSQLの実行が完了した後に、OS上で外部コマンドを実行するための仕組みです。Windowsでは`cmd`やPowerShell、Unix系OSでは`sh`や`bash`などを利用できます。 |
+| **スクリプト環境変数** | KSQLやCommandなどの実行時に利用できる環境変数です。プラットフォームの環境変数に加えて、Kagerowが管理する実行時情報やスクリプト固有の値を参照できます。 |
+| **世代管理** | 同じヘッダーと同じデータ型を持つデータを同一形式として管理し、取り込まれたデータを世代として保持する仕組みです。KSQLから`${テーブル名[n]}`、`${テーブル名[L]}`などの形式で特定の世代を参照できます。 |
+| **キャッシュ** | KDBのデータをセッション終了後も保持し、次回のKDB構築時に再利用するための機能です。大量のデータを扱う場合は、KDB構築時間の短縮にも利用できます。 |
 
 ### アプリケーションの起動
-
-アプリケーションの起動は非常に簡単です。</br>
+アプリケーションの起動は簡単です。</br>
 アプリケーションアイコンをダブルクリック、または専用コマンドをプロンプトで入力することで起動できます。
 
 ![KagerowImg](public/manual/img/初期表示.png)
@@ -169,11 +206,11 @@ GUI/CLIアプリケーション、ライブラリなど幅広い範囲で使用�
 
 - 文字コードはJVM標準で対応しているものから選択可能
 - ヘッダーの有無を選択可能（ヘッダーがない場合はKagerowが自動でヘッダーを付与）
-- SQLで使用不可能なヘッダー名称が存在した場合、プレフィックスを付与
-- 同じ形式のデータ（同じCSV/TSVのヘッダー）は同じテーブルとして世代管理が可能
-- データ重複防止
-- 取込後のデータ型はKagerowが自動で選択。選択はデータ変換可能な範囲で最も近しいものとなる。
-- セキュアデータを選択することで、セル単位で暗号化が可能。※暗号化方式については後述
+- SQLで使用できないヘッダー名が存在する場合は、プレフィックスを付与
+- 同じ形式のデータ（同じCSV/TSVのヘッダー）は、同じテーブルとして世代管理できます
+- データの重複を防止できます
+- 取込後のデータ型はKagerowが自動で選択。データ変換可能な範囲で、最も適した型が自動的に選択されます。
+- セキュアデータを選択することで、セル単位の暗号化が可能です。※暗号化方式については後述します。
 
 #### 主な対応文字コード
 
@@ -183,7 +220,7 @@ GUI/CLIアプリケーション、ライブラリなど幅広い範囲で使用�
 | UTF-16(BE/LE)     | ✅       |
 | UTF-32(BE/LE)     | ✅       |
 | Shift-JIS     | ✅       |
-| Windous-31J     | ✅       |
+| Windows-31J     | ✅       |
 | MS932(CP932)     | ✅       |
 | EUC-JP     | ✅       |
 | ISO-2022-JP     | ✅       |
@@ -229,7 +266,6 @@ GUI/CLIアプリケーション、ライブラリなど幅広い範囲で使用�
 **Kagerow** では以下順序でデータ変換処理を行います。
 
 ```mermaid
-
 sequenceDiagram
   participant start as データ型
   participant line_1 as NULL
@@ -291,6 +327,7 @@ sequenceDiagram
 ![KagerowImg](public/manual/img/データ取込オプション選択.png)
 
 オプションが選択できたら実行ボタンを押下しデータを取り込みます。</br>
+
 正常に取り込みができていればコンテキストが追加されているはずです。
 
 ![KagerowImg](public/manual/img/コンテキスト追加.png)
@@ -299,8 +336,8 @@ sequenceDiagram
 
 ### スクリプト編集
 
-さて、ここからはスクリプトの各種設定や内容について編集をしながら説明します。</br>
-スクリプには以下構成要素があります。
+さて、ここからは、スクリプトの各種設定と内容について説明します。</br>
+スクリプトには以下構成要素があります。
 
 - 共通設定（Common）
 - SQL設定（KSQL）
@@ -317,8 +354,8 @@ sequenceDiagram
 | :-------------- | :--------- |
 | スクリプト名称     | スクリプトに付与できる固有の名称です |
 | スクリプト概要     | スクリプトの概要を自由記述できます |
-| 実行モード        | スクリプトの実行モードを選択できます。モードの選択は初回のみ変更可能です。 |
-| カレントスキーマ   | KSQLを実行する際のカレントスキーマを指定します。 |
+| 実行モード        | スクリプトの実行モードを選択します。モードは初回のみ変更できます。 |
+| カレントスキーマ   | KSQL実行時のカレントスキーマを指定します。 |
 | スクリプト環境変数 | スクリプト実行時に使用できる環境変数を指定できます。 |
 | キャッシュ        | KDBをキャッシュします。 |
 
@@ -343,7 +380,7 @@ sequenceDiagram
 2. Kagerow管理下の環境変数
 3. 共通設定で宣言された環境変数
 
-また**Kagerow** によって管理された環境変数が存在ます。
+また**Kagerow** によって管理された環境変数が存在します。
 
 | 変数名         | 説明 |
 | :-------------- | :--------- |
@@ -354,7 +391,7 @@ sequenceDiagram
 | k_script_exe_mode     | 共通設定にて指定したスクリプト実行モードです |
 | k_schema     | 共通設定にて指定したカレントスキーマです |
 | k_script_file_path     | スクリプトファイルパスです |
-| k_timestamp     | 実行日時です。この変数は`k_timestamp_format`にて指定されたフォーマットに従います |
+| k_timestamp     | スクリプトの実行日時です。この変数は`k_timestamp_format`にて指定されたフォーマットに従います |
 | k_timestamp_format | `k_timestamp`の表示形式を指定します。デフォルトは`yyyyMMddHHmmSSS`です |
 
 ##### キャッシュについて
@@ -378,21 +415,21 @@ sequenceDiagram
 
 ##### 追加・削除
 
-KSQLの追加・削除は対象をテーブルから選択し、各種ボタンを押下してください。
+KSQLの追加・削除は、対象をテーブルから選択し、各種ボタンを押下して行います。
 
 ##### 個別実行
 
 KSQLはKDB構築後であれば個別実行を行うことが可能です。</br>
-個別実行は主にデバックが開発工程で活躍します。
+個別実行は主にデバッグが開発工程で活躍します。
 
 個別実行を行う際、キャッシュ機能を有効化していると個別実行前までのスナップショットを作成します。</br>
-これはデバックを行う際、無駄なキャッシュデータの蓄積を防止するためです。
+これはデバッグを行う際、無駄なキャッシュデータの蓄積を防止するためです。
 
 #### プラグイン設定（Plugin）
 
 **Kagerow** ではプラグインをスクリプト実行前後に実行することが可能です。</br>
 基本的によく使用する機能に関しては`デフォルトプラグイン`として用意してありますが、</br>
-必要に応じてカスタムプラグインをご自身で作成・追加することも可能です。
+必要に応じて、カスタムプラグインを作成・追加することもできます。
 
 ![KagerowImg](public/manual/img/プラグインへ画面切り替え.png)
 
@@ -431,7 +468,7 @@ KSQLはKDB構築後であれば個別実行を行うことが可能です。</br
 
 ##### 実行モード一覧
 
-選択可能な実行モードは各種プラットフォームで実際に使用可能なモードのみとなります。
+選択可能な実行モードは、実行環境で利用可能なものだけが表示されます。
 
 - cmd
 - ps（PowerShell）
@@ -442,21 +479,20 @@ KSQLはKDB構築後であれば個別実行を行うことが可能です。</br
 
 ### スクリプト実行
 
-スクリプトの実行は`スクリプト実行`ボタンを押下するか、Ctrl+Entryで可能です。</br>
+スクリプトの実行は`スクリプト実行`ボタンを押下するか、Ctrl+Enterで可能です。</br>
 実行が完了すると結果が表示されます。
 
 ![KagerowImg](public/manual/img/スクリプト実行.png)
 
 ### KSQLファイル
 **Kagerow** は専用のXMLスキーマに沿って記述されるKSQLファイルを取り込み実行されます。</br>
-KSQLファイルの各セクションについてここからは説明します。
+ここからは、KSQLファイルの各セクションについて説明します。
 
 #### ファイル構成
 KSQLファイルは以下の主要構成要素によって管理されています。
 
 ```xml
 <kagerow-script>
-
     <configuration>
         <name>...</name>
         <summary>...</summary>
@@ -464,81 +500,54 @@ KSQLファイルは以下の主要構成要素によって管理されていま�
         <schema>...</schema>
         <cache>...</cache> <!-- 任意 -->
     </configuration>
-
     <environment> <!-- 任意 -->
         <env name="..." value="..." />
     </environment>
-
     <plugins> <!-- 任意 -->
-
         <input>
-
             <plugin
                 id="..."
                 name="..."
                 package="..."
                 next="...">
-
                 <param name="...">...</param>
-
             </plugin>
-
         </input>
-
         <output>
-
             <plugin ... />
-
         </output>
-
     </plugins>
-
     <ksqls>
-
         <ksql
             id="..."
             name="..."
             next="...">
-
             <variable-declaration>
-
                 <variable
                     name="..."
                     value="..." />
-
             </variable-declaration>
-
             <sql><![CDATA[
                 SELECT ...
             ]]></sql>
-
         </ksql>
-
     </ksqls>
-
     <command>
-
         <environmental-variables>
-
             <variable
                 name="..."
                 value="..." />
-
         </environmental-variables>
-
         <cmd mode="bash">
             ...
         </cmd>
-
     </command>
-
 </kagerow-script>
 ```
 
 ---
 
 ##### ルート要素
-
 | 要素 | 必須 | 説明 |
 |------|:---:|------|
 | `configuration` | ✅ | スクリプトの基本設定 |
@@ -567,11 +576,8 @@ KSQLファイルは以下の主要構成要素によって管理されていま�
 
 ```xml
 <environment>
-
     <env name="DB_HOST" value="localhost"/>
-
     <env name="DB_PORT" value="5432"/>
-
 </environment>
 ```
 
@@ -587,27 +593,19 @@ KSQLファイルは以下の主要構成要素によって管理されていま�
 プラグインは **input** と **output** に分類されます。
 
 ```xml
+
 <plugins>
-
     <input>
-
         <plugin id="csv" name="CSV Reader">
-
             <param name="path">employees.csv</param>
-
             <param name="encoding">UTF-8</param>
-
         </plugin>
-
     </input>
-
     <output>
-
         <plugin id="excel" name="Excel Writer"/>
-
     </output>
-
 </plugins>
+
 ```
 
 ###### plugin
@@ -633,23 +631,16 @@ KSQLファイルは以下の主要構成要素によって管理されていま�
 
 ```xml
 <ksqls>
-
     <ksql id="main" name="社員一覧">
-
         <variable-declaration>
-
             <variable
                 name="table"
                 value="EMPLOYEE"/>
-
         </variable-declaration>
-
         <sql><![CDATA[
             SELECT * FROM ${table};
         ]]></sql>
-
     </ksql>
-
 </ksqls>
 ```
 
@@ -676,19 +667,14 @@ KSQLファイルは以下の主要構成要素によって管理されていま�
 
 ```xml
 <command>
-
     <environmental-variables>
-
         <variable
             name="OUTPUT"
             value="./output"/>
-
     </environmental-variables>
-
     <cmd mode="bash">
         echo "$OUTPUT"
     </cmd>
-
 </command>
 ```
 
@@ -709,6 +695,27 @@ KSQLファイルは以下の主要構成要素によって管理されていま�
 | `value` | ✅ | 環境変数の値 |
 
 ---
+
+##### 最小構成サンプルスクリプト
+
+以下はKagerowでSQLを実行する最小構成の例です。
+
+```xml
+<kagerow-script>
+    <configuration>
+        <name>sample</name>
+        <summary>サンプルスクリプト</summary>
+        <mode>Oracle</mode>
+        <schema>sample</schema>
+    </configuration>
+
+    <ksqls>
+        <ksql id="main" name="sample">
+            <sql>SELECT * FROM DUAL</sql>
+        </ksql>
+    </ksqls>
+</kagerow-script>
+```
 
 ##### サンプルスクリプト
 
@@ -764,3 +771,24 @@ KSQLファイルは以下の主要構成要素によって管理されていま�
 
 ## ☕️ developer
 開発者向けのページは[こちら](./public/design/index-README.md)です。
+
+## ライセンス
+
+Kagerowは **MIT License** のもとで公開しています。<br/>
+Kagerow本体のソースコードは、MIT Licenseの条件に従って利用・改変・再配布できます。<br/>
+また、Kagerowでは第三者ライブラリを使用しています。各ライブラリにはKagerowとは異なるライセンスが適用される場合があります。<br/>
+第三者ライブラリのライセンスおよび著作権表示については、配布物に含まれる以下のファイルを確認してください。
+
+* `LICENSE` — Kagerowのライセンス
+* `THIRD-PARTY-NOTICES.txt` — 使用している第三者ライブラリのライセンス・著作権表示
+* `licenses/` — 第三者ライブラリのライセンス本文
+
+### 主な第三者ライブラリ
+
+| ライブラリ              | 用途             | ライセンス              |
+| ------------------ | -------------- | ------------------ |
+| H2 Database Engine | SQL実行・一時データベース | EPL 1.0 / MPL 2.0  |
+| picocli 4.7.7      | CLI            | Apache License 2.0 |
+
+第三者ライブラリのライセンス条件については、各ライブラリのライセンス本文および配布物に含まれる `THIRD-PARTY-NOTICES.txt` を優先してください。<br/>
+詳しくは、リポジトリの [`LICENSE`](./LICENSE) および [`THIRD-PARTY-NOTICES.txt`](./THIRD-PARTY-NOTICES.txt) を参照してください。

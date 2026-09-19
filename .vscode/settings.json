@@ -8,6 +8,7 @@
     "editor.tabSize": 4,
     "editor.insertSpaces": true,
     "editor.formatOnSave": true,
+    "terminal.integrated.defaultProfile.osx": "JavaSE-25 LTS",
     "workbench.colorTheme": "Eclipse Dark (Java)",
     "java.format.settings.url": "${workspaceFolder}/.vscode/pleiades-formatter.xml",
     "java.format.settings.profile": "Pleiades [カスタム]",
@@ -64,10 +65,24 @@
             "source.organizeImports": "explicit"
         }
     },
+    "cSpell.diagnosticLevel": "Information",
+    "cSpell.enabled": true,
     "cSpell.words": [
         "Kagerow",
         "kagerow",
         "keeeeeent",
         "sakulabo",
+        "physicsname",
+        "sendphysicsname",
+        "tablename",
+        "Tablename",
+        "hamcrest",
+        "spotbugs",
+        "picocli",
+        "antrun",
+        "antfile",
+        "httpserver",
+        "Ksql",
+        "KSQL"
     ]
 }
