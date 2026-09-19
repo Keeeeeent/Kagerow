@@ -81,6 +81,8 @@
         "picocli",
         "antrun",
         "antfile",
-        "httpserver"
+        "httpserver",
+        "Ksql",
+        "KSQL"
     ]
 }
