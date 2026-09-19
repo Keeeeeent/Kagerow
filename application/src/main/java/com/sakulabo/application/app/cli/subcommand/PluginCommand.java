@@ -1,14 +1,23 @@
 package com.sakulabo.application.app.cli.subcommand;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import javax.naming.Binding;
 import javax.naming.Name;
 import javax.naming.NamingEnumeration;
 
+import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Fail;
+import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Success;
+import com.sakulabo.application.app.rpc.datatype.receive.ArrayReceiveDataType;
+import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
 import com.sakulabo.core.Kagerow.Contents.KagerowPluginContent;
 import com.sakulabo.core.Kagerow.Contents.KagerowPluginContent.PluginInfo;
 import com.sakulabo.core.Kagerow.Contents.KagerowPluginContent.PluginParamInfo;
@@ -38,35 +47,87 @@ public class PluginCommand {
 	 * プラグイン一覧確認コマンド
 	 */
 	@Command(name = "list")
-	public static class PluginListCommand implements Callable<Integer> {
+	public static class PluginListCommand extends AuthRemoteCommand {
 
 		/** {@inheritDoc} */
 		@Override
-		public Integer call() throws Exception {
+		protected Integer local() throws Exception {
 			try {
 				KagerowPluginPackageContext ctx = KagerowUtilities.getContext(KagerowPluginPackageContext._NAME);
 				NamingEnumeration<Binding> pluginPkgs = ctx.listBindings((Name) null);
+				Map<String, List<String>> pluginList = new HashMap<>();
 				while (pluginPkgs.hasMore()) {
 					String pluginPkgName = pluginPkgs.next().getName();
 					KagerowPluginContext plugins = ctx.lookup(pluginPkgName);
-					System.out.println();
-					System.out.println(plugins);
-					System.out.println("────────────────────────────────────────────────");
+					List<String> pluginNames = new ArrayList<>();
 					NamingEnumeration<Binding> pluginInfo = plugins.listBindings((Name) null);
 					info: while (pluginInfo.hasMore()) {
 						String key = pluginInfo.next().getName();
 						if (plugins.isDisable(key)) {
 							break info;
 						}
-						System.out.printf("%-20s %n", key);
+						pluginNames.add(key);
 					}
+					pluginList.put(plugins.toString(), pluginNames);
 				}
-				System.out.println();
+				print(pluginList);
 			} catch (Exception e) {
 				KagerowLogger.newAppLogger().err(e);
 				return Integer.valueOf(1);
 			}
 			return Integer.valueOf(0);
+		}
+
+		/** {@inheritDoc} */
+		@Override
+		protected Integer remote() throws Exception {
+			// メソッド呼び出し
+			RpcResult result = doRpcMethodCall("pkgs", "/rpc/plugin", HashMap::new);
+			// 結果処理
+			return switch (result) {
+				case Success success: {
+					ArrayReceiveDataType list = new ArrayReceiveDataType(success.response().get("list"));
+					Optional<List<String>> resultList = list.getRawType();
+					Map<String, List<String>> pluginList = new HashMap<>();
+					if (resultList.isPresent()) {
+						for (String key : resultList.get()) {
+							RpcResult subResult = doRpcMethodCall("list", "/rpc/plugin", () -> {
+								return new HashMap<>() {
+									{
+										put("pkgName", new StringSendDataType(key));
+									}
+								};
+							});
+							if (subResult instanceof Success successResult) {
+								ArrayReceiveDataType subList = new ArrayReceiveDataType(
+										successResult.response().get("list"));
+								List<String> value = subList.getRawType().orElse(Collections.emptyList());
+								pluginList.put(key, value);
+							}
+						}
+					}
+					print(pluginList);
+					yield Integer.valueOf(0);
+				}
+				case Fail fail: {
+					System.err
+							.println(String.format("StatusCode : %d ResponseText", fail.statusCode(), fail.response()));
+					yield Integer.valueOf(1);
+				}
+			};
+		}
+
+		private void print(Map<String, List<String>> plugins) {
+			if (plugins.isEmpty()) {
+				return;
+			}
+			for (Entry<String, List<String>> entry : plugins.entrySet()) {
+				System.out.println();
+				System.out.println(entry.getKey());
+				System.out.println("────────────────────────────────────────────────");
+				entry.getValue().forEach(key -> System.out.printf("%-20s %n", key));
+			}
+			System.out.println();
 		}
 
 	}
@@ -77,13 +138,13 @@ public class PluginCommand {
 	@Command(name = "info")
 	public static class PluginInfoCommand implements Callable<Integer> {
 
-		/**　パッケージ名称 */
+		/** パッケージ名称 */
 		@Option(names = "--pkg")
 		private String packageName = "default";
-		/**　パッケージ名称 */
+		/** パッケージ名称 */
 		@Option(names = "--ver")
 		private String version;
-		/**　プラグイン名称 */
+		/** プラグイン名称 */
 		@Option(names = "--name", required = true)
 		private String pluginName;
 
@@ -123,7 +184,8 @@ public class PluginCommand {
 
 		/**
 		 * プラグインパラメータ情報一覧を表示します
-		 * @param info パラメータ情報リスト
+		 * 
+		 * @param info  パラメータ情報リスト
 		 * @param title タイトル
 		 */
 		private void print(List<PluginParamInfo> info, String title) {
@@ -151,6 +213,7 @@ public class PluginCommand {
 
 		/**
 		 * パラメータ情報を表示します
+		 * 
 		 * @param param パラメータ情報
 		 */
 		private void printBody(PluginParamInfo param) {
@@ -162,6 +225,7 @@ public class PluginCommand {
 
 		/**
 		 * 必須フラグを表示形式に変換します
+		 * 
 		 * @param required 必須フラグ
 		 * @return 変換後文字列
 		 */
@@ -171,6 +235,7 @@ public class PluginCommand {
 
 		/**
 		 * デフォルト値を表示形式に変換します
+		 * 
 		 * @param defaultValue デフォルト値
 		 * @return 変換後文字列
 		 */
@@ -186,13 +251,13 @@ public class PluginCommand {
 	@Command(name = "disable")
 	public static class PluginDisableCommand implements Callable<Integer> {
 
-		/**　パッケージ名称 */
+		/** パッケージ名称 */
 		@Option(names = "--pkg", required = true)
 		private String packageName;
-		/**　パッケージ名称 */
+		/** パッケージ名称 */
 		@Option(names = "--ver")
 		private String version;
-		/**　プラグイン名称 */
+		/** プラグイン名称 */
 		@Option(names = "--name")
 		private String pluginName;
 
@@ -235,13 +300,13 @@ public class PluginCommand {
 	@Command(name = "enable")
 	public static class PluginEnableCommand implements Callable<Integer> {
 
-		/**　パッケージ名称 */
+		/** パッケージ名称 */
 		@Option(names = "--pkg", required = true)
 		private String packageName;
-		/**　パッケージ名称 */
+		/** パッケージ名称 */
 		@Option(names = "--ver")
 		private String version;
-		/**　プラグイン名称 */
+		/** プラグイン名称 */
 		@Option(names = "--name")
 		private String pluginName;
 
