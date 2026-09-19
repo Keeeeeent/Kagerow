@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Stream;
 
@@ -23,6 +24,7 @@ import com.sakulabo.application.app.rpc.datatype.send.ArraySendDataType;
 import com.sakulabo.application.app.rpc.datatype.send.DateTimeSendDataType;
 import com.sakulabo.application.app.rpc.datatype.send.IntegerSendDataType;
 import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
+import com.sakulabo.application.app.rpc.exception.ExitCodeException;
 import com.sakulabo.application.app.rpc.exception.RpcRuntimeException;
 import com.sakulabo.application.app.rpc.executor.TableExecutor;
 import com.sakulabo.application.app.rpc.filters.CertificationFilter;
@@ -31,6 +33,8 @@ import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowDataT
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowVirtualFileObject;
 import com.sakulabo.core.Kagerow.Context.KagerowVirtualDirContext;
 import com.sakulabo.core.Kagerow.Context.KagerowVirtualFileContext;
+import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
+import com.sakulabo.core.Kagerow.Utilities.KagerowTransaction;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 
 /**
@@ -147,7 +151,7 @@ public class TableExecutorImpl implements TableExecutor {
         // 引数取得
         String schemaName = schema.getRawType().get();
         String tableName = table.getRawType().get();
-        int generat = generation.getRawType().orElse(BigInteger.ZERO).intValue();
+        int generate = generation.getRawType().orElse(BigInteger.ZERO).intValue();
 
         // メイン処理呼び出し
         try {
@@ -158,7 +162,7 @@ public class TableExecutorImpl implements TableExecutor {
             // テーブル世代一覧取得
             KagerowVirtualFileContent cnt = dirCtx.lookup(tableName);
             // 返却用インスタンス生成
-            KagerowVirtualFileObject fileObject = cnt.get(generat);
+            KagerowVirtualFileObject fileObject = cnt.get(generate);
             StringSendDataType sendUri = new StringSendDataType(fileObject.uri().get());
             StringSendDataType sendphysicsname = new StringSendDataType(schemaName);
             StringSendDataType sendTablename = new StringSendDataType(tableName);
@@ -179,6 +183,58 @@ public class TableExecutorImpl implements TableExecutor {
             return tableInfo;
         } catch (Exception e) {
             throw new RpcRuntimeException("Failed to retrieve table information", e);
+        }
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @RpcMethod("delete")
+    public void deleteTable(
+            @RpcMethodParam(value = "schemaName", required = true) StringReceiveDataType schema,
+            @RpcMethodParam(value = "tableName") StringReceiveDataType table,
+            @RpcMethodParam(value = "synonymName") StringReceiveDataType synonym,
+            @RpcMethodParam(value = "generation") IntegerReceiveDataType generation)
+            throws ExitCodeException, RpcRuntimeException {
+
+        // 引数取得
+        String schemaName = schema.getRawType().get();
+        String tableName = table.getRawType().orElse(null);
+        String synonymName = table.getRawType().orElse(null);
+        int generate = generation.getRawType().orElse(BigInteger.ZERO).intValue();
+
+        try {
+            if (Objects.isNull(tableName) && Objects.isNull(synonymName)) {
+                throw new ExitCodeException("synonym or table must be specified", 2);
+            }
+            KagerowVirtualFileContext ctx = KagerowUtilities.getContext(KagerowVirtualFileContext._NAME);
+            KagerowVirtualDirContext dirCtx = ctx.lookup(schemaName);
+            Map<String, String> synonyms = dirCtx.getSynonymMapList();
+            if (Objects.isNull(tableName)) {
+                for (Map.Entry<String, String> entry : synonyms.entrySet()) {
+                    if (entry.getKey().equals(synonymName)) {
+                        tableName = entry.getValue();
+                        break;
+                    }
+                }
+            }
+            KagerowTransaction tran = KagerowTransaction.getTransactionFromSchemaName(schemaName);
+            try (tran) {
+                KagerowVirtualFileContent cnt = dirCtx.lookup(tableName);
+                if (cnt.contentSize() < generate) {
+                    throw new ExitCodeException("The number of specified generations exceeds the maximum limit", 3);
+                }
+                if (cnt.contentSize() >= 1) {
+                    throw new ExitCodeException("There must be at least one table", 4);
+                }
+                KagerowVirtualFileObject fileObject = cnt.get(generate);
+                String target = KagerowVirtualFileContent.getGeneration(fileObject);
+                cnt.destroySubcontext(target);
+            }
+
+        } catch (Exception e) {
+            KagerowLogger.newAppLogger().err(e);
+            throw new RpcRuntimeException("Failed to delete the table", e);
         }
 
     }

@@ -1,5 +1,6 @@
 package com.sakulabo.application.app.cli.subcommand;
 
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 
 import javax.naming.Binding;
 import javax.naming.Name;
@@ -136,7 +136,7 @@ public class PluginCommand {
 	 * プラグイン確認コマンド
 	 */
 	@Command(name = "info")
-	public static class PluginInfoCommand implements Callable<Integer> {
+	public static class PluginInfoCommand extends AuthRemoteCommand {
 
 		/** パッケージ名称 */
 		@Option(names = "--pkg")
@@ -150,36 +150,115 @@ public class PluginCommand {
 
 		/** {@inheritDoc} */
 		@Override
-		public Integer call() throws Exception {
+		protected Integer local() throws Exception {
 			try {
 				Name pkgName = KagerowUtilities.createVersioningPluginPkgName(packageName, version);
 				KagerowPluginContent content = KagerowUtilities.getPlugin(pkgName, pluginName);
 				KagerowPluginPackageContext ctx = KagerowUtilities.getContext(KagerowPluginPackageContext._NAME);
 				KagerowPluginContext plugins = ctx.lookup(packageName);
 				PluginInfo info = content.toPluginInfo();
-				System.out.println();
-				System.out.println("Plugin Information");
-				System.out.println("──────────────────────────────────────────────────────────────");
-				System.out.printf("Package      : %s%n", packageName);
-				System.out.printf("Name         : %s%n", pluginName);
-				System.out.printf("Version      : %s%n",
-						Objects.isNull(version) ? plugins.toString().split("@", 2)[1] : version);
+				String version = Objects.isNull(this.version) ? plugins.toString().split("@", 2)[1] : this.version;
+				boolean status = false;
 				if (plugins.isDisable(pluginName) || ctx.isDisable(packageName)) {
-					System.out.println("Status       : Disable");
-				} else {
-					System.out.println("Status       : Enable");
+					status = true;
 				}
 				Map<PluginType, List<PluginParamInfo>> params = info.param();
 				List<PluginParamInfo> inputParam = params.get(PluginType.INPUT);
 				List<PluginParamInfo> outputParam = params.get(PluginType.OUTPUT);
-				print(inputParam, "Input Parameter");
-				print(outputParam, "Output Parameter");
-				System.out.println();
+				printInfo(
+						packageName,
+						pluginName,
+						version,
+						status,
+						inputParam,
+						outputParam);
 			} catch (Exception e) {
 				KagerowLogger.newAppLogger().err(e);
 				return Integer.valueOf(1);
 			}
 			return Integer.valueOf(0);
+		}
+
+		/** {@inheritDoc} */
+		@Override
+		protected Integer remote() throws Exception {
+			// メソッド呼び出し
+			RpcResult result = doRpcMethodCall("info", "/rpc/plugin", () -> {
+				return new HashMap<>() {
+					{
+						put("packageName", new StringSendDataType(packageName));
+						put("version", new StringSendDataType(version));
+						put("pluginName", new StringSendDataType(pluginName));
+					}
+				};
+			});
+			// 結果処理
+			return switch (result) {
+				case Success success: {
+					Map<String, String> response = success.response();
+					String packageName = response.get("packageName");
+					String pluginName = response.get("pluginName");
+					String version = response.get("version");
+					boolean status = Boolean.valueOf(response.get("status"));
+					List<PluginParamInfo> inputParam = new ArrayList<>();
+					List<PluginParamInfo> outputParam = new ArrayList<>();
+					ArrayReceiveDataType inputParamType = new ArrayReceiveDataType(response.get("inputParam"));
+					if (inputParamType.getRawType().isPresent()) {
+						List<String> params = inputParamType.getRawType().get();
+						PluginParamInfo item = new PluginParamInfo(
+								params.get(0),
+								params.get(1),
+								Boolean.valueOf(params.get(2)));
+						inputParam.add(item);
+					}
+					ArrayReceiveDataType outputParamType = new ArrayReceiveDataType(response.get("outputParam"));
+					if (outputParamType.getRawType().isPresent()) {
+						List<String> params = outputParamType.getRawType().get();
+						PluginParamInfo item = new PluginParamInfo(
+								params.get(0),
+								params.get(1),
+								Boolean.valueOf(params.get(2)));
+						inputParam.add(item);
+					}
+					printInfo(
+							packageName,
+							pluginName,
+							version,
+							status,
+							inputParam,
+							outputParam);
+					yield Integer.valueOf(0);
+				}
+				case Fail fail: {
+					System.err
+							.println(String.format("StatusCode : %d ResponseText", fail.statusCode(), fail.response()));
+					yield Integer.valueOf(1);
+				}
+			};
+		}
+
+		/**
+		 * プラグインの情報を出力します
+		 * 
+		 * @param packageName プラグインパッケージ名称
+		 * @param pluginName  プラグイン名称
+		 * @param version     プラグインバージョン
+		 * @param status      プラグインステータス
+		 * @param inputParam  プラグイン入力パラメータ
+		 * @param outputParam プラグイン出漁パラメータ
+		 */
+		private void printInfo(String packageName, String pluginName, String version, boolean status,
+				List<PluginParamInfo> inputParam, List<PluginParamInfo> outputParam) {
+			System.out.println();
+			System.out.println("Plugin Information");
+			System.out.println("──────────────────────────────────────────────────────────────");
+			System.out.printf("Package      : %s%n", packageName);
+			System.out.printf("Name         : %s%n", pluginName);
+			System.out.printf("Version      : %s%n", version);
+			System.out.printf("Status       : %s%n", status ? "Disable" : "Enable");
+			print(inputParam, "Input Parameter");
+			print(outputParam, "Output Parameter");
+			System.out.println();
 		}
 
 		/**
@@ -249,7 +328,7 @@ public class PluginCommand {
 	 * プラグイン無効化コマンド
 	 */
 	@Command(name = "disable")
-	public static class PluginDisableCommand implements Callable<Integer> {
+	public static class PluginDisableCommand extends AuthRemoteCommand {
 
 		/** パッケージ名称 */
 		@Option(names = "--pkg", required = true)
@@ -263,7 +342,7 @@ public class PluginCommand {
 
 		/** {@inheritDoc} */
 		@Override
-		public Integer call() throws Exception {
+		protected Integer local() throws Exception {
 			try {
 				if ("default".equals(packageName)) {
 					System.err.println("The default plugin cannot be disabled");
@@ -292,13 +371,44 @@ public class PluginCommand {
 			return Integer.valueOf(0);
 		}
 
+		/** {@inheritDoc} */
+		@Override
+		protected Integer remote() throws Exception {
+			// メソッド呼び出し
+			RpcResult result = doRpcMethodCall("disable", "/rpc/plugin", () -> {
+				return new HashMap<>() {
+					{
+						put("packageName", new StringSendDataType(packageName));
+						if (Objects.nonNull(version)) {
+							put("version", new StringSendDataType(version));
+						}
+						if (Objects.nonNull(pluginName)) {
+							put("pluginName", new StringSendDataType(pluginName));
+						}
+					}
+				};
+			});
+			// 結果処理
+			return switch (result) {
+				case Success _: {
+					yield Integer.valueOf(0);
+				}
+				case Fail fail: {
+					Integer exitCode = Integer.valueOf(fail.response().getOrDefault("exitCode", "1"));
+					System.err
+							.println(String.format("StatusCode : %d ResponseText", fail.statusCode(), fail.response()));
+					yield exitCode;
+				}
+			};
+		}
+
 	}
 
 	/**
 	 * プラグイン有効化コマンド
 	 */
 	@Command(name = "enable")
-	public static class PluginEnableCommand implements Callable<Integer> {
+	public static class PluginEnableCommand extends AuthRemoteCommand {
 
 		/** パッケージ名称 */
 		@Option(names = "--pkg", required = true)
@@ -312,7 +422,7 @@ public class PluginCommand {
 
 		/** {@inheritDoc} */
 		@Override
-		public Integer call() throws Exception {
+		protected Integer local() throws Exception {
 			try {
 				if ("default".equals(packageName)) {
 					return Integer.valueOf(0);
@@ -338,6 +448,40 @@ public class PluginCommand {
 				return Integer.valueOf(1);
 			}
 			return Integer.valueOf(0);
+		}
+
+		/** {@inheritDoc} */
+		@Override
+		protected Integer remote() throws Exception {
+			// メソッド呼び出し
+			RpcResult result = doRpcMethodCall("enable", "/rpc/plugin", () -> {
+				return new HashMap<>() {
+					{
+						put("packageName", new StringSendDataType(packageName));
+						if (Objects.nonNull(version)) {
+							put("version", new StringSendDataType(version));
+						}
+						if (Objects.nonNull(pluginName)) {
+							put("pluginName", new StringSendDataType(pluginName));
+						}
+					}
+				};
+			});
+			// 結果処理
+			return switch (result) {
+				case Success _: {
+					yield Integer.valueOf(0);
+				}
+				case Fail fail: {
+					Integer exitCode = Integer.valueOf(1);
+					if (fail.statusCode() == HttpURLConnection.HTTP_NOT_MODIFIED) {
+						exitCode = Integer.valueOf(fail.response().getOrDefault("exitCode", "1"));
+					}
+					System.err
+							.println(String.format("StatusCode : %d ResponseText", fail.statusCode(), fail.response()));
+					yield exitCode;
+				}
+			};
 		}
 
 	}

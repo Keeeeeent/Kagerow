@@ -1,5 +1,6 @@
 package com.sakulabo.application.app.cli.subcommand;
 
+import java.net.HttpURLConnection;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -9,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 
 import javax.naming.Binding;
@@ -379,7 +379,7 @@ public class TableCommand {
 	 * テーブル削除コマンド
 	 */
 	@Command(name = "delete")
-	public static class TableDeleteCommand implements Callable<Integer> {
+	public static class TableDeleteCommand extends AuthRemoteCommand {
 
 		/**
 		 * オプショングループ
@@ -405,7 +405,7 @@ public class TableCommand {
 
 		/** {@inheritDoc} */
 		@Override
-		public Integer call() throws Exception {
+		protected Integer local() throws Exception {
 			if (Objects.isNull(options.tableName) && Objects.isNull(options.synonymName)) {
 				System.err.println("synonym or table must be specified");
 				return Integer.valueOf(2);
@@ -442,6 +442,36 @@ public class TableCommand {
 			return Integer.valueOf(0);
 		}
 
+		/** {@inheritDoc} */
+		@Override
+		protected Integer remote() throws Exception {
+			// メソッド呼び出し
+			RpcResult result = doRpcMethodCall("delete", "/rpc/table", () -> {
+				return new HashMap<>() {
+					{
+						put("schemaName", new StringSendDataType(schemaName));
+						put("tableName", new StringSendDataType(options.tableName));
+						put("synonymName", new StringSendDataType(options.synonymName));
+						put("generation", new IntegerSendDataType(generation));
+					}
+				};
+			});
+			// 結果処理
+			return switch (result) {
+				case Success _: {
+					yield Integer.valueOf(0);
+				}
+				case Fail fail: {
+					Integer exitCode = Integer.valueOf(1);
+					if (fail.statusCode() == HttpURLConnection.HTTP_NOT_MODIFIED) {
+						exitCode = Integer.valueOf(fail.response().getOrDefault("exitCode", "1"));
+					}
+					System.err
+							.println(String.format("StatusCode : %d ResponseText", fail.statusCode(), fail.response()));
+					yield exitCode;
+				}
+			};
+		}
 	}
 
 }

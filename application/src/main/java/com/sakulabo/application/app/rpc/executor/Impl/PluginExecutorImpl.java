@@ -2,6 +2,7 @@ package com.sakulabo.application.app.rpc.executor.Impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.naming.Binding;
@@ -14,14 +15,19 @@ import com.sakulabo.application.app.rpc.RpcMethodParam;
 import com.sakulabo.application.app.rpc.RpcSetting;
 import com.sakulabo.application.app.rpc.datatype.receive.StringReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.send.ArraySendDataType;
+import com.sakulabo.application.app.rpc.datatype.send.BooleanSendDataType;
+import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
 import com.sakulabo.application.app.rpc.exception.ExitCodeException;
 import com.sakulabo.application.app.rpc.exception.RpcRuntimeException;
 import com.sakulabo.application.app.rpc.executor.PluginExecutor;
 import com.sakulabo.application.app.rpc.filters.CertificationFilter;
+import com.sakulabo.core.Kagerow.Contents.KagerowPluginContent;
+import com.sakulabo.core.Kagerow.Contents.KagerowPluginContent.PluginParamInfo;
 import com.sakulabo.core.Kagerow.Context.KagerowPluginContext;
 import com.sakulabo.core.Kagerow.Context.KagerowPluginPackageContext;
 import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
+import com.sakulabo.regulation.annotation.KagerowPlugin.PluginType;
 
 /**
  * プラグイン管理機能のRPCコントローラー実装クラスです
@@ -77,13 +83,74 @@ public class PluginExecutorImpl implements PluginExecutor {
 
     /** {@information} */
     @Override
+    @RpcMethod("info")
+    public PluginInfo getPluginInfo(
+            @RpcMethodParam(value = "packageName", required = true) StringReceiveDataType pkgNm,
+            @RpcMethodParam("version") StringReceiveDataType pluginVer,
+            @RpcMethodParam(value = "pluginName", required = true) StringReceiveDataType pluginNm)
+            throws RpcRuntimeException {
+        String packageName = pkgNm.getRawType().get();
+        String version = pluginVer.getRawType().orElse("default");
+        String pluginName = pluginNm.getRawType().get();
+        try {
+            Name pkgName = KagerowUtilities.createVersioningPluginPkgName(packageName, version);
+            KagerowPluginContent content = KagerowUtilities.getPlugin(pkgName, pluginName);
+            KagerowPluginPackageContext ctx = KagerowUtilities.getContext(KagerowPluginPackageContext._NAME);
+            KagerowPluginContext plugins = ctx.lookup(packageName);
+            com.sakulabo.core.Kagerow.Contents.KagerowPluginContent.PluginInfo info = content.toPluginInfo();
+            String sendStrVersion = Objects.isNull(version) ? plugins.toString().split("@", 2)[1] : version;
+            boolean status = true;
+            if (plugins.isDisable(pluginName) || ctx.isDisable(packageName)) {
+                status = false;
+            }
+            Map<PluginType, List<PluginParamInfo>> params = info.param();
+            List<String> inputParam = params.get(PluginType.INPUT)
+                    .stream()
+                    .map(this::convertInfo)
+                    .toList();
+            List<String> outputParam = params.get(PluginType.OUTPUT).stream()
+                    .map(this::convertInfo)
+                    .toList();
+            StringSendDataType sendPackageNm = new StringSendDataType(packageName);
+            StringSendDataType sendPluginNm = new StringSendDataType(pluginName);
+            StringSendDataType sendVersion = new StringSendDataType(sendStrVersion);
+            BooleanSendDataType sendStatus = new BooleanSendDataType(status);
+            ArraySendDataType sendInputParam = ArraySendDataType.getInstance(inputParam);
+            ArraySendDataType sendOutputParam = ArraySendDataType.getInstance(outputParam);
+            return new PluginInfo(
+                    sendPackageNm,
+                    sendPluginNm,
+                    sendVersion,
+                    sendStatus,
+                    sendInputParam,
+                    sendOutputParam);
+        } catch (Exception e) {
+            throw new RpcRuntimeException("Failed to retrieve plugin information", e);
+        }
+    }
+
+    /**
+     * プラグインの情報を送信向け文字列に変換します
+     * 
+     * @param info プラグイン情報
+     * @return 送信向け文字列
+     */
+    private String convertInfo(PluginParamInfo info) {
+        return String.join(",",
+                info.name(),
+                info.defaultValue(),
+                Boolean.toString(info.required()));
+    }
+
+    /** {@information} */
+    @Override
     @RpcMethod("disable")
     public void setDisable(
             @RpcMethodParam(value = "packageName", required = true) StringReceiveDataType pkgNm,
             @RpcMethodParam("version") StringReceiveDataType pluginVer,
             @RpcMethodParam("pluginName") StringReceiveDataType pluginNm) throws ExitCodeException {
         String packageName = pkgNm.getRawType().get();
-        String version = pluginVer.getRawType().orElse(null);
+        String version = pluginVer.getRawType().orElse("default");
         String pluginName = pluginNm.getRawType().orElse(null);
         try {
             if ("default".equals(packageName)) {
@@ -117,7 +184,7 @@ public class PluginExecutorImpl implements PluginExecutor {
             @RpcMethodParam("version") StringReceiveDataType pluginVer,
             @RpcMethodParam("pluginName") StringReceiveDataType pluginNm) throws ExitCodeException {
         String packageName = pkgNm.getRawType().get();
-        String version = pluginVer.getRawType().orElse(null);
+        String version = pluginVer.getRawType().orElse("default");
         String pluginName = pluginNm.getRawType().orElse(null);
         try {
             if ("default".equals(packageName)) {

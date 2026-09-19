@@ -1,5 +1,7 @@
 package com.sakulabo.application.app.rpc.executor;
 
+import com.sakulabo.application.app.rpc.RpcMethod;
+import com.sakulabo.application.app.rpc.RpcMethodParam;
 import com.sakulabo.application.app.rpc.RpcSendParam;
 import com.sakulabo.application.app.rpc.datatype.receive.IntegerReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.receive.StringReceiveDataType;
@@ -7,6 +9,7 @@ import com.sakulabo.application.app.rpc.datatype.send.ArraySendDataType;
 import com.sakulabo.application.app.rpc.datatype.send.DateTimeSendDataType;
 import com.sakulabo.application.app.rpc.datatype.send.IntegerSendDataType;
 import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
+import com.sakulabo.application.app.rpc.exception.ExitCodeException;
 import com.sakulabo.application.app.rpc.exception.RpcRuntimeException;
 import com.sakulabo.application.common.spi.RpcTarget;
 
@@ -81,5 +84,23 @@ public interface TableExecutor extends RpcTarget {
                         StringReceiveDataType table,
                         IntegerReceiveDataType generation)
                         throws RpcRuntimeException;
+
+        /**
+         * テーブルを削除します
+         * 
+         * @param schema     スキーマ名称
+         * @param table      テーブル物理名称
+         * @param synonym    テーブル論理名称
+         * @param generation テーブル世代
+         * @throws ExitCodeException   テーブル削除失敗
+         * @throws RpcRuntimeException 予期せぬエラー
+         */
+        @RpcMethod("delete")
+        public void deleteTable(
+                        @RpcMethodParam(value = "schemaName", required = true) StringReceiveDataType schema,
+                        @RpcMethodParam(value = "tableName") StringReceiveDataType table,
+                        @RpcMethodParam(value = "synonymName") StringReceiveDataType synonym,
+                        @RpcMethodParam(value = "generation") IntegerReceiveDataType generation)
+                        throws ExitCodeException, RpcRuntimeException;
 
 }
