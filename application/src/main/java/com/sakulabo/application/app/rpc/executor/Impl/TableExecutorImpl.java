@@ -144,25 +144,38 @@ public class TableExecutorImpl implements TableExecutor {
     @RpcMethod("info")
     public TableInfo getTableInfo(
             @RpcMethodParam(value = "schemaName", required = true) StringReceiveDataType schema,
-            @RpcMethodParam(value = "tableName", required = true) StringReceiveDataType table,
+            @RpcMethodParam(value = "tableName") StringReceiveDataType table,
+            @RpcMethodParam(value = "synonymName") StringReceiveDataType synonym,
             @RpcMethodParam(value = "generation") IntegerReceiveDataType generation)
-            throws RpcRuntimeException {
+            throws ExitCodeException, RpcRuntimeException {
 
         // 引数取得
         String schemaName = schema.getRawType().get();
         String tableName = table.getRawType().get();
+        String synonymName = synonym.getRawType().get();
         int generate = generation.getRawType().orElse(BigInteger.ZERO).intValue();
+
+        if (Objects.isNull(tableName) && Objects.isNull(synonymName)) {
+            throw new ExitCodeException("synonym or table must be specified", 2);
+        }
 
         // メイン処理呼び出し
         try {
             // コンテキスト取得
             KagerowVirtualFileContext ctx = KagerowUtilities.getContext(KagerowVirtualFileContext._NAME);
-            // 対象テーブルコンテキスト取得
             KagerowVirtualDirContext dirCtx = ctx.lookup(schemaName);
-            // テーブル世代一覧取得
+            Map<String, String> synonyms = dirCtx.getSynonymMapList();
+            if (Objects.isNull(tableName)) {
+                for (Map.Entry<String, String> entry : synonyms.entrySet()) {
+                    if (entry.getKey().equals(synonymName)) {
+                        tableName = entry.getValue();
+                        break;
+                    }
+                }
+            }
             KagerowVirtualFileContent cnt = dirCtx.lookup(tableName);
-            // 返却用インスタンス生成
             KagerowVirtualFileObject fileObject = cnt.get(generate);
+            // レスポンス作成
             StringSendDataType sendUri = new StringSendDataType(fileObject.uri().get());
             StringSendDataType sendphysicsname = new StringSendDataType(schemaName);
             StringSendDataType sendTablename = new StringSendDataType(tableName);

@@ -392,14 +392,17 @@ public abstract class RemoteCommand implements Callable<Integer> {
 					// 単一の場合
 					valueSubElem.setTextContent(dat);
 				}
+				// 生成要素追加
+				valueElem.appendChild(valueSubElem);
+				// サブメンバー追加
+				memberElem.appendChild(valueElem);
 			} else {
 				Element nilElem = dom.createElement(RpcDataTypes.NIL.toString());
-				valueSubElem.appendChild(nilElem);
+				// 生成要素追加
+				valueElem.appendChild(nilElem);
+				// サブメンバー追加
+				memberElem.appendChild(valueElem);
 			}
-			// 生成要素追加
-			valueElem.appendChild(valueSubElem);
-			// サブメンバー追加
-			memberElem.appendChild(valueElem);
 			// 要素を構造体として追加
 			node.appendChild(memberElem);
 		}

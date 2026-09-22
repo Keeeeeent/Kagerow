@@ -1,7 +1,6 @@
 package com.sakulabo.application.app.rpc.executor;
 
 import com.sakulabo.application.app.rpc.RpcMethod;
-import com.sakulabo.application.app.rpc.RpcMethodParam;
 import com.sakulabo.application.app.rpc.RpcSendParam;
 import com.sakulabo.application.app.rpc.datatype.receive.IntegerReceiveDataType;
 import com.sakulabo.application.app.rpc.datatype.receive.StringReceiveDataType;
@@ -74,7 +73,8 @@ public interface TableExecutor extends RpcTarget {
          * テーブル詳細情報を取得します
          *
          * @param schema     スキーマ名称
-         * @param table      テーブル名称
+         * @param table      テーブル物理名称
+         * @param synonym    テーブル論理名称
          * @param generation テーブル世代
          * @return テーブル詳細情報
          * @throws RpcRuntimeException テーブル詳細情報取得失敗
@@ -82,8 +82,9 @@ public interface TableExecutor extends RpcTarget {
         public TableInfo getTableInfo(
                         StringReceiveDataType schema,
                         StringReceiveDataType table,
+                        StringReceiveDataType synonym,
                         IntegerReceiveDataType generation)
-                        throws RpcRuntimeException;
+                        throws ExitCodeException, RpcRuntimeException;
 
         /**
          * テーブルを削除します
@@ -97,10 +98,10 @@ public interface TableExecutor extends RpcTarget {
          */
         @RpcMethod("delete")
         public void deleteTable(
-                        @RpcMethodParam(value = "schemaName", required = true) StringReceiveDataType schema,
-                        @RpcMethodParam(value = "tableName") StringReceiveDataType table,
-                        @RpcMethodParam(value = "synonymName") StringReceiveDataType synonym,
-                        @RpcMethodParam(value = "generation") IntegerReceiveDataType generation)
+                        StringReceiveDataType schema,
+                        StringReceiveDataType table,
+                        StringReceiveDataType synonym,
+                        IntegerReceiveDataType generation)
                         throws ExitCodeException, RpcRuntimeException;
 
 }
