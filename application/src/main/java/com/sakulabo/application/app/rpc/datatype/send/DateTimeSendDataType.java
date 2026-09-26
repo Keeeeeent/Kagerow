@@ -26,6 +26,15 @@ public class DateTimeSendDataType extends AbstractBaseDataType implements BaseDa
 		super(baseData);
 	}
 
+	/**
+	 * 日付コンストラクタ
+	 *
+	 * @param baseData 変換前データ
+	 */
+	public DateTimeSendDataType(LocalDateTime baseData) {
+		super(DateTimeFormatter.ISO_DATE_TIME.format(baseData));
+	}
+
 	/** {@inheritDoc} */
 	@Override
 	public Optional<LocalDateTime> getRawType() throws IllegalStateException {

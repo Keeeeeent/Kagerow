@@ -110,6 +110,7 @@ import com.sakulabo.regulation.spi.PluginAdapter.KagerowRowSet;
 
 /**
  * Kagerowスクリプトの実行計画を実行する基底クラスです
+ * 
  * @author keeeeeent
  */
 public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
@@ -376,6 +377,7 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 		/**
 		 * デフォルトコンストラクタ
+		 * 
 		 * @param chunkLorder チャンクローダー
 		 * @param file        ロードファイル
 		 */
@@ -411,7 +413,8 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/**
 	 * デフォルトコンストラクタ
-	 * @throws IOException 一時KDB物理ファイル生成失敗
+	 * 
+	 * @throws IOException       一時KDB物理ファイル生成失敗
 	 * @throws AppLogicException 監視設定失敗
 	 */
 	protected ExecutionPlan() throws AppLogicException, IOException {
@@ -434,9 +437,10 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/**
 	 * キャッシュロードを行うコンストラクタ
+	 * 
 	 * @param cacheId キャッシュID
 	 * @throws AppLogicException 監視設定失敗
-	 * @throws IOException 一時KDB物理ファイル生成失敗
+	 * @throws IOException       一時KDB物理ファイル生成失敗
 	 */
 	@SuppressWarnings("unchecked")
 	protected ExecutionPlan(String cacheId) throws AppLogicException, IOException {
@@ -532,6 +536,7 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/**
 	 * JMXの監視設定を行います
+	 * 
 	 * @throws AppLogicException 監視設定失敗
 	 */
 	private void setJMX() throws AppLogicException {
@@ -557,6 +562,7 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/**
 	 * JMX登録処理を行います
+	 * 
 	 * @param mBeanServer JMXサーバー
 	 * @param ObjectName  JMX名称
 	 * @throws AppLogicException 監視設定失敗
@@ -565,6 +571,7 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/**
 	 * セッションIDを取得します
+	 * 
 	 * @return セッションID
 	 */
 	UUID getSessionID() {
@@ -573,6 +580,7 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/**
 	 * チャンクローダーを生成します
+	 * 
 	 * @return 生成されたチャンクローダー
 	 * @throws Exception チャンクローダー生成失敗
 	 */
@@ -580,6 +588,7 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/**
 	 * 実行ステップとアダプターを関連付けし、実行ステップを実行します
+	 * 
 	 * @param step         実行ステップ
 	 * @param startTrigger 開始トリガー
 	 * @param endTrigger   終了トリガー
@@ -604,6 +613,7 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/**
 	 * KDBの構築処理を実行します
+	 * 
 	 * @return 仮返却変数
 	 * @throws CreateKDBException KDB論理インスタンス生成失敗
 	 */
@@ -730,6 +740,7 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/**
 	 * DDLプラグインに対するKDBマッピングを実施します
+	 * 
 	 * @param fileContext 仮想ファイルコンテキスト
 	 * @param linkerList  ロード先一時保管リスト
 	 * @throws KSQLParseException マッピング失敗
@@ -757,6 +768,7 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/**
 	 * KagerowVirtualFileObjectセットをマージします
+	 * 
 	 * @param oldValue マージ先
 	 * @param newValue マージ元
 	 * @return マージ後セット
@@ -772,6 +784,7 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/**
 	 * コマンド実行を行います
+	 * 
 	 * @return 仮返却変数
 	 * @throws CommandException コマンド実行インスタンス生成失敗
 	 */
@@ -833,6 +846,7 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/**
 	 * KSQLの実行を行います
+	 * 
 	 * @return 仮返却変数
 	 * @throws KsqlException SQL実行失敗
 	 */
@@ -899,6 +913,7 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/**
 	 * インプットプラグインを使用し、KDBに追加の処理を施します
+	 * 
 	 * @return 仮返却変数
 	 * @throws InputPluginException ブラブイン実行要求失敗
 	 */
@@ -995,6 +1010,7 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/**
 	 * アウトプットプラグインを使用し、KDBに追加の処理を施します
+	 * 
 	 * @return 仮返却変数
 	 * @throws OutputPluginException ブラブイン実行要求失敗
 	 */
@@ -1363,6 +1379,7 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/**
 	 * キャッシュオブジェクトを生成します
+	 * 
 	 * @return キャッシュオブジェクト
 	 */
 	private KagerowExecutionCache createCache() {
@@ -1403,6 +1420,7 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/**
 	 * KagerowVirtualFileObjectセット文字列をマージします
+	 * 
 	 * @param oldValue マージ先
 	 * @param newValue マージ元
 	 * @return マージ後セット
@@ -1418,10 +1436,11 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/**
 	 * キャッシュIDをコンテキストに登録します
+	 * 
 	 * @param cache 登録対象キャッシュインスタンス
 	 * @return キャッシュID
 	 * @throws AppLogicException キャッシュID登録失敗
-	 * @throws NamingException コンテキスト取得失敗
+	 * @throws NamingException   コンテキスト取得失敗
 	 */
 	private String registCache(KagerowExecutionCache cache) throws AppLogicException, NamingException {
 
@@ -1637,7 +1656,7 @@ public abstract sealed class ExecutionPlan<T extends KagerowVirtualFileObject>
 
 	/** {@inheritDoc} */
 	@Override
-	public boolean isIgnoreCashe() {
+	public boolean isIgnoreCache() {
 		return ignoreCache;
 	}
 

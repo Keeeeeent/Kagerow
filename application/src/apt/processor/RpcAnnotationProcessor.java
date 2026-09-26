@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -21,9 +22,9 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.tools.StandardLocation;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.FileObject;
+import javax.tools.StandardLocation;
 
 /**
  * RPCエンドポイント向けXSDを生成するアノテーションプロセッサーです
@@ -107,16 +108,15 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 	private final static MessageFormat STRUCT_XML_FORMAT = new MessageFormat("""
 			<xs:element name="name">
 												    <xs:simpleType>
-												        <xs:restriction base="xs:string">
-												            <xs:enumeration value="{0}"/>
+												        <xs:restriction base="xs:string">{0}
 												        </xs:restriction>
 												    </xs:simpleType>
 												</xs:element>
 												<xs:element name="value">
 										          <xs:complexType>
-										              <xs:sequence>
-										                  <xs:element name="{1}" type="{2}"/>
-										              </xs:sequence>
+										              <xs:choice>
+															<xs:element name="nil"/>{1}
+										              </xs:choice>
 										          </xs:complexType>
 												</xs:element>""");
 
@@ -197,6 +197,7 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 
 	/**
 	 * XSDファイルパスを生成します
+	 * 
 	 * @param method メソッド（ソースコード）
 	 * @return XSDファイルパス
 	 * @throws IOException クラス定義不正
@@ -222,8 +223,8 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 				// RPCメソッド設定情報を検索
 				Map<? extends ExecutableElement, ? extends AnnotationValue> methodInfo = isTarget(method,
 						"com.sakulabo.application.app.rpc.RpcMethod")
-								.getFirst()
-								.getElementValues();
+						.getFirst()
+						.getElementValues();
 				for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> minfo : methodInfo.entrySet()) {
 					// 要素を取得
 					String mname = minfo.getKey().getSimpleName().toString();
@@ -243,6 +244,7 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 
 	/**
 	 * リソースにプロバイダーを追加した時のメッセージを出力します
+	 * 
 	 * @param filePath 出力先
 	 */
 	private void resourceLogMsg(String filePath) {
@@ -254,25 +256,35 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 
 	/**
 	 * XSD文字列を生成します
+	 * 
 	 * @param struct XSD論理データ構造
 	 * @return XSD文字列
 	 */
 	private String createXSD(XmlRpcStruct struct) {
-		StringBuilder builder = new StringBuilder();
+		StringBuilder nameTagBuilder = new StringBuilder();
+		StringBuilder valueTagBuilder = new StringBuilder();
+		Set<String> valueTagItem = new HashSet<>();
+		String nameElementFormat = "%n\t\t\t\t\t\t\t\t\t\t\t\t<xs:enumeration value=\"%s\"/>";
+		String valueElementFormat = "%n\t\t\t\t\t\t\t\t\t\t\t\t<xs:element name=\"%s\" type=\"%s\"/>";
 		String member = """
 				<xs:complexType>
 								                <xs:sequence>
-								                    %s
+													%s
 								                </xs:sequence>
 								            </xs:complexType>""";
 		for (SearchParam param : struct.params()) {
-			String formatedParam = STRUCT_XML_FORMAT.format(new Object[] {
-					param.value, param.getTagName(), param.getTagType()
-			});
-			builder.append(formatedParam);
+			nameTagBuilder.append(nameElementFormat.formatted(param.value));
+			valueTagItem.add(valueElementFormat.formatted(
+					param.getTagName(), param.getTagType()));
 		}
-		if (0 < builder.length()) {
-			member = member.formatted(builder.toString());
+		for (String item : valueTagItem) {
+			valueTagBuilder.append(item);
+		}
+		if (0 < struct.params().size()) {
+			String memberElementFormat = STRUCT_XML_FORMAT.format(new Object[] {
+					nameTagBuilder.toString(), valueTagBuilder.toString()
+			});
+			member = member.formatted(memberElementFormat);
 		} else {
 			member = "";
 		}
@@ -281,8 +293,9 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 
 	/**
 	 * XSD論理データ構造
+	 * 
 	 * @param methodName RPCメソッド名
-	 * @param params PRCメソッドパラメータ
+	 * @param params     PRCメソッドパラメータ
 	 */
 	private static record XmlRpcStruct(
 			String methodName,
@@ -291,8 +304,9 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 
 	/**
 	 * RPCメソッドパラメータ論理データ構造
-	 * @param value パラメータ名称
-	 * @param required 必須フラグ
+	 * 
+	 * @param value     パラメータ名称
+	 * @param required  必須フラグ
 	 * @param className クラス情報
 	 */
 	private static record SearchParam(
@@ -302,65 +316,68 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 
 		/**
 		 * XSDエンドポイント受け取りタグ種別を生成します
+		 * 
 		 * @return タグ種別
 		 */
 		String getTagName() {
 			return switch (className) {
-			case "com.sakulabo.application.app.rpc.datatype.receive.Base64ReceiveDataType" -> {
-				yield "base64";
-			}
-			case "com.sakulabo.application.app.rpc.datatype.receive.BooleanReceiveDataType" -> {
-				yield "boolean";
-			}
-			case "com.sakulabo.application.app.rpc.datatype.receive.DateTimeReceiveDataType" -> {
-				yield "dateTime.iso8601";
-			}
-			case "com.sakulabo.application.app.rpc.datatype.receive.DoubleReceiveDataType" -> {
-				yield "double";
-			}
-			case "com.sakulabo.application.app.rpc.datatype.receive.IntegerReceiveDataType" -> {
-				yield "int";
-			}
-			case "com.sakulabo.application.app.rpc.datatype.receive.ArrayReceiveDataType" -> {
-				yield "array";
-			}
-			case null -> "nil";
-			default -> "string";
+				case "com.sakulabo.application.app.rpc.datatype.receive.Base64ReceiveDataType" -> {
+					yield "base64";
+				}
+				case "com.sakulabo.application.app.rpc.datatype.receive.BooleanReceiveDataType" -> {
+					yield "boolean";
+				}
+				case "com.sakulabo.application.app.rpc.datatype.receive.DateTimeReceiveDataType" -> {
+					yield "dateTime.iso8601";
+				}
+				case "com.sakulabo.application.app.rpc.datatype.receive.DoubleReceiveDataType" -> {
+					yield "double";
+				}
+				case "com.sakulabo.application.app.rpc.datatype.receive.IntegerReceiveDataType" -> {
+					yield "int";
+				}
+				case "com.sakulabo.application.app.rpc.datatype.receive.ArrayReceiveDataType" -> {
+					yield "array";
+				}
+				case null -> "nil";
+				default -> "string";
 			};
 		}
 
 		/**
 		 * XSDエンドポイント受け取りデータタイプを取得します
+		 * 
 		 * @return データタイプ
 		 */
 		String getTagType() {
 			return switch (className) {
-			case "com.sakulabo.application.app.rpc.datatype.receive.Base64ReceiveDataType" -> {
-				yield "xs:base64Binary";
-			}
-			case "com.sakulabo.application.app.rpc.datatype.receive.BooleanReceiveDataType" -> {
-				yield "xs:boolean";
-			}
-			case "com.sakulabo.application.app.rpc.datatype.receive.DateTimeReceiveDataType" -> {
-				yield "xs:dateTime";
-			}
-			case "com.sakulabo.application.app.rpc.datatype.receive.DoubleReceiveDataType" -> {
-				yield "xs:double";
-			}
-			case "com.sakulabo.application.app.rpc.datatype.receive.IntegerReceiveDataType" -> {
-				yield "xs:int";
-			}
-			case "com.sakulabo.application.app.rpc.datatype.receive.ArrayReceiveDataType" -> {
-				yield "RpcArrayType";
-			}
-			case null -> "xs:string";
-			default -> "xs:string";
+				case "com.sakulabo.application.app.rpc.datatype.receive.Base64ReceiveDataType" -> {
+					yield "xs:base64Binary";
+				}
+				case "com.sakulabo.application.app.rpc.datatype.receive.BooleanReceiveDataType" -> {
+					yield "xs:boolean";
+				}
+				case "com.sakulabo.application.app.rpc.datatype.receive.DateTimeReceiveDataType" -> {
+					yield "xs:dateTime";
+				}
+				case "com.sakulabo.application.app.rpc.datatype.receive.DoubleReceiveDataType" -> {
+					yield "xs:double";
+				}
+				case "com.sakulabo.application.app.rpc.datatype.receive.IntegerReceiveDataType" -> {
+					yield "xs:int";
+				}
+				case "com.sakulabo.application.app.rpc.datatype.receive.ArrayReceiveDataType" -> {
+					yield "RpcArrayType";
+				}
+				case null -> "xs:string";
+				default -> "xs:string";
 			};
 		}
 	}
 
 	/**
 	 * PRCメソッドパラメータの論理データ構造を生成します
+	 * 
 	 * @param method メソッド（ソースコード）
 	 * @return PRCメソッドパラメータの論理データ構造
 	 */
@@ -404,8 +421,9 @@ public class RpcAnnotationProcessor extends AbstractProcessor {
 
 	/**
 	 * 文字列から指定された要素が処理対象であるか判定します
+	 * 
 	 * @param target 対象要素
-	 * @param name 検索条件
+	 * @param name   検索条件
 	 * @return 検索結果
 	 */
 	private List<AnnotationMirror> isTarget(Element target, String name) {

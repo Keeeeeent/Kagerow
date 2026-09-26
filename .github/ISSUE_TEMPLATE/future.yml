@@ -1,0 +1,80 @@
+name: Future Task
+description: 将来的に対応・検討するタスクを登録します。
+title: "[Future]: "
+labels:
+  - future
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Future Task
+
+        現時点では対応しないが、将来的に検討・実装したい内容を記録します。
+
+  - type: input
+    id: summary
+    attributes:
+      label: 概要
+      description: 将来的に実現したいことを簡潔に記載してください。
+      placeholder: 例）SQLエディタに補完機能を追加する
+    validations:
+      required: true
+
+  - type: textarea
+    id: background
+    attributes:
+      label: 背景・目的
+      description: なぜこの機能・改善が必要なのかを記載してください。
+      placeholder: |
+        現在は〜〜のため、〜〜という問題がある。
+
+  - type: textarea
+    id: requirements
+    attributes:
+      label: 想定する要件
+      description: 現時点で考えている要件や仕様を記載してください。
+      placeholder: |
+        - 〜〜できること
+        - 〜〜をサポートすること
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 優先度
+      description: 現時点での優先度を選択してください。
+      options:
+        - Low
+        - Medium
+        - High
+        - 未定
+      default: 3
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: カテゴリ
+      description: タスクの分類を選択してください。
+      options:
+        - Feature
+        - Improvement
+        - Refactoring
+        - Performance
+        - Documentation
+        - Infrastructure
+        - Other
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: メモ・参考情報
+      description: 関連 Issue、参考資料、検討事項などがあれば記載してください。
+      placeholder: |
+        関連 Issue:
+        参考:
+        その他:

@@ -181,6 +181,7 @@ public class NonComponentKsqlPopupEditPanel extends JPanel
 
 		/**
 		 * デフォルトコンストラクタ
+		 * 
 		 * @param map データ
 		 */
 		public tableModel(Map<String, String> map) {
@@ -269,10 +270,11 @@ public class NonComponentKsqlPopupEditPanel extends JPanel
 
 	/**
 	 * デフォルトコンストラクタKagerowScriptAccessor kagerowScriptAccessor
+	 * 
 	 * @param kagerowScriptAccessor スクリプトアクセッサー
-	 * @param kagerowSqlAccessor ksqlスクリプトアクセッサー
-	 * @param planAccessor KDBセッション
-	 * @param parent 親コンポーネント
+	 * @param kagerowSqlAccessor    ksqlスクリプトアクセッサー
+	 * @param planAccessor          KDBセッション
+	 * @param parent                親コンポーネント
 	 */
 	public NonComponentKsqlPopupEditPanel(KagerowScriptAccessor kagerowScriptAccessor,
 			KagerowSqlAccessor kagerowSqlAccessor, NonComponentScriptEditPanel parent,
@@ -384,6 +386,7 @@ public class NonComponentKsqlPopupEditPanel extends JPanel
 
 	/**
 	 * 個別実行ボタン押下後処理メソッド
+	 * 
 	 * @throws Exception SQL実行失敗
 	 */
 	@ActionListenerMixin.ActionCommand(COMMON_EXE_CMD)
@@ -409,7 +412,7 @@ public class NonComponentKsqlPopupEditPanel extends JPanel
 
 			// キャッシュ機能が有効な場合、無効化されてもいいか確認
 			if (planAccessor.isCache()) {
-				if (!planAccessor.isIgnoreCashe()) {
+				if (!planAccessor.isIgnoreCache()) {
 					// 表示できる結果がないことを通知
 					boolean choiceResult = dialogHelper.showChoiceDialog(
 							NonComponentKsqlPopupEditPanelText.IGNORE_CHASH_TITLE.toString(),

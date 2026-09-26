@@ -36,42 +36,42 @@ public final class AcceleratorHelper {
 	 */
 	public static enum ShortcutKey {
 
-		/** スクリプト新規作成（ctlr+n） */
+		/** スクリプト新規作成（ctrl+n） */
 		CREATE_SCRIPT(FileMenu.ADD_SCRIPT, KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()) {
 			@Override
 			public void doShortcut(ActionEvent e, JComponent target) {
 				((FileMenu) target).addScript(e);
 			}
 		},
-		/** スクリプト編集（ctlr+o） */
+		/** スクリプト編集（ctrl+o） */
 		EDIT_SCRIPT(FileMenu.EDIT_SCRIPT, KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()) {
 			@Override
 			public void doShortcut(ActionEvent e, JComponent target) {
 				((FileMenu) target).editScript();
 			}
 		},
-		/** スクリプト保存（ctlr+s） */
+		/** スクリプト保存（ctrl+s） */
 		SAVE_SCRIPT(FileMenu.SAVE_SCRIPT, KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()) {
 			@Override
 			public void doShortcut(ActionEvent e, JComponent target) {
 				((FileMenu) target).saveScript(e);
 			}
 		},
-		/** データインポート（ctlr+i） */
+		/** データインポート（ctrl+i） */
 		IMPORT_FILE_DATA(FileMenu.DATA_IMPORT, KeyEvent.VK_I, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()) {
 			@Override
 			public void doShortcut(ActionEvent e, JComponent target) {
 				((FileMenu) target).dataImport();
 			}
 		},
-		/** スクリプト実行（ctlr+enter） */
+		/** スクリプト実行（ctrl+enter） */
 		EXECUT_SCRIPT("EXECUT_SCRIPT", KeyEvent.VK_ENTER, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()) {
 			@Override
 			public void doShortcut(ActionEvent e, JComponent target) {
 				((NonComponentResultViewPanel) target).exeBtn();
 			}
 		},
-		/** 個別スクリプト実行（ctlr+enter） */
+		/** 個別スクリプト実行（ctrl+enter） */
 		PRIVATE_EXECUT_SCRIPT("PRIVATE_EXECUT_SCRIPT", KeyEvent.VK_ENTER,
 				Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()) {
 			@Override
@@ -84,7 +84,7 @@ public final class AcceleratorHelper {
 
 			}
 		},
-		/** スクリプト実行（ctlr+space） */
+		/** スクリプト実行（ctrl+space） */
 		COMPLEMENT_SCRIPT("COMPLEMENT_SCRIPT", KeyEvent.VK_SPACE,
 				Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()) {
 			@Override
@@ -104,9 +104,10 @@ public final class AcceleratorHelper {
 
 		/**
 		 * デフォルトコンストラクタ
-		 * @param action アクションコマンド
+		 * 
+		 * @param action   アクションコマンド
 		 * @param keyEvent キーイベント
-		 * @param mask キーイベントマスク
+		 * @param mask     キーイベントマスク
 		 */
 		private ShortcutKey(String action, int keyEvent, int mask) {
 			this.action = action;
@@ -116,7 +117,8 @@ public final class AcceleratorHelper {
 
 		/**
 		 * ショートカットキーアクションバインド
-		 * @param e イベント
+		 * 
+		 * @param e      イベント
 		 * @param target ショートカット起動対象コンポーネント
 		 */
 		public abstract void doShortcut(ActionEvent e, JComponent target);
@@ -125,8 +127,9 @@ public final class AcceleratorHelper {
 
 	/**
 	 * ショートカットキーを生成、登録します
+	 * 
 	 * @param shortcutKey ショートカットキー列挙クラス
-	 * @param target 登録対象
+	 * @param target      登録対象
 	 */
 	public final void setShortcut(ShortcutKey shortcutKey, JComponent target) {
 		// ショートカット作成

@@ -1,0 +1,127 @@
+name: Bug Report
+description: Kagerow の不具合を報告します。
+title: "[Bug]: "
+labels:
+  - bug
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Bug Report
+
+        Kagerow で発生した不具合を報告してください。
+        可能な限り再現手順やログを記載してください。
+
+  - type: input
+    id: summary
+    attributes:
+      label: 概要
+      description: 発生した不具合を簡潔に記載してください。
+      placeholder: 例）CSVインポート時に日本語が文字化けする
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: コンポーネント
+      options:
+        - CLI
+        - GUI
+        - Core
+        - RPC
+        - Build
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: behavior
+    attributes:
+      label: 実際の結果
+      description: 実際に何が起きたのかを記載してください。
+      placeholder: |
+        CSVをインポートすると、日本語の文字が文字化けする。
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待する結果
+      description: 本来どうなることを期待していたかを記載してください。
+      placeholder: |
+        CSVの日本語が正しく読み込まれる。
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順
+      description: 不具合を再現するための手順を記載してください。
+      placeholder: |
+        1. Kagerowを起動する
+        2. `sample.csv` を指定する
+        3. `import` を実行する
+        4. 文字化けが発生する
+    validations:
+      required: true
+
+  - type: textarea
+    id: app-environment
+    attributes:
+      label: アプリケーションバージョン
+      description: Kagerowのバージョンなどを記載してください。
+      placeholder: |
+        - Kagerow: 1.0.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: os-environment
+    attributes:
+      label: OS情報
+      description: OSを記載してください。
+      placeholder: |
+        - MacOS
+        - Linux
+        - Windows
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: ログ・エラーメッセージ
+      description: 関連するログやスタックトレースがあれば貼り付けてください。
+      render: text
+      placeholder: |
+        java.lang.IllegalStateException: ...
+            at com.sakulabo....
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 再現用データ・コード
+      description: 再現に必要なKSQL、CSV、SQLなどがあれば記載または添付してください。
+      placeholder: |
+        ```sql
+        SELECT * FROM ...
+        ```
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: 回避方法
+      description: 現在分かっている回避方法があれば記載してください。
+      placeholder: |
+        別のオプションを指定すると回避できる。
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: その他
+      description: その他の情報、スクリーンショット、関連Issueなどがあれば記載してください。

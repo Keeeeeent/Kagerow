@@ -11,6 +11,7 @@ developer-tools
 
 # manager
 manager/JITCompileOptions.properties
+application/JITCompileOptions.properties
 
 # public
 /public/openjdk/*tar

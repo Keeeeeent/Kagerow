@@ -23,6 +23,15 @@ public class BooleanSendDataType extends AbstractBaseDataType implements BaseDat
 		super(baseData);
 	}
 
+	/**
+	 * デフォルトコンストラクタ
+	 *
+	 * @param baseData 変換前データ
+	 */
+	public BooleanSendDataType(boolean baseData) {
+		super(Boolean.toString(baseData));
+	}
+
 	/** {@inheritDoc} */
 	@Override
 	public Optional<Boolean> getRawType() {
