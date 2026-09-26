@@ -27,27 +27,21 @@ Kagerowは次のような用途に利用できます。
 
 ### 処理フローイメージ
 
-```
-          CSV / TSV
-              │
-              ▼
-        Input Plugin
-              │
-              ▼
-        ┌──────────┐
-        │    KDB   │
-        └──────────┘
-              │
-              ▼
-            KSQL
-              │
-       ┌──────┴──────┐
-       ▼             ▼
- Output Plugin     Command
-       │             │
-       ▼             ▼
- CSV / JSON /     外部コマンド
- Excel / HTML ...
+```mermaid
+flowchart TD
+    A["CSV / TSV"]
+    B["入力プラグイン"]
+    C[("KDB")]
+    D["KSQL"]
+    E["出力プラグイン"]
+    F["外部コマンド"]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+
 ```
 
 ## 🛠️ 使用技術  
