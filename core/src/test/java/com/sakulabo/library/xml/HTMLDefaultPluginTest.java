@@ -20,17 +20,20 @@ import javax.sql.rowset.RowSetProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.sakulabo.BaseTest;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Kagerow.Utilities.KagerowDBMode;
 import com.sakulabo.regulation.spi.PluginAdapter.KagerowRowSet;
 
 /**
  * XML出力プラグインのテストクラスです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class HTMLDefaultPluginTest extends BaseTest<HTMLDefaultPlugin> {
 
 	/** テスト対象 */
@@ -47,13 +50,6 @@ public class HTMLDefaultPluginTest extends BaseTest<HTMLDefaultPlugin> {
 	private CachedRowSet cachedRowSet;
 	@Mock
 	private ResultSetMetaData metaData;
-
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected HTMLDefaultPluginTest() {
-		super(HTMLDefaultPluginTest.class);
-	}
 
 	@BeforeEach
 	void initService() {
@@ -114,7 +110,7 @@ public class HTMLDefaultPluginTest extends BaseTest<HTMLDefaultPlugin> {
 			testTarget.output(params, List.of(targetData));
 
 			// 結果検証
-			Path expect = testDir.resolve("expect_001.html");
+			Path expect = getTestDir().resolve("expect_001.html");
 			long result = Files.mismatch(resultFile, expect);
 			// バイト単位で比較を行い、完全一致の場合は-1L
 			// そうでない場合は一致しないバイト位置が返却される

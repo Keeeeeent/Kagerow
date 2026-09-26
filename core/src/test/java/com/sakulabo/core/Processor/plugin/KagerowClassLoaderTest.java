@@ -11,33 +11,19 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.sakulabo.BaseTest;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Kagerow.Exception.ApplicationError;
 
 /**
  * アプリケーション共通で使用されるプラグイン専用クラスローダーのテストクラスです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class KagerowClassLoaderTest extends BaseTest<KagerowClassLoader> {
-
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected KagerowClassLoaderTest() {
-		super(KagerowClassLoaderTest.class);
-	}
-
-	@BeforeEach
-	void initService() {
-	}
-
-	@AfterEach
-	void closeService() {
-	}
 
 	/**
 	 * [試験観点] : karファイル読み込み
@@ -49,7 +35,7 @@ public class KagerowClassLoaderTest extends BaseTest<KagerowClassLoader> {
 	@Disabled
 	public void Test001() throws Throwable {
 		// karファイルが読み込みできている
-		KagerowClassLoader target = new KagerowClassLoader(testDir.resolve("test.plugin"));
+		KagerowClassLoader target = new KagerowClassLoader(getTestDir().resolve("test.plugin"));
 		Class<?> clazz = target.loadClass("com.sakulabo.library.common.FileDefaultOutputer");
 		// Class情報がnullではない
 		assertThat(clazz, is(not(nullValue())));
@@ -66,7 +52,7 @@ public class KagerowClassLoaderTest extends BaseTest<KagerowClassLoader> {
 	public void Test002() throws Throwable {
 		// karファイルが読み込みできている
 		@SuppressWarnings("resource")
-		KagerowClassLoader target = new KagerowClassLoader(testDir.resolve("test.plugin"));
+		KagerowClassLoader target = new KagerowClassLoader(getTestDir().resolve("test.plugin"));
 		// リソースロードができている
 		String line = null;
 		try (
@@ -96,7 +82,7 @@ public class KagerowClassLoaderTest extends BaseTest<KagerowClassLoader> {
 	@Disabled
 	public void Test003() throws Throwable {
 		// クラスローダー生成
-		KagerowClassLoader target = new KagerowClassLoader(testDir.resolve("test.plugin"));
+		KagerowClassLoader target = new KagerowClassLoader(getTestDir().resolve("test.plugin"));
 		// スレッドの生成
 		Thread thread = target.currentThread("test");
 		// デーモンスレッドで生成されている
@@ -118,7 +104,7 @@ public class KagerowClassLoaderTest extends BaseTest<KagerowClassLoader> {
 	public void Test004() throws Throwable {
 		try {
 			// クラスローダー生成
-			new KagerowClassLoader(testDir.resolve("test.nonplugin"));
+			new KagerowClassLoader(getTestDir().resolve("test.nonplugin"));
 			fail("テスト失敗");
 		} catch (ApplicationError e) {
 			assertThat(e.getThrowClass(), is(KagerowClassLoader.class));

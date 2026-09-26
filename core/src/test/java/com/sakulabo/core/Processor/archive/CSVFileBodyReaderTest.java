@@ -6,31 +6,17 @@ import static org.hamcrest.MatcherAssert.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.sakulabo.BaseTest;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 
 /**
  * CSVファイルのボディー読み取り実装提供クラスのテストクラスです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class CSVFileBodyReaderTest extends BaseTest<CSVFileBodyReaderTest> {
-
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected CSVFileBodyReaderTest() {
-		super(CSVFileHeaderReaderTest.class);
-	}
-
-	@BeforeEach
-	void initService() {
-	}
-
-	@AfterEach
-	void closeService() throws Exception {
-	}
 
 	/** テスト対象 */
 	private CSVFileBodyReader testTarget;
@@ -42,7 +28,7 @@ public class CSVFileBodyReaderTest extends BaseTest<CSVFileBodyReaderTest> {
 	@Test
 	public void Test001() throws Throwable {
 		// インスタンス初期化
-		Path path = testDir.resolve("testdata1.csv");
+		Path path = getTestDir().resolve("testdata1.csv");
 		testTarget = new CSVFileBodyReader(path, StandardCharsets.UTF_8, false);
 		@SuppressWarnings("unused")
 		String[] result;
@@ -61,7 +47,7 @@ public class CSVFileBodyReaderTest extends BaseTest<CSVFileBodyReaderTest> {
 	@Test
 	public void Test002() throws Throwable {
 		// インスタンス初期化
-		Path path = testDir.resolve("testdata2.csv");
+		Path path = getTestDir().resolve("testdata2.csv");
 		testTarget = new CSVFileBodyReader(path, StandardCharsets.UTF_8, true);
 		String[] result;
 		String[][] exp = {
@@ -91,7 +77,7 @@ public class CSVFileBodyReaderTest extends BaseTest<CSVFileBodyReaderTest> {
 	@Test
 	public void Test003() throws Throwable {
 		// インスタンス初期化
-		Path path = testDir.resolve("testdata3.csv");
+		Path path = getTestDir().resolve("testdata3.csv");
 		testTarget = new CSVFileBodyReader(path, StandardCharsets.UTF_8, true);
 		String[] result = testTarget.readLine();
 		String[] exp = {
@@ -111,7 +97,7 @@ public class CSVFileBodyReaderTest extends BaseTest<CSVFileBodyReaderTest> {
 	@Test
 	public void Test004() throws Throwable {
 		// インスタンス初期化
-		Path path = testDir.resolve("testdata4.csv");
+		Path path = getTestDir().resolve("testdata4.csv");
 		testTarget = new CSVFileBodyReader(path, StandardCharsets.UTF_8, true);
 		String[] result = testTarget.readLine();
 		String[] exp = {
@@ -131,7 +117,7 @@ public class CSVFileBodyReaderTest extends BaseTest<CSVFileBodyReaderTest> {
 	@Test
 	public void Test005() throws Throwable {
 		// インスタンス初期化
-		Path path = testDir.resolve("testdata5.csv");
+		Path path = getTestDir().resolve("testdata5.csv");
 		testTarget = new CSVFileBodyReader(path, StandardCharsets.UTF_8, true);
 		String[] result = testTarget.readLine();
 		String[] exp = {
@@ -151,7 +137,7 @@ public class CSVFileBodyReaderTest extends BaseTest<CSVFileBodyReaderTest> {
 	@Test
 	public void Test006() throws Throwable {
 		// インスタンス初期化
-		Path path = testDir.resolve("testdata6.csv");
+		Path path = getTestDir().resolve("testdata6.csv");
 		testTarget = new CSVFileBodyReader(path, StandardCharsets.UTF_8, true);
 		String[] result;
 		String[][] exp = {

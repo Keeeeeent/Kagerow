@@ -9,37 +9,31 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.sakulabo.BaseTest;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Common.AppPathUtils;
-import com.sakulabo.core.Kagerow.KagerowApplication;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowVirtualFileObject.BasicFileObject;
+import com.sakulabo.core.Kagerow.Context.KagerowVirtualFileContext;
 import com.sakulabo.core.Kagerow.Utilities.KagerowDBMode;
+import com.sakulabo.core.Kagerow.Utilities.KagerowTransaction;
+import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 import com.sakulabo.core.Processor.database.DDLConnectionHandler;
 
 /**
  * バイナリファイル読み取り実装提供クラスのテストクラスです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected BasicChunkLorderTest() {
-		super(BasicChunkLorderTest.class);
-	}
-
-	@BeforeEach
-	void initService() {
-		// セキュアコンテキスト生成
-		KagerowApplication.getInstance("test");
-	}
-
-	@AfterEach
-	void closeService() throws Exception {
+	@BeforeAll
+	public static void initService() throws Exception {
+		// スキーマ作成
+		KagerowVirtualFileContext ctx = KagerowUtilities.getContext(KagerowVirtualFileContext._NAME);
+		ctx.createSubcontext("test");
 	}
 
 	/** テスト対象 */
@@ -52,9 +46,9 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 	@Test
 	public void Test001() throws Throwable {
 
-		try {
+		try (KagerowTransaction tran = KagerowTransaction.getTransactionFromSchemaName("test")) {
 			// インスタンス初期化
-			Path path = testDir.resolve("test1.csv");
+			Path path = getTestDir().resolve("test1.csv");
 			BasicChunkCreater creater = new BasicChunkCreater("test", path, StandardCharsets.UTF_8, true,
 					new CSVFileReaderFactory());
 			BasicFileObject result = creater.create("Test001");
@@ -69,6 +63,8 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 
 			testTarget = new BasicChunkLorder(KagerowDBMode.ORACLE, kdbPath);
 			testTarget.lord(result);
+
+			tran.commit();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -86,7 +82,7 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 
 		try {
 			// インスタンス初期化
-			Path path = testDir.resolve("test1.csv");
+			Path path = getTestDir().resolve("test1.csv");
 			BasicChunkCreater creater = new BasicChunkCreater("test", path, StandardCharsets.UTF_8, true,
 					new CSVFileReaderFactory());
 			BasicFileObject result = creater.create("Test001");
@@ -123,7 +119,7 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 
 		try {
 			// インスタンス初期化
-			Path path = testDir.resolve("test1.csv");
+			Path path = getTestDir().resolve("test1.csv");
 			BasicChunkCreater creater = new BasicChunkCreater("test", path, StandardCharsets.UTF_8, true,
 					new CSVFileReaderFactory());
 			BasicFileObject result = creater.create("Test001");
@@ -160,7 +156,7 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 
 		try {
 			// インスタンス初期化
-			Path path = testDir.resolve("test1.csv");
+			Path path = getTestDir().resolve("test1.csv");
 			BasicChunkCreater creater = new BasicChunkCreater("test", path, StandardCharsets.UTF_8, true,
 					new CSVFileReaderFactory());
 			BasicFileObject result = creater.create("Test001");
@@ -197,7 +193,7 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 
 		try {
 			// インスタンス初期化
-			Path path = testDir.resolve("test1.csv");
+			Path path = getTestDir().resolve("test1.csv");
 			BasicChunkCreater creater = new BasicChunkCreater("test", path, StandardCharsets.UTF_8, true,
 					new CSVFileReaderFactory());
 			BasicFileObject result = creater.create("Test001");
@@ -234,7 +230,7 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 
 		try {
 			// インスタンス初期化
-			Path path = testDir.resolve("test6.csv");
+			Path path = getTestDir().resolve("test6.csv");
 			BasicChunkCreater creater = new BasicChunkCreater("test", path, StandardCharsets.UTF_8, true,
 					new CSVFileReaderFactory());
 			BasicFileObject result = creater.create("Test001");

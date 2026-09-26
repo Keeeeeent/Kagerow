@@ -22,17 +22,20 @@ import javax.sql.rowset.WebRowSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.sakulabo.BaseTest;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Kagerow.Utilities.KagerowDBMode;
 import com.sakulabo.regulation.spi.PluginAdapter.KagerowRowSet;
 
 /**
  * XML出力プラグインのテストクラスです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class XMLDefaultPluginTest extends BaseTest<XMLDefaultPlugin> {
 
 	/** テスト対象 */
@@ -49,13 +52,6 @@ public class XMLDefaultPluginTest extends BaseTest<XMLDefaultPlugin> {
 	private CachedRowSet cachedRowSet;
 	@Mock
 	private ResultSetMetaData metaData;
-
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected XMLDefaultPluginTest() {
-		super(XMLDefaultPluginTest.class);
-	}
 
 	@BeforeEach
 	void initService() {

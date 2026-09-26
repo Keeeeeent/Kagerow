@@ -9,10 +9,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.sakulabo.BaseTest;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Kagerow.Utilities.KagerowCommandMode;
 import com.sakulabo.core.Kagerow.Utilities.KagerowDBMode;
 import com.sakulabo.core.Kagerow.Utilities.KagerowScriptAccessor;
@@ -20,21 +21,11 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowScriptAccessor;
 /**
  * Kagerowスクリプトファイル解析のテストクラスです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class KsqlFileWriterTest extends BaseTest<KagerowScriptAccessor> {
 
 	/** テスト対象 */
 	private KagerowScriptAccessor testTarget;
-
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected KsqlFileWriterTest() {
-		super(KsqlFileWriterTest.class);
-	}
-
-	@BeforeEach
-	void initService() {
-	}
 
 	@AfterEach
 	void closeService() throws IOException {
@@ -53,7 +44,7 @@ public class KsqlFileWriterTest extends BaseTest<KagerowScriptAccessor> {
 	public void Test001() throws Throwable {
 
 		// テストデータ準備
-		Path testData = testDir.resolve("test1.ksql");
+		Path testData = getTestDir().resolve("test1.ksql");
 		testTarget = KagerowScriptAccessor.getInstance(testData);
 
 		// テスト実行
@@ -203,7 +194,7 @@ public class KsqlFileWriterTest extends BaseTest<KagerowScriptAccessor> {
 	public void Test002() throws Throwable {
 
 		// テストデータ準備
-		Path testData = testDir.resolve("test2.ksql");
+		Path testData = getTestDir().resolve("test2.ksql");
 		testTarget = KagerowScriptAccessor.getInstance(testData);
 
 		// テスト実行
@@ -277,7 +268,7 @@ public class KsqlFileWriterTest extends BaseTest<KagerowScriptAccessor> {
 	public void Test003() throws Throwable {
 
 		// テストデータ準備
-		Path testData = testDir.resolve("test3.ksql");
+		Path testData = getTestDir().resolve("test3.ksql");
 		testTarget = KagerowScriptAccessor.getInstance(testData);
 
 		// テスト実行
@@ -375,7 +366,7 @@ public class KsqlFileWriterTest extends BaseTest<KagerowScriptAccessor> {
 	public void Test004() throws Throwable {
 
 		// テストデータ準備
-		Path testData = testDir.resolve("test4.ksql");
+		Path testData = getTestDir().resolve("test4.ksql");
 		testTarget = KagerowScriptAccessor.getInstance(testData);
 
 		// テスト実行
@@ -474,7 +465,7 @@ public class KsqlFileWriterTest extends BaseTest<KagerowScriptAccessor> {
 	public void Test005() throws Throwable {
 
 		// テストデータ準備
-		Path testData = testDir.resolve("test5.ksql");
+		Path testData = getTestDir().resolve("test5.ksql");
 		testTarget = KagerowScriptAccessor.getInstance(testData);
 
 		// テスト実行

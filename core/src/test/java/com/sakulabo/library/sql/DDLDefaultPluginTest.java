@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
 import static org.mockito.Mockito.*;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.HashMap;
@@ -12,18 +13,22 @@ import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.sakulabo.BaseTest;
-import com.sakulabo.core.Kagerow.KagerowApplication;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
+import com.sakulabo.core.Kagerow.Utilities.KagerowChunkCreater.ChunkCreateMode;
 import com.sakulabo.core.Kagerow.Utilities.KagerowDBMode;
+import com.sakulabo.core.Kagerow.Utilities.KagerowVirtualFileCreater;
 
 /**
  * DDL実行プラグインのテストクラスです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class DDLDefaultPluginTest extends BaseTest<DDLDefaultPlugin> {
 
 	/** テスト対象 */
@@ -35,17 +40,9 @@ public class DDLDefaultPluginTest extends BaseTest<DDLDefaultPlugin> {
 	@Mock
 	private Statement statement;
 
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	public DDLDefaultPluginTest() {
-		super(DDLDefaultPluginTest.class);
-	}
-
 	@BeforeEach
 	void initService() {
 		closeable = MockitoAnnotations.openMocks(this);
-		KagerowApplication.getInstance("test");
 	}
 
 	@AfterEach
@@ -62,6 +59,17 @@ public class DDLDefaultPluginTest extends BaseTest<DDLDefaultPlugin> {
 	 */
 	@Test
 	public void Test001() throws Throwable {
+
+		// 前提準備
+		// テーブル作成
+		KagerowVirtualFileCreater.constructionKDB(
+				ChunkCreateMode.CSV,
+				"test",
+				getInputPath("test1.csv"),
+				StandardCharsets.UTF_8,
+				false,
+				"Test002",
+				false);
 
 		// 引数のキャプチャ
 		ArgumentCaptor<String> argCaptor_statement = ArgumentCaptor.forClass(String.class);
@@ -80,7 +88,6 @@ public class DDLDefaultPluginTest extends BaseTest<DDLDefaultPlugin> {
 
 		// テスト実行
 		testTarget.input(params, mode, connection);
-
 		// 結果検証
 		assertThat(argCaptor_statement.getAllValues().get(0), is("""
 				create view test as select * from \

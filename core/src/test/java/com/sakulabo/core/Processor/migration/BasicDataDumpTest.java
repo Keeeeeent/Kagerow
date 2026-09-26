@@ -1,9 +1,9 @@
 package com.sakulabo.core.Processor.migration;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.sakulabo.BaseTest;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Common.AppPathUtils;
 
 /**
@@ -11,25 +11,11 @@ import com.sakulabo.core.Common.AppPathUtils;
  *
  * @author keeeeeent
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class BasicDataDumpTest extends BaseTest<BasicDataDump> {
 
 	/** テスト対象 */
 	private BasicDataDump testTarget;
-
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected BasicDataDumpTest() {
-		super(BasicDataDumpTest.class);
-	}
-
-	@BeforeEach
-	void initService() {
-	}
-
-	@AfterEach
-	void closeService() throws Exception {
-	}
 
 	/**
 	 * [試験観点] : データバックアップ

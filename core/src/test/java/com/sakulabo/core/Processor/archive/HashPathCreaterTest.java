@@ -10,11 +10,12 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.naming.Name;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.sakulabo.BaseTest;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Common.ErrorMessage;
 import com.sakulabo.core.Common.URINameParser;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowDataType;
@@ -22,25 +23,15 @@ import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowDataT
 /**
  * ハッシュパスを生成するファクトリクラスのテストクラスです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class HashPathCreaterTest extends BaseTest<HashPathCreater> {
 
 	/** テスト対象 */
 	private HashPathCreater testTarget;
 
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected HashPathCreaterTest() {
-		super(HashPathCreaterTest.class);
-	}
-
 	@BeforeEach
 	void initService() throws NoSuchAlgorithmException {
 		testTarget = new HashPathCreater();
-	}
-
-	@AfterEach
-	void closeService() throws Exception {
 	}
 
 	/**

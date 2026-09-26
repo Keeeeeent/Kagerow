@@ -6,11 +6,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.file.Path;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.sakulabo.BaseTest;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Kagerow.Exception.KFileParseException;
 import com.sakulabo.core.Kagerow.Utilities.KagerowCommandMode;
 import com.sakulabo.core.Kagerow.Utilities.KagerowDBMode;
@@ -19,25 +19,11 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowScriptAccessor;
 /**
  * Kagerowスクリプトファイル解析のテストクラスです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class KsqlFileReaderTest extends BaseTest<KagerowScriptAccessor> {
 
 	/** テスト対象 */
 	private KagerowScriptAccessor testTarget;
-
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected KsqlFileReaderTest() {
-		super(KsqlFileReaderTest.class);
-	}
-
-	@BeforeEach
-	void initService() {
-	}
-
-	@AfterEach
-	void closeService() {
-	}
 
 	/**
 	 * [試験観点] : 通常KSQLファイル
@@ -49,7 +35,7 @@ public class KsqlFileReaderTest extends BaseTest<KagerowScriptAccessor> {
 	public void Test001() throws Throwable {
 
 		// テストデータ準備
-		Path testData = testDir.resolve("test1.ksql");
+		Path testData = getTestDir().resolve("test1.ksql");
 
 		// テスト実行
 		testTarget = KagerowScriptAccessor.getInstance(testData);
@@ -188,7 +174,7 @@ public class KsqlFileReaderTest extends BaseTest<KagerowScriptAccessor> {
 	public void Test002() throws Throwable {
 
 		// テストデータ準備
-		Path testData = testDir.resolve("test2.ksql");
+		Path testData = getTestDir().resolve("test2.ksql");
 
 		// テスト実行
 		testTarget = KagerowScriptAccessor.getInstance(testData);
@@ -257,7 +243,7 @@ public class KsqlFileReaderTest extends BaseTest<KagerowScriptAccessor> {
 	public void Test003() throws Throwable {
 
 		// テストデータ準備
-		Path testData = testDir.resolve("test3.ksql");
+		Path testData = getTestDir().resolve("test3.ksql");
 
 		// テスト実行
 		testTarget = KagerowScriptAccessor.getInstance(testData);
@@ -351,7 +337,7 @@ public class KsqlFileReaderTest extends BaseTest<KagerowScriptAccessor> {
 	public void Test004() throws Throwable {
 
 		// テストデータ準備
-		Path testData = testDir.resolve("test4.ksql");
+		Path testData = getTestDir().resolve("test4.ksql");
 
 		// テスト実行
 		testTarget = KagerowScriptAccessor.getInstance(testData);
@@ -445,7 +431,7 @@ public class KsqlFileReaderTest extends BaseTest<KagerowScriptAccessor> {
 	public void Test005() throws Throwable {
 
 		// テストデータ準備
-		Path testData = testDir.resolve("test5.ksql");
+		Path testData = getTestDir().resolve("test5.ksql");
 
 		// テスト実行
 		testTarget = KagerowScriptAccessor.getInstance(testData);
@@ -474,7 +460,7 @@ public class KsqlFileReaderTest extends BaseTest<KagerowScriptAccessor> {
 		String exp = "XMLエラー（6行目, 12列目）: <summary> はこの位置では使用できません。<name> が必要です";
 
 		// テストデータ準備
-		Path testData = testDir.resolve("test6.ksql");
+		Path testData = getTestDir().resolve("test6.ksql");
 
 		try {
 			// テスト実行
@@ -499,7 +485,7 @@ public class KsqlFileReaderTest extends BaseTest<KagerowScriptAccessor> {
 		String exp = "XMLエラー（7行目, 9列目）: <mode> はこの位置では使用できません。<summary> が必要です";
 
 		// テストデータ準備
-		Path testData = testDir.resolve("test7.ksql");
+		Path testData = getTestDir().resolve("test7.ksql");
 
 		try {
 			// テスト実行
@@ -524,7 +510,7 @@ public class KsqlFileReaderTest extends BaseTest<KagerowScriptAccessor> {
 		String exp = "XMLエラー（8行目, 11列目）: <schema> はこの位置では使用できません。<mode> が必要です";
 
 		// テストデータ準備
-		Path testData = testDir.resolve("test8.ksql");
+		Path testData = getTestDir().resolve("test8.ksql");
 
 		try {
 			// テスト実行

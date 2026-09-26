@@ -29,6 +29,7 @@ import javax.sql.rowset.CachedRowSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -37,6 +38,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.sakulabo.BaseTest;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Kagerow.KagerowApplication;
 import com.sakulabo.core.Kagerow.Utilities.KagerowDBMode;
 import com.sakulabo.library.common.DefaultPluginMessage;
@@ -46,6 +48,7 @@ import com.sakulabo.regulation.spi.PluginAdapter.KagerowRowSet;
 /**
  * CSV出力プラグインのテストクラスです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class CSVDefaultPluginTest extends BaseTest<CSVDefaultPlugin> {
 
 	/** テスト対象 */
@@ -62,13 +65,6 @@ public class CSVDefaultPluginTest extends BaseTest<CSVDefaultPlugin> {
 	private CachedRowSet cachedRowSet;
 	@Mock
 	private ResultSetMetaData metaData;
-
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected CSVDefaultPluginTest() {
-		super(CSVDefaultPluginTest.class);
-	}
 
 	@BeforeEach
 	void initService() {
@@ -110,7 +106,7 @@ public class CSVDefaultPluginTest extends BaseTest<CSVDefaultPlugin> {
 					AS SELECT * FROM temporary;
 				""";
 		Map<String, String> params = new HashMap<>();
-		params.put("InputPath", testDir.resolve("test1.csv").toString());
+		params.put("InputPath", getTestDir().resolve("test1.csv").toString());
 		params.put("IsHeader", "true");
 		params.put("TableName", "temporary");
 		params.put("IsEscape", "false");
@@ -156,7 +152,7 @@ public class CSVDefaultPluginTest extends BaseTest<CSVDefaultPlugin> {
 					AS SELECT * FROM temporary;
 				""";
 		Map<String, String> params = new HashMap<>();
-		params.put("InputPath", testDir.resolve("test1.csv").toString());
+		params.put("InputPath", getTestDir().resolve("test1.csv").toString());
 		params.put("IsHeader", "true");
 		params.put("TableName", "temporary");
 		params.put("IsEscape", "false");
@@ -185,7 +181,7 @@ public class CSVDefaultPluginTest extends BaseTest<CSVDefaultPlugin> {
 				""";
 		Map<String, String> params = new HashMap<>();
 		// 試験観点対象データ
-		String testPath = testDir.resolve("test99.csv").toString();
+		String testPath = getTestDir().resolve("test99.csv").toString();
 		params.put("InputPath", testPath);
 		params.put("IsHeader", "true");
 		params.put("TableName", "temporary");

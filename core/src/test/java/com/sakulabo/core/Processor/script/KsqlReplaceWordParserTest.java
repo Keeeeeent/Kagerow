@@ -7,34 +7,20 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.sakulabo.BaseTest;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 
 /**
  * KSQLに存在する置換文字列を処理するスクリプトのテストクラスです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class KsqlReplaceWordParserTest extends BaseTest<KsqlReplaceWordParser> {
 
 	/** テスト対象 */
 	private KsqlReplaceWordParser testTarget;
-
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected KsqlReplaceWordParserTest() {
-		super(KsqlReplaceWordParserTest.class);
-	}
-
-	@BeforeEach
-	void initService() {
-	}
-
-	@AfterEach
-	void closeService() {
-	}
 
 	/**
 	 * [試験観点] : 置換対象なし
@@ -110,12 +96,12 @@ public class KsqlReplaceWordParserTest extends BaseTest<KsqlReplaceWordParser> {
 		};
 		testTarget = new KsqlReplaceWordParser(replaceWordDictionary);
 		String sql = """
-				SELECT * FROM @{target} INNER JOIN @{target} USIND(X);
+				SELECT * FROM @{target} INNER JOIN @{target} USING(X);
 				""";
 
 		// 期待値
 		String exp = """
-				SELECT * FROM DUAL INNER JOIN DUAL USIND(X);
+				SELECT * FROM DUAL INNER JOIN DUAL USING(X);
 				""";
 
 		// テスト実施
@@ -144,12 +130,12 @@ public class KsqlReplaceWordParserTest extends BaseTest<KsqlReplaceWordParser> {
 		};
 		testTarget = new KsqlReplaceWordParser(replaceWordDictionary);
 		String sql = """
-				SELECT * FROM @{target1} INNER JOIN @{target2} USIND(X);
+				SELECT * FROM @{target1} INNER JOIN @{target2} USING(X);
 				""";
 
 		// 期待値
 		String exp = """
-				SELECT * FROM DUAL1 INNER JOIN DUAL2 USIND(X);
+				SELECT * FROM DUAL1 INNER JOIN DUAL2 USING(X);
 				""";
 
 		// テスト実施

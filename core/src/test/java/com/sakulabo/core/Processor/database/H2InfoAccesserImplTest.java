@@ -7,11 +7,11 @@ import java.math.BigInteger;
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.sakulabo.BaseTest;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowDataType;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowVirtualFileObject.BasicFileObject;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowVirtualFileObject.SecureFileObject;
@@ -20,22 +20,8 @@ import com.sakulabo.core.Processor.database.impl.H2InfoAccesserImpl;
 /**
  * データベースオブジェクト実行情報生成テストです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class H2InfoAccesserImplTest extends BaseTest<H2InfoAccesserImpl> {
-
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected H2InfoAccesserImplTest() {
-		super(H2InfoAccesserImplTest.class);
-	}
-
-	@BeforeEach
-	void initService() {
-	}
-
-	@AfterEach
-	void closeService() throws Exception {
-	}
 
 	/**
 	 * [試験観点] : H2モード

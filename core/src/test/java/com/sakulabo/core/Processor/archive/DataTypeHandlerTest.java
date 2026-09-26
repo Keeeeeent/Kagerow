@@ -4,11 +4,11 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.sakulabo.BaseTest;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Common.ErrorMessage;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowDataType;
 
@@ -17,22 +17,8 @@ import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowDataT
  * 
  * @author keeeeeent
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class DataTypeHandlerTest extends BaseTest<DataTypeHandlerTest> {
-
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected DataTypeHandlerTest() {
-		super(DataTypeHandlerTest.class);
-	}
-
-	@BeforeEach
-	void initService() {
-	}
-
-	@AfterEach
-	void closeService() throws Exception {
-	}
 
 	/** テスト対象 */
 	private DataTypeHandler testTarget;

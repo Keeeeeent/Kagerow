@@ -6,36 +6,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.charset.StandardCharsets;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.sakulabo.BaseTest;
-import com.sakulabo.core.Kagerow.KagerowApplication;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Kagerow.Utilities.KagerowFileHeaderReader;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 
 /**
  * CSVファイルのヘッダー読み取り実装提供クラスのテストクラスです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
-
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected CSVFileHeaderReaderTest() {
-		super(CSVFileHeaderReaderTest.class);
-	}
-
-	@BeforeEach
-	void initService() {
-		// セキュアコンテキスト生成
-		KagerowApplication.getInstance("test");
-	}
-
-	@AfterEach
-	void closeService() throws Exception {
-	}
 
 	/** テスト対象 */
 	private CSVFileHeaderReader testTarget;
@@ -47,7 +30,7 @@ public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
 	@Test
 	public void Test001() throws Throwable {
 		// インスタンス初期化
-		testTarget = new CSVFileHeaderReader(testDir.resolve("testdata1.csv"), StandardCharsets.UTF_8, false);
+		testTarget = new CSVFileHeaderReader(getTestDir().resolve("testdata1.csv"), StandardCharsets.UTF_8, false);
 		String[] result = testTarget.readLine();
 		String[] exp = {
 				"COLUMN_1", "COLUMN_2", "COLUMN_3", "COLUMN_4", "COLUMN_5", "COLUMN_6", "COLUMN_7"
@@ -66,7 +49,7 @@ public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
 	@Test
 	public void Test002() throws Throwable {
 		// インスタンス初期化
-		testTarget = new CSVFileHeaderReader(testDir.resolve("testdata2.csv"), StandardCharsets.UTF_8, true);
+		testTarget = new CSVFileHeaderReader(getTestDir().resolve("testdata2.csv"), StandardCharsets.UTF_8, true);
 		String[] result = testTarget.readLine();
 		String[] exp = {
 				"COL_1", "COL_2", "COL_3", "COL_4", "COL_5", "COL_6", "COL_7"
@@ -85,7 +68,7 @@ public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
 	@Test
 	public void Test003() throws Throwable {
 		// インスタンス初期化
-		testTarget = new CSVFileHeaderReader(testDir.resolve("testdata3.csv"), StandardCharsets.UTF_8, true);
+		testTarget = new CSVFileHeaderReader(getTestDir().resolve("testdata3.csv"), StandardCharsets.UTF_8, true);
 		String[] result = testTarget.readLine();
 		String[] exp = {
 				"COL\"_1", "COL_2", "COL_3", "COL\"_4", "COL_5", "COL_6", "COL\"_7"
@@ -104,7 +87,7 @@ public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
 	@Test
 	public void Test004() throws Throwable {
 		// インスタンス初期化
-		testTarget = new CSVFileHeaderReader(testDir.resolve("testdata4.csv"), StandardCharsets.UTF_8, true);
+		testTarget = new CSVFileHeaderReader(getTestDir().resolve("testdata4.csv"), StandardCharsets.UTF_8, true);
 		String[] result = testTarget.readLine();
 		String[] exp = {
 				"COL_1", "COL_2", "COL_3", "COL_\n4", "COL_5", "COL_6", "COL_7"
@@ -123,7 +106,7 @@ public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
 	@Test
 	public void Test005() throws Throwable {
 		// インスタンス初期化
-		testTarget = new CSVFileHeaderReader(testDir.resolve("testdata4.csv"), StandardCharsets.UTF_8, true);
+		testTarget = new CSVFileHeaderReader(getTestDir().resolve("testdata4.csv"), StandardCharsets.UTF_8, true);
 		String[] result = testTarget.readLine();
 		String[] exp = {
 				"COL_1", "COL_2", "COL_3", "COL_\n4", "COL_5", "COL_6", "COL_7"
@@ -147,7 +130,7 @@ public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
 	@Test
 	public void Test006() throws Throwable {
 		// インスタンス初期化
-		testTarget = new CSVFileHeaderReader(testDir.resolve("testdata5.csv"), StandardCharsets.UTF_8, true);
+		testTarget = new CSVFileHeaderReader(getTestDir().resolve("testdata5.csv"), StandardCharsets.UTF_8, true);
 		String[] result = testTarget.readLine();
 		String[] exp = {
 				"COL_,1", "COL_2", "COL_3", "COL_4", "COL_5", "COL_6", "COL_7"
@@ -166,7 +149,7 @@ public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
 	@Test
 	public void Test007() throws Throwable {
 		// インスタンス初期化
-		testTarget = new CSVFileHeaderReader(testDir.resolve("testdata7.csv"), StandardCharsets.UTF_8, true);
+		testTarget = new CSVFileHeaderReader(getTestDir().resolve("testdata7.csv"), StandardCharsets.UTF_8, true);
 		String[] result = testTarget.readLine();
 		String[] exp = {
 				"K_IN", "COL_2", "COL_3", "COL_4", "COL_5", "COL_6", "COL_7"
@@ -196,7 +179,7 @@ public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
 			}
 
 			// インスタンス初期化
-			testTarget = new CSVFileHeaderReader(testDir.resolve("testdata7.csv"), StandardCharsets.UTF_8, true);
+			testTarget = new CSVFileHeaderReader(getTestDir().resolve("testdata7.csv"), StandardCharsets.UTF_8, true);
 			String[] result = testTarget.readLine();
 			String[] exp = {
 					"TEST_IN", "COL_2", "COL_3", "COL_4", "COL_5", "COL_6", "COL_7"

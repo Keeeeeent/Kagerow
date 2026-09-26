@@ -11,11 +11,11 @@ import java.util.Optional;
 
 import javax.naming.Binding;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.sakulabo.BaseTest;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Kagerow.Exception.AlreadyLoadedBeanException;
 import com.sakulabo.core.Kagerow.Utilities.KagerowAOP;
 import com.sakulabo.core.Kagerow.Utilities.KagerowAOPProcessors;
@@ -26,22 +26,8 @@ import com.sakulabo.core.Provides.LoardDIBeansProvider.Key;
  *
  * @author keeeeeent
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class LoardDIBeansProviderTest extends BaseTest<LoardDIBeansProvider> {
-
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected LoardDIBeansProviderTest() {
-		super(LoardDIBeansProviderTest.class);
-	}
-
-	@BeforeEach
-	void initService() {
-	}
-
-	@AfterEach
-	void closeService() throws Exception {
-	}
 
 	/** テスト対象 */
 	private LoardDIBeansProvider provider;

@@ -16,10 +16,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.sakulabo.BaseTest;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowDataType;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowVirtualFileObject.BasicFileObject;
 import com.sakulabo.core.Kagerow.Contents.Impl.KagerowVirtualFileContentImpl;
@@ -29,6 +31,7 @@ import com.sakulabo.core.Kagerow.Context.Impl.KagerowVirtualFileContextImpl;
 /**
  * KSQLに存在するリンク可能文字列を処理するスクリプトのテストクラスです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class KsqlDatabaseLinkerTest extends BaseTest<KsqlDatabaseLinker> {
 
 	/** テスト対象 */
@@ -42,13 +45,6 @@ public class KsqlDatabaseLinkerTest extends BaseTest<KsqlDatabaseLinker> {
 	private KagerowVirtualDirContextImpl context;
 	@Mock
 	private KagerowVirtualFileContentImpl content;
-
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected KsqlDatabaseLinkerTest() {
-		super(KsqlDatabaseLinkerTest.class);
-	}
 
 	@BeforeEach
 	public void setUp() {

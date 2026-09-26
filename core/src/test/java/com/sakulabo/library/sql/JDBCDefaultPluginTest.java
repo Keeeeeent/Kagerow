@@ -16,16 +16,19 @@ import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.sakulabo.BaseTest;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Kagerow.KagerowApplication;
 
 /**
  * JDBCプラグインのテストクラスです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class JDBCDefaultPluginTest extends BaseTest<JDBCDefaultPlugin> {
 
 	/** テスト対象 */
@@ -71,13 +74,6 @@ public class JDBCDefaultPluginTest extends BaseTest<JDBCDefaultPlugin> {
 		} catch (NoSuchMethodException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	public JDBCDefaultPluginTest() {
-		super(JDBCDefaultPluginTest.class);
 	}
 
 	@BeforeEach

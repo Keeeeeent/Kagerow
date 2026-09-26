@@ -81,11 +81,11 @@
 	<build>
 		<finalName>application-core</finalName>
 		<resources>
-	        <!-- 通常resources -->
-	        <resource>
-	            <directory>src/main/resources</directory>
-	        </resource>
-	    </resources>
+			<!-- 通常resources -->
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -100,7 +100,7 @@
 							<goal>compile</goal>
 						</goals>
 						<configuration>
-							 <compilerArgs>
+							<compilerArgs>
 								<arg>-proc:none</arg>
 							</compilerArgs>
 						</configuration>
@@ -149,6 +149,7 @@
 					<argLine>
 					 <![CDATA[
 						${argLine}
+						--add-opens com.sakulabo.core/com.sakulabo=ALL-UNNAMED
 						--add-opens com.sakulabo.core/com.sakulabo.core.Processor.archive=ALL-UNNAMED
 						--add-opens com.sakulabo.core/com.sakulabo.core.Processor.database=ALL-UNNAMED
 						--add-opens com.sakulabo.core/com.sakulabo.core.Processor.migration=ALL-UNNAMED
@@ -198,11 +199,11 @@
 						</goals>
 					</execution>
 				</executions>
-				 <configuration>
+				<configuration>
 					<skip>false</skip>
-					 <includes>
-						 <include>com/sakulabo/**</include>
-					 </includes>
+					<includes>
+						<include>com/sakulabo/**</include>
+					</includes>
 				</configuration>
 			</plugin>
 			<!-- Javac実行向けの依存関係ファイル抽出（JCTree対応のアノテーションプロセッサコンパイル専用） -->
@@ -276,14 +277,14 @@
 						</goals>
 						<configuration>
 							<target>
-								<echo message="[------- ライセンスファイル格納 -------]"/>
-						        <!-- license -->
-						        <copy todir="${project.build.directory}/classes/META-INF/license">
-						            <fileset dir="${basedir}/../">
-						                <include name="THIRD-PARTY-NOTICES.txt"/>
-						                <include name="licenses/*"/>
-						            </fileset>
-						        </copy>
+								<echo message="[------- ライセンスファイル格納 -------]" />
+								<!-- license -->
+								<copy todir="${project.build.directory}/classes/META-INF/license">
+									<fileset dir="${basedir}/../">
+										<include name="THIRD-PARTY-NOTICES.txt" />
+										<include name="licenses/*" />
+									</fileset>
+								</copy>
 							</target>
 						</configuration>
 					</execution>
@@ -292,7 +293,9 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<!--This
+				plugin's configuration is used to store Eclipse m2e settings only. It has no
+				influence on the Maven build itself.-->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>

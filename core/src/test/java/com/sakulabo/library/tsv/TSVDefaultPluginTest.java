@@ -29,6 +29,7 @@ import javax.sql.rowset.CachedRowSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -37,7 +38,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.sakulabo.BaseTest;
-import com.sakulabo.core.Kagerow.KagerowApplication;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Kagerow.Utilities.KagerowDBMode;
 import com.sakulabo.library.common.DefaultPluginMessage;
 import com.sakulabo.regulation.annotation.KagerowPlugin.PluginType;
@@ -46,6 +47,7 @@ import com.sakulabo.regulation.spi.PluginAdapter.KagerowRowSet;
 /**
  * TSV出力プラグインのテストクラスです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class TSVDefaultPluginTest extends BaseTest<TSVDefaultPlugin> {
 
 	/** テスト対象 */
@@ -63,17 +65,8 @@ public class TSVDefaultPluginTest extends BaseTest<TSVDefaultPlugin> {
 	@Mock
 	private ResultSetMetaData metaData;
 
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected TSVDefaultPluginTest() {
-		super(TSVDefaultPluginTest.class);
-	}
-
 	@BeforeEach
 	void initService() {
-		// セキュアコンテキスト生成
-		KagerowApplication.getInstance("test");
 		closeable = MockitoAnnotations.openMocks(this);
 	}
 
@@ -110,7 +103,7 @@ public class TSVDefaultPluginTest extends BaseTest<TSVDefaultPlugin> {
 					AS SELECT * FROM temporary;
 				""";
 		Map<String, String> params = new HashMap<>();
-		params.put("InputPath", testDir.resolve("test1.csv").toString());
+		params.put("InputPath", getTestDir().resolve("test1.csv").toString());
 		params.put("IsHeader", "true");
 		params.put("TableName", "temporary");
 		params.put("IsEscape", "false");
@@ -156,7 +149,7 @@ public class TSVDefaultPluginTest extends BaseTest<TSVDefaultPlugin> {
 					AS SELECT * FROM temporary;
 				""";
 		Map<String, String> params = new HashMap<>();
-		params.put("InputPath", testDir.resolve("test1.csv").toString());
+		params.put("InputPath", getTestDir().resolve("test1.csv").toString());
 		params.put("IsHeader", "true");
 		params.put("TableName", "temporary");
 		params.put("IsEscape", "false");
@@ -185,7 +178,7 @@ public class TSVDefaultPluginTest extends BaseTest<TSVDefaultPlugin> {
 				""";
 		Map<String, String> params = new HashMap<>();
 		// 試験観点対象データ
-		String testPath = testDir.resolve("test99.csv").toString();
+		String testPath = getTestDir().resolve("test99.csv").toString();
 		params.put("InputPath", testPath);
 		params.put("IsHeader", "true");
 		params.put("TableName", "temporary");

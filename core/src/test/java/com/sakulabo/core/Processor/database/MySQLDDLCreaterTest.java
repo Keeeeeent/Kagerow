@@ -5,11 +5,11 @@ import static org.hamcrest.MatcherAssert.*;
 
 import java.util.Collections;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.sakulabo.BaseTest;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowDataType;
 import com.sakulabo.core.Processor.archive.DataSet;
 import com.sakulabo.core.Processor.database.impl.MySQLDDLCreater;
@@ -17,25 +17,11 @@ import com.sakulabo.core.Processor.database.impl.MySQLDDLCreater;
 /**
  * MySQLモード向けのDDLを生成テストです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class MySQLDDLCreaterTest extends BaseTest<MySQLDDLCreater> {
 
 	/** テスト対象 */
 	private MySQLDDLCreater testTarget;
-
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected MySQLDDLCreaterTest() {
-		super(MySQLDDLCreaterTest.class);
-	}
-
-	@BeforeEach
-	void initService() {
-	}
-
-	@AfterEach
-	void closeService() throws Exception {
-	}
 
 	/**
 	 * [試験観点] : チャンク読み取り

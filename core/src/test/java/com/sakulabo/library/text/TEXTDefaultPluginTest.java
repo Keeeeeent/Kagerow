@@ -25,6 +25,7 @@ import javax.sql.rowset.CachedRowSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -32,7 +33,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.sakulabo.BaseTest;
-import com.sakulabo.core.Kagerow.KagerowApplication;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Kagerow.Utilities.KagerowDBMode;
 import com.sakulabo.library.common.DefaultPluginMessage;
 import com.sakulabo.regulation.annotation.KagerowPlugin.PluginType;
@@ -41,6 +42,7 @@ import com.sakulabo.regulation.spi.PluginAdapter.KagerowRowSet;
 /**
  * TSV出力プラグインのテストクラスです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class TEXTDefaultPluginTest extends BaseTest<TEXTDefaultPlugin> {
 
 	/** テスト対象 */
@@ -58,17 +60,8 @@ public class TEXTDefaultPluginTest extends BaseTest<TEXTDefaultPlugin> {
 	@Mock
 	private ResultSetMetaData metaData;
 
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected TEXTDefaultPluginTest() {
-		super(TEXTDefaultPluginTest.class);
-	}
-
 	@BeforeEach
 	void initService() {
-		// セキュアコンテキスト生成
-		KagerowApplication.getInstance("test");
 		closeable = MockitoAnnotations.openMocks(this);
 	}
 
@@ -161,7 +154,7 @@ public class TEXTDefaultPluginTest extends BaseTest<TEXTDefaultPlugin> {
 
 		try {
 			// 結果検証
-			Path expect = testDir.resolve("expect_001.txt");
+			Path expect = getTestDir().resolve("expect_001.txt");
 			long result = Files.mismatch(resultFile, expect);
 			// バイト単位で比較を行い、完全一致の場合は-1L
 			// そうでない場合は一致しないバイト位置が返却される
@@ -256,7 +249,7 @@ public class TEXTDefaultPluginTest extends BaseTest<TEXTDefaultPlugin> {
 
 		try {
 			// 結果検証
-			Path expect = testDir.resolve("expect_002.txt");
+			Path expect = getTestDir().resolve("expect_002.txt");
 			long result = Files.mismatch(resultFile, expect);
 			// バイト単位で比較を行い、完全一致の場合は-1L
 			// そうでない場合は一致しないバイト位置が返却される

@@ -10,36 +10,29 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.sakulabo.BaseTest;
+import com.sakulabo.BaseTest.KagerowContainerRunner;
 import com.sakulabo.core.Common.ErrorMessage;
-import com.sakulabo.core.Kagerow.KagerowApplication;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowVirtualFileObject.BasicFileObject;
+import com.sakulabo.core.Kagerow.Context.KagerowVirtualFileContext;
 import com.sakulabo.core.Kagerow.Exception.AppLogicException;
+import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 
 /**
  * バイナリファイル実装提供クラスのテストクラスです
  */
+@ExtendWith(KagerowContainerRunner.class)
 public class BasicChunkCreaterTest extends BaseTest<BasicChunkCreater> {
 
-	/**
-	 * デフォルトコンストラクタ
-	 */
-	protected BasicChunkCreaterTest() {
-		super(BasicChunkCreaterTest.class);
-	}
-
-	@BeforeEach
-	void initService() {
-		// セキュアコンテキスト生成
-		KagerowApplication.getInstance("test");
-	}
-
-	@AfterEach
-	void closeService() throws Exception {
+	@BeforeAll
+	public static void initService() throws Exception {
+		// スキーマ作成
+		KagerowVirtualFileContext ctx = KagerowUtilities.getContext(KagerowVirtualFileContext._NAME);
+		ctx.createSubcontext("test");
 	}
 
 	/** テスト対象 */
@@ -53,7 +46,7 @@ public class BasicChunkCreaterTest extends BaseTest<BasicChunkCreater> {
 	public void Test001() throws Throwable {
 
 		// インスタンス初期化
-		Path path = testDir.resolve("test1.csv");
+		Path path = getTestDir().resolve("test1.csv");
 		testTarget = new BasicChunkCreater("test", path, StandardCharsets.UTF_8, true, new CSVFileReaderFactory());
 		BasicFileObject result = testTarget.create("Test001");
 
@@ -89,7 +82,7 @@ public class BasicChunkCreaterTest extends BaseTest<BasicChunkCreater> {
 	@Test
 	public void Test002() throws Throwable {
 
-		Path path = testDir.resolve("test2.csv");
+		Path path = getTestDir().resolve("test2.csv");
 
 		try {
 			// インスタンス初期化
