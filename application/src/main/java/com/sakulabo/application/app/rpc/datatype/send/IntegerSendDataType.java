@@ -24,6 +24,24 @@ public class IntegerSendDataType extends AbstractBaseDataType implements BaseDat
 		super(baseData);
 	}
 
+	/**
+	 * 数値コンストラクタ
+	 *
+	 * @param baseData 変換前データ
+	 */
+	public IntegerSendDataType(BigInteger baseData) {
+		super(baseData.toString());
+	}
+
+	/**
+	 * 数値コンストラクタ
+	 *
+	 * @param baseData 変換前データ
+	 */
+	public IntegerSendDataType(Integer baseData) {
+		super(baseData.toString());
+	}
+
 	/** {@inheritDoc} */
 	@Override
 	public Optional<BigInteger> getRawType() throws IllegalStateException {

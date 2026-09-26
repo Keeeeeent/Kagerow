@@ -17,6 +17,7 @@ import com.sakulabo.regulation.spi.PluginAdapter;
 /**
  * プラグインデフォルトDUALテーブル生成プラグインクラス
  * DTC= Dual Table Creater
+ * 
  * @author keeeeeent
  */
 @KagerowPlugin(name = "KagerowDTCPlugin", types = { PluginType.INPUT }, multiSize = 10)
@@ -37,8 +38,8 @@ public class DTCDefaultPlugin extends DefaultPlugin implements PluginAdapter {
 		// TODO 他のモードを追加出来次第、テストを追加予定
 		if (!IGNORE_MODE.contains(mode)) {
 			try {
-				try (Statement statment = connection.createStatement()) {
-					statment.execute("""
+				try (Statement statement = connection.createStatement()) {
+					statement.execute("""
 							CREATE TABLE DUAL AS
 								SELECT * FROM (VALUES('X')) AS D(DUMMY)
 							""");

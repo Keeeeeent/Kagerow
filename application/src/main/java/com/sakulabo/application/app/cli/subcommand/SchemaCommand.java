@@ -7,8 +7,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 
 import javax.naming.Binding;
 import javax.naming.Name;
@@ -17,6 +17,7 @@ import javax.naming.NamingEnumeration;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Fail;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Success;
 import com.sakulabo.application.app.rpc.datatype.receive.ArrayReceiveDataType;
+import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
 import com.sakulabo.core.Kagerow.Context.KagerowVirtualDirContext;
 import com.sakulabo.core.Kagerow.Context.KagerowVirtualFileContext;
 import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
@@ -92,7 +93,7 @@ public class SchemaCommand {
 	 * スキーマ削除コマンド
 	 */
 	@Command(name = "delete")
-	public static class SchemaDeleteCommand implements Callable<Integer> {
+	public static class SchemaDeleteCommand extends AuthRemoteCommand {
 
 		/** スキーマ名称 */
 		@Option(names = "--name", required = true)
@@ -100,7 +101,7 @@ public class SchemaCommand {
 
 		/** {@inheritDoc} */
 		@Override
-		public Integer call() throws Exception {
+		protected Integer local() throws Exception {
 			if (KagerowVirtualFileContext.SYSTEM_SCHEMA.equals(schemaName)) {
 				return Integer.valueOf(2);
 			}
@@ -117,13 +118,37 @@ public class SchemaCommand {
 			return Integer.valueOf(0);
 		}
 
+		/** {@inheritDoc} */
+		@Override
+		protected Integer remote() throws Exception {
+			// メソッド呼び出し
+			RpcResult result = doRpcMethodCall("delete", "/rpc/schema", () -> {
+				return new HashMap<>() {
+					{
+						put("schemaName", new StringSendDataType(schemaName));
+					}
+				};
+			});
+			// 結果処理
+			return switch (result) {
+				case Success _: {
+					yield Integer.valueOf(0);
+				}
+				case Fail fail: {
+					System.err
+							.println(String.format("StatusCode : %d ResponseText", fail.statusCode(), fail.response()));
+					yield Integer.valueOf(1);
+				}
+			};
+		}
+
 	}
 
 	/**
 	 * スキーマ詳細確認コマンド
 	 */
 	@Command(name = "info")
-	public static class SchemaInfoCommand implements Callable<Integer> {
+	public static class SchemaInfoCommand extends AuthRemoteCommand {
 
 		/** スキーマ名称 */
 		@Option(names = "--name", required = true)
@@ -131,7 +156,7 @@ public class SchemaCommand {
 
 		/** {@inheritDoc} */
 		@Override
-		public Integer call() throws Exception {
+		protected Integer local() throws Exception {
 			if (KagerowVirtualFileContext.SYSTEM_SCHEMA.equals(schemaName)) {
 				return Integer.valueOf(2);
 			}
@@ -149,17 +174,57 @@ public class SchemaCommand {
 				// テーブル数
 				int tables = cnt.getSynonymMapList().size();
 				// 表示
-				System.out.println("Schema Information");
-				System.out.println("────────────────────────────────");
-				System.out.printf("Name         : %s%n", schemaName);
-				System.out.printf("Last Updated : %s%n", lastUpdated);
-				System.out.printf("Size         : %s%n", String.format("%dKB", size));
-				System.out.printf("Tables       : %,d%n", tables);
+				print(lastUpdated, size, tables);
 			} catch (Exception e) {
 				KagerowLogger.newAppLogger().err(e);
 				return Integer.valueOf(1);
 			}
 			return Integer.valueOf(0);
+		}
+
+		/** {@inheritDoc} */
+		@Override
+		protected Integer remote() throws Exception {
+			// メソッド呼び出し
+			RpcResult result = doRpcMethodCall("info", "/rpc/schema", () -> {
+				return new HashMap<>() {
+					{
+						put("schemaName", new StringSendDataType(schemaName));
+					}
+				};
+			});
+			// 結果処理
+			return switch (result) {
+				case Success success: {
+					Map<String, String> response = success.response();
+					long size = Long.valueOf(response.get("size"));
+					int tables = Integer.valueOf(response.get("tables"));
+					String lastUpdated = response.get("lastUpdated");
+					print(lastUpdated, size, tables);
+					yield Integer.valueOf(0);
+				}
+				case Fail fail: {
+					System.err
+							.println(String.format("StatusCode : %d ResponseText", fail.statusCode(), fail.response()));
+					yield Integer.valueOf(1);
+				}
+			};
+		}
+
+		/**
+		 * スキーマ情報を表示します
+		 * 
+		 * @param lastUpdated 最終更新日
+		 * @param size        サイズ
+		 * @param tables      テーブル数
+		 */
+		private void print(String lastUpdated, long size, int tables) {
+			System.out.println("Schema Information");
+			System.out.println("────────────────────────────────");
+			System.out.printf("Name         : %s%n", schemaName);
+			System.out.printf("Last Updated : %s%n", lastUpdated);
+			System.out.printf("Size         : %s%n", String.format("%dKB", size));
+			System.out.printf("Tables       : %,d%n", tables);
 		}
 
 	}

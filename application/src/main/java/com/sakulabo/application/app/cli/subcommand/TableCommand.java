@@ -1,11 +1,16 @@
 package com.sakulabo.application.app.cli.subcommand;
 
+import java.net.HttpURLConnection;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.Callable;
+import java.util.stream.Stream;
 
 import javax.naming.Binding;
 import javax.naming.Name;
@@ -15,8 +20,12 @@ import javax.naming.NamingException;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Fail;
 import com.sakulabo.application.app.cli.subcommand.RemoteCommand.RpcResult.Success;
 import com.sakulabo.application.app.rpc.datatype.receive.ArrayReceiveDataType;
+import com.sakulabo.application.app.rpc.datatype.receive.DateTimeReceiveDataType;
+import com.sakulabo.application.app.rpc.datatype.receive.IntegerReceiveDataType;
+import com.sakulabo.application.app.rpc.datatype.send.IntegerSendDataType;
 import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent;
+import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowDataType;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowVirtualFileObject;
 import com.sakulabo.core.Kagerow.Context.KagerowVirtualDirContext;
 import com.sakulabo.core.Kagerow.Context.KagerowVirtualFileContext;
@@ -118,17 +127,49 @@ public class TableCommand {
 						}
 					};
 				});
+			} else {
+				result = doRpcMethodCall("generation", "/rpc/table", () -> {
+					return new HashMap<>() {
+						{
+							put("schemaName", new StringSendDataType(schemaName));
+							put("tableName", new StringSendDataType(tableName));
+						}
+					};
+				});
 			}
 			// 結果処理
 			return switch (result) {
 				case Success success: {
 					ArrayReceiveDataType list = new ArrayReceiveDataType(success.response().get("list"));
 					Optional<List<String>> schemaList = list.getRawType();
-					schemaList.ifPresent(li -> {
-						System.out.printf("%-17s %s%n", "Logical Name", "Physical Name");
-						System.out.println("────────────────────────────────────────────────");
-						li.stream().forEach(System.out::println);
-					});
+					if (Objects.isNull(tableName)) {
+						schemaList.ifPresent(li -> {
+							System.out.printf("%-17s %s%n", "Logical Name", "Physical Name");
+							System.out.println("────────────────────────────────────────────────");
+							li.stream().map(line -> {
+								String[] tableItem = line.split(",");
+								return String.format("%-17s %s%n", tableItem[0], tableItem[1]);
+							}).forEach(System.out::println);
+						});
+					} else {
+						schemaList.ifPresent(li -> {
+							System.out.printf("%-17s %-17s %-30s %s%n",
+									"Index",
+									"Size",
+									"Created",
+									"Name");
+							System.out.println(
+									"────────────────────────────────────────────────────────────────────────────────────────────────");
+							li.stream().map(line -> {
+								String[] tableItem = line.split(",");
+								return String.format("%-17s %-17s %-30s %s%n",
+										tableItem[0],
+										tableItem[1],
+										tableItem[2],
+										tableItem[3]);
+							}).forEach(System.out::println);
+						});
+					}
 					yield Integer.valueOf(0);
 				}
 				case Fail fail: {
@@ -141,7 +182,7 @@ public class TableCommand {
 
 		/**
 		 * テーブルの世代情報を出力します
-		 * 
+		 *
 		 * @param dirCtx   テーブルリスト
 		 * @param synonyms シノニム設定一覧
 		 * @throws NamingException コンテキスト取得失敗
@@ -178,7 +219,7 @@ public class TableCommand {
 
 		/**
 		 * テーブルの情報を出力します
-		 * 
+		 *
 		 * @param dirCtx   テーブルリスト
 		 * @param synonyms シノニム設定一覧
 		 * @throws NamingException コンテキスト取得失敗
@@ -209,7 +250,7 @@ public class TableCommand {
 	 * テーブル情報確認コマンド
 	 */
 	@Command(name = "info")
-	public static class TableInfoCommand implements Callable<Integer> {
+	public static class TableInfoCommand extends AuthRemoteCommand {
 
 		/** スキーマ名称 */
 		@Option(names = { "--schema", "-s" }, required = true)
@@ -226,7 +267,7 @@ public class TableCommand {
 
 		/** {@inheritDoc} */
 		@Override
-		public Integer call() throws Exception {
+		protected Integer local() throws Exception {
 			if (Objects.isNull(tableName) && Objects.isNull(synonymName)) {
 				System.err.println("synonym or table must be specified");
 				return Integer.valueOf(2);
@@ -244,25 +285,92 @@ public class TableCommand {
 			}
 			KagerowVirtualFileContent cnt = dirCtx.lookup(tableName);
 			KagerowVirtualFileObject fileObject = cnt.get(generation);
+			printInfo(fileObject.uri().get(), schemaName, tableName,
+					fileObject.datSize().longValue(),
+					fileObject.createTime().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+					List.of(fileObject.headerData()),
+					Stream.of(fileObject.dataType()).map(KagerowDataType::name).toList());
+			return Integer.valueOf(0);
+		}
+
+		/** {@inheritDoc} */
+		@Override
+		protected Integer remote() throws Exception {
+			// メソッド呼び出し
+			RpcResult result = doRpcMethodCall("info", "/rpc/table", () -> {
+				return new HashMap<>() {
+					{
+						put("schemaName", new StringSendDataType(schemaName));
+						put("tableName", new StringSendDataType(tableName));
+						put("generation", new IntegerSendDataType(generation));
+					}
+				};
+			});
+			// 結果処理
+			return switch (result) {
+				case Success success: {
+					IntegerReceiveDataType size = new IntegerReceiveDataType(success.response().get("size"));
+					DateTimeReceiveDataType created = new DateTimeReceiveDataType(success.response().get("created"));
+					ArrayReceiveDataType header = new ArrayReceiveDataType(success.response().get("header"));
+					ArrayReceiveDataType datatype = new ArrayReceiveDataType(success.response().get("datatype"));
+					List<String> headerList = header.getRawType().orElse(Collections.emptyList());
+					List<String> datatypeList = datatype.getRawType().orElse(Collections.emptyList());
+					printInfo(
+							success.response().get("uri"),
+							success.response().get("physicsname"),
+							success.response().get("tablename"),
+							size.getRawType().get().longValue(),
+							created.getRawType().get(),
+							headerList,
+							datatypeList);
+					yield Integer.valueOf(0);
+				}
+				case Fail fail: {
+					System.err
+							.println(String.format("StatusCode : %d ResponseText", fail.statusCode(), fail.response()));
+					yield Integer.valueOf(1);
+				}
+			};
+		}
+
+		/**
+		 * テーブル情報を表示します
+		 *
+		 * @param uri          KagerowURI
+		 * @param physicsname  論理名称
+		 * @param tablename    物理名称
+		 * @param size         サイズ
+		 * @param created      作成日
+		 * @param headerList   カラムリスト
+		 * @param datatypeList カラムタイプ
+		 */
+		public void printInfo(
+				String uri,
+				String physicsname,
+				String tablename,
+				long size,
+				LocalDateTime created,
+				List<String> headerList,
+				List<String> datatypeList) {
 			System.out.println("Table Information");
 			System.out.println("────────────────────────────────");
-			System.out.printf("KagerowURI   : %s%n", fileObject.uri().get());
-			System.out.printf("PhysicsName  : %s%n", schemaName);
-			System.out.printf("LogicName    : %s%n", tableName);
-			System.out.printf("Size         : %s%n", formatSize(fileObject.datSize().longValue()));
-			System.out.printf("Created      : %s%n", fileObject.createTime().toString());
+			System.out.printf("KagerowURI   : %s%n", uri);
+			System.out.printf("PhysicsName  : %s%n", physicsname);
+			System.out.printf("LogicName    : %s%n", tablename);
+			System.out.printf("Size         : %s%n", formatSize(size));
+			System.out.printf("Created      : %s%n",
+					DateTimeFormatter.ISO_INSTANT.format(created));
 			System.out.println();
 			System.out.println("Column Information");
 			System.out.println("────────────────────────────────");
-			int maxHeaderCount = 13;
-			for (int i = 0; i < fileObject.headerData().length; i++) {
-				maxHeaderCount = Math.max(maxHeaderCount, fileObject.headerData()[i].length());
-			}
+			int maxHeaderCount = Stream.concat(Stream.of(13), headerList.stream().map(Integer::valueOf))
+					.mapToInt(i -> i)
+					.max()
+					.getAsInt();
 			String format = "%-" + maxHeaderCount + "s: %s%n";
-			for (int i = 0; i < fileObject.headerData().length; i++) {
-				System.out.printf(format, fileObject.headerData()[i], fileObject.dataType()[i]);
+			for (int i = 0; i < headerList.size(); i++) {
+				System.out.printf(format, headerList.get(i), datatypeList.get(i));
 			}
-			return Integer.valueOf(0);
 		}
 
 	}
@@ -271,7 +379,7 @@ public class TableCommand {
 	 * テーブル削除コマンド
 	 */
 	@Command(name = "delete")
-	public static class TableDeleteCommand implements Callable<Integer> {
+	public static class TableDeleteCommand extends AuthRemoteCommand {
 
 		/**
 		 * オプショングループ
@@ -297,7 +405,7 @@ public class TableCommand {
 
 		/** {@inheritDoc} */
 		@Override
-		public Integer call() throws Exception {
+		protected Integer local() throws Exception {
 			if (Objects.isNull(options.tableName) && Objects.isNull(options.synonymName)) {
 				System.err.println("synonym or table must be specified");
 				return Integer.valueOf(2);
@@ -334,6 +442,36 @@ public class TableCommand {
 			return Integer.valueOf(0);
 		}
 
+		/** {@inheritDoc} */
+		@Override
+		protected Integer remote() throws Exception {
+			// メソッド呼び出し
+			RpcResult result = doRpcMethodCall("delete", "/rpc/table", () -> {
+				return new HashMap<>() {
+					{
+						put("schemaName", new StringSendDataType(schemaName));
+						put("tableName", new StringSendDataType(options.tableName));
+						put("synonymName", new StringSendDataType(options.synonymName));
+						put("generation", new IntegerSendDataType(generation));
+					}
+				};
+			});
+			// 結果処理
+			return switch (result) {
+				case Success _: {
+					yield Integer.valueOf(0);
+				}
+				case Fail fail: {
+					Integer exitCode = Integer.valueOf(1);
+					if (fail.statusCode() == HttpURLConnection.HTTP_NOT_MODIFIED) {
+						exitCode = Integer.valueOf(fail.response().getOrDefault("exitCode", "1"));
+					}
+					System.err
+							.println(String.format("StatusCode : %d ResponseText", fail.statusCode(), fail.response()));
+					yield exitCode;
+				}
+			};
+		}
 	}
 
 }

@@ -9,11 +9,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpClient.Version;
+import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -24,10 +24,10 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
-import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
@@ -78,6 +78,7 @@ public abstract class RemoteCommand implements Callable<Integer> {
 	protected sealed interface RpcResult {
 		/**
 		 * リクエスト成功
+		 * 
 		 * @param response レスポンスデータ
 		 */
 		record Success(Map<String, String> response) implements RpcResult {
@@ -85,7 +86,8 @@ public abstract class RemoteCommand implements Callable<Integer> {
 
 		/**
 		 * リクエスト失敗
-		 * @param response レスポンスデータ
+		 * 
+		 * @param response   レスポンスデータ
 		 * @param statusCode レスポンスコード
 		 */
 		record Fail(Map<String, String> response, int statusCode) implements RpcResult {
@@ -96,6 +98,7 @@ public abstract class RemoteCommand implements Callable<Integer> {
 	@Override
 	public Integer call() throws Exception {
 		try {
+			preCall();
 			if (Objects.isNull(remote)) {
 				return local();
 			} else {
@@ -113,6 +116,7 @@ public abstract class RemoteCommand implements Callable<Integer> {
 
 	/**
 	 * ローカル実行コマンド
+	 * 
 	 * @return リターンコード
 	 * @throws Exception 実行時例外
 	 */
@@ -120,17 +124,26 @@ public abstract class RemoteCommand implements Callable<Integer> {
 
 	/**
 	 * リモート実行コマンド
+	 * 
 	 * @return リターンコード
 	 * @throws Exception 実行時例外
 	 */
 	protected abstract Integer remote() throws Exception;
 
 	/**
+	 * オプション事前処理
+	 */
+	protected void preCall() {
+		;
+	};
+
+	/**
 	 * RPCメソッド呼び出しを行います
-	 * @param methodName RPCメソッド明瞭
-	 * @param rpcPath RPCパス
+	 * 
+	 * @param methodName        RPCメソッド明瞭
+	 * @param rpcPath           RPCパス
 	 * @param createRequestBody リクエストXML生成関数
-	 * @param isAuthentication 認証フラグ
+	 * @param isAuthentication  認証フラグ
 	 * @return 呼び出し結果
 	 * @throws Exception リクエスト失敗
 	 */
@@ -221,6 +234,7 @@ public abstract class RemoteCommand implements Callable<Integer> {
 
 	/**
 	 * トークンの取得を行います
+	 * 
 	 * @return トークン
 	 */
 	private String getToken() {
@@ -239,6 +253,7 @@ public abstract class RemoteCommand implements Callable<Integer> {
 
 	/**
 	 * RPCエンドポイント接続URIを生成します
+	 * 
 	 * @param rpcPath 呼び出しメソッドパス
 	 * @return 生成されたURI
 	 * @throws URISyntaxException URI変換失敗
@@ -251,7 +266,8 @@ public abstract class RemoteCommand implements Callable<Integer> {
 
 	/**
 	 * リクエストを解析します
-	 * @param responseXML 解析対象
+	 * 
+	 * @param responseXML  解析対象
 	 * @param responseCode ステータスコード
 	 * @return 解析結果
 	 * @throws Exception 解析失敗
@@ -321,9 +337,10 @@ public abstract class RemoteCommand implements Callable<Integer> {
 
 	/**
 	 * リクエストを構築します
-	 * @param dom XMLリクエスト
+	 * 
+	 * @param dom          XMLリクエスト
 	 * @param requestParam リクエストパラメータ
-	 * @param methodName メソッドパス
+	 * @param methodName   メソッドパス
 	 * @return 構築されたXML
 	 * @throws Exception XML構築失敗
 	 */
@@ -375,14 +392,17 @@ public abstract class RemoteCommand implements Callable<Integer> {
 					// 単一の場合
 					valueSubElem.setTextContent(dat);
 				}
+				// 生成要素追加
+				valueElem.appendChild(valueSubElem);
+				// サブメンバー追加
+				memberElem.appendChild(valueElem);
 			} else {
 				Element nilElem = dom.createElement(RpcDataTypes.NIL.toString());
-				valueSubElem.appendChild(nilElem);
+				// 生成要素追加
+				valueElem.appendChild(nilElem);
+				// サブメンバー追加
+				memberElem.appendChild(valueElem);
 			}
-			// 生成要素追加
-			valueElem.appendChild(valueSubElem);
-			// サブメンバー追加
-			memberElem.appendChild(valueElem);
 			// 要素を構造体として追加
 			node.appendChild(memberElem);
 		}

@@ -28,19 +28,26 @@ import com.sakulabo.regulation.annotation.KagerowSpiModule;
 	requires jdk.httpserver;
 	requires java.xml;
 	requires java.compiler;
+
+	// KagerowCLI依存パッケージ
 	requires info.picocli;
 	requires java.net.http;
 
+	// Kagerowアプリケーションスターター
+	uses com.sakulabo.application.common.spi.ViewRunner;
+
 	// KagerowRPC
 	uses com.sakulabo.application.common.spi.RpcTarget;
-	uses com.sakulabo.application.common.spi.ViewRunner;
 
 	provides com.sakulabo.application.common.spi.RpcTarget
 			with com.sakulabo.application.app.rpc.executor.Impl.DataImportExecutorImpl,
 			com.sakulabo.application.app.rpc.executor.Impl.AuthExecutorImpl,
 			com.sakulabo.application.app.rpc.executor.Impl.SchemaExecutorImpl,
 			com.sakulabo.application.app.rpc.executor.Impl.ScriptExecutorImpl,
-			com.sakulabo.application.app.rpc.executor.Impl.TableExecutorImpl;
+			com.sakulabo.application.app.rpc.executor.Impl.TableExecutorImpl,
+			com.sakulabo.application.app.rpc.executor.Impl.PluginExecutorImpl,
+			com.sakulabo.application.app.rpc.executor.Impl.SynonymExecutorImpl,
+			com.sakulabo.application.app.rpc.executor.Impl.CacheExecutorImpl;
 
 	// KagerowSPI
 	provides com.sakulabo.core.Kagerow.Spi.KagerowAutomaticStarter
