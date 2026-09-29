@@ -18,7 +18,7 @@ import com.sakulabo.core.Processor.database.impl.DefaultDMLCreater;
  * DML生成テストです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class DefaultDMLCreaterTest extends BaseTest<DefaultDMLCreater> {
+public class DefaultDMLCreaterTest extends BaseTest {
 
 	/** テスト対象 */
 	private DefaultDMLCreater testTarget;

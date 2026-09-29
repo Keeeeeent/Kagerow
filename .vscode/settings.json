@@ -1,6 +1,6 @@
 {
   "java.jdt.ls.java.home": "${workspaceFolder}/public/openjdk/inuse/jdk-25.jdk/Contents/Home",
-  "java.jdt.ls.vmargs": "-Xmx2G --add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.jvm=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED",
+  "java.jdt.ls.vmargs": "-Xmx2G --add-opens=jdk.unsupported/sun.misc=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.jvm=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED",
   "java.configuration.updateBuildConfiguration": "automatic",
   "java.format.enabled": true,
   "java.compile.nullAnalysis.mode": "disabled",
@@ -24,7 +24,10 @@
     {
       "name": "Kagerow JUnit 5",
       "vmArgs": [
+        "--add-opens=jdk.unsupported/sun.misc=ALL-UNNAMED",
+
         "--add-opens=com.sakulabo.core/com.sakulabo=ALL-UNNAMED",
+        "--add-opens=com.sakulabo.core/com.sakulabo.core.Common=ALL-UNNAMED",
         "--add-opens=com.sakulabo.core/com.sakulabo.core.Processor.aop=ALL-UNNAMED",
         "--add-opens=com.sakulabo.core/com.sakulabo.core.Processor.archive=ALL-UNNAMED",
         "--add-opens=com.sakulabo.core/com.sakulabo.core.Processor.database=ALL-UNNAMED",
@@ -69,17 +72,21 @@
   "cSpell.enabled": true,
   "cSpell.words": [
     "Accesser",
+    "agentjar",
     "antfile",
     "antrun",
     "APPLOGGER",
     "archivedatadir",
     "befoer",
     "BINARYNAME",
+    "CHUNKL",
     "codehaus",
     "Creater",
     "ddlformat",
+    "DONT",
     "Droper",
     "Editer",
+    "Encrypter",
     "Execut",
     "expcmd",
     "expsql",
@@ -104,7 +111,9 @@
     "KVIEW",
     "lacth",
     "Loard",
+    "LOARDDIBEANS",
     "LOCALTIMESTAMP",
+    "LOGSDIR",
     "Lorder",
     "NEXTVAL",
     "nonplugin",
@@ -117,8 +126,10 @@
     "Premain",
     "Processer",
     "processorpath",
+    "rawtypes",
     "regist",
     "Retransform",
+    "rowset",
     "sakulabo",
     "sendphysicsname",
     "SESSIONT",
@@ -133,6 +144,9 @@
     "tablename",
     "Tablename",
     "testdata",
-    "todir"
+    "todir",
+    "tosynonym",
+    "vmoption",
+    "zipfs"
   ]
 }

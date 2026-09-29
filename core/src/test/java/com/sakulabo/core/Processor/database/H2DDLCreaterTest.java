@@ -18,7 +18,7 @@ import com.sakulabo.core.Processor.database.impl.H2DDLCreater;
  * H2モード向けのDDLを生成テストです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class H2DDLCreaterTest extends BaseTest<H2DDLCreater> {
+public class H2DDLCreaterTest extends BaseTest {
 
 	/** テスト対象 */
 	private H2DDLCreater testTarget;

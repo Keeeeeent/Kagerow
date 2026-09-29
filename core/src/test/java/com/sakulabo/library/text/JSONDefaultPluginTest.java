@@ -43,7 +43,7 @@ import com.sakulabo.regulation.spi.PluginAdapter.KagerowRowSet;
  * TSV出力プラグインのテストクラスです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class JSONDefaultPluginTest extends BaseTest<JSONDefaultPlugin> {
+public class JSONDefaultPluginTest extends BaseTest {
 
 	/** テスト対象 */
 	@InjectMocks

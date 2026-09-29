@@ -16,7 +16,7 @@ import com.sakulabo.BaseTest.KagerowContainerRunner;
  * TSVファイルのボディー読み取り実装提供クラスのテストクラスです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class TSVFileBodyReaderTest extends BaseTest<TSVFileBodyReader> {
+public class TSVFileBodyReaderTest extends BaseTest {
 
 	/** テスト対象 */
 	private TSVFileBodyReader testTarget;

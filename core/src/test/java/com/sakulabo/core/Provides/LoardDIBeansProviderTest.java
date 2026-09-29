@@ -27,7 +27,7 @@ import com.sakulabo.core.Provides.LoardDIBeansProvider.Key;
  * @author keeeeeent
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class LoardDIBeansProviderTest extends BaseTest<LoardDIBeansProvider> {
+public class LoardDIBeansProviderTest extends BaseTest {
 
 	/** テスト対象 */
 	private LoardDIBeansProvider provider;

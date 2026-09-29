@@ -1,0 +1,20 @@
+{
+  "Custom Java Class Template": {
+    "prefix": "cclass",
+    "body": [
+      "package ${TM_DIRECTORY/^.*(src\\/main\\/java\\/|src\\/)/$1/};",
+      "",
+      "/**",
+      " * @author ${USER}",
+      " * @date $CURRENT_YEAR/$CURRENT_MONTH/$CURRENT_DATE",
+      " */",
+      "public class ${TM_FILENAME_BASE} {",
+      "",
+      "    public ${TM_FILENAME_BASE}() {",
+      "        $0",
+      "    }",
+      "}"
+    ],
+    "description": "独自のJavaクラステンプレートを生成します"
+  }
+}

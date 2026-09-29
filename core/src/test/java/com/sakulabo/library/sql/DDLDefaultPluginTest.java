@@ -10,17 +10,17 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.sakulabo.BaseTest;
 import com.sakulabo.BaseTest.KagerowContainerRunner;
+import com.sakulabo.BaseTest.KagerowSchemaCreateRunner;
+import com.sakulabo.BaseTest.KagerowSchemaCreateRunner.NeedsKagerowSchema;
 import com.sakulabo.core.Kagerow.Utilities.KagerowChunkCreater.ChunkCreateMode;
 import com.sakulabo.core.Kagerow.Utilities.KagerowDBMode;
 import com.sakulabo.core.Kagerow.Utilities.KagerowVirtualFileCreater;
@@ -29,7 +29,9 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowVirtualFileCreater;
  * DDL実行プラグインのテストクラスです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class DDLDefaultPluginTest extends BaseTest<DDLDefaultPlugin> {
+@ExtendWith(KagerowSchemaCreateRunner.class)
+@ExtendWith(MockitoExtension.class)
+public class DDLDefaultPluginTest extends BaseTest {
 
 	/** テスト対象 */
 	@InjectMocks
@@ -40,16 +42,6 @@ public class DDLDefaultPluginTest extends BaseTest<DDLDefaultPlugin> {
 	@Mock
 	private Statement statement;
 
-	@BeforeEach
-	void initService() {
-		closeable = MockitoAnnotations.openMocks(this);
-	}
-
-	@AfterEach
-	void closeService() throws Exception {
-		closeable.close();
-	}
-
 	/**
 	 * [試験観点] : 通常DDL
 	 * [期待される結果] : 以下である
@@ -58,6 +50,7 @@ public class DDLDefaultPluginTest extends BaseTest<DDLDefaultPlugin> {
 	 * ・DDLが正しく生成されていること
 	 */
 	@Test
+	@NeedsKagerowSchema("test")
 	public void Test001() throws Throwable {
 
 		// 前提準備

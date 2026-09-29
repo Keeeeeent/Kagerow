@@ -5,7 +5,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
-import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowVirtualFileObject;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowVirtualFileObject.BasicFileObject;
 import com.sakulabo.core.Kagerow.Exception.AppLogicException;
 import com.sakulabo.core.Kagerow.Utilities.KagerowChunkCreater;
@@ -21,12 +20,13 @@ public non-sealed class BasicVirtualFileCreater extends AppVirtualFileCreater im
 
 	/**
 	 * デフォルトコンストラクタ
-	 * @param mode 実行モード
-	 * @param schema スキーマファイル名
-	 * @param path 入力ファイル
-	 * @param charset 入力ファイル文字コード
+	 * 
+	 * @param mode     実行モード
+	 * @param schema   スキーマファイル名
+	 * @param path     入力ファイル
+	 * @param charset  入力ファイル文字コード
 	 * @param isHeader ヘッダー有無
-	 * @param synonym テーブル名称のシノニム
+	 * @param synonym  テーブル名称のシノニム
 	 * @param observer 進捗更新オブザーバー
 	 * @throws IOException ファイル読み込み失敗、文字コード判定不可
 	 */
@@ -43,7 +43,7 @@ public non-sealed class BasicVirtualFileCreater extends AppVirtualFileCreater im
 
 	/** {@inheritDoc} */
 	@Override
-	public KagerowVirtualFileObject createVirtualFileObject() throws AppLogicException, IOException {
+	public BasicFileObject createVirtualFileObject() throws AppLogicException, IOException {
 		// バインドオブジェクト生成
 		KagerowChunkCreater<BasicFileObject> creater = KagerowChunkCreater.newBasicInstance(
 				mode,
@@ -54,7 +54,7 @@ public non-sealed class BasicVirtualFileCreater extends AppVirtualFileCreater im
 		// オブザーバーの設定
 		creater.setObserver(observer);
 		// データ生成処理実行
-		KagerowVirtualFileObject data = creater.create(synonym);
+		BasicFileObject data = creater.create(synonym);
 		return data;
 	}
 
