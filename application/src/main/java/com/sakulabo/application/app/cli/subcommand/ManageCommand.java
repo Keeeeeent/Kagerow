@@ -4,6 +4,7 @@ import java.io.Console;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 
+import com.sakulabo.application.common.code.EnvOption;
 import com.sakulabo.core.Kagerow.KagerowApplication;
 import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
 import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
@@ -56,6 +57,7 @@ public class ManageCommand implements Callable<Integer> {
 
 	/**
 	 * パスワード変更コマンド
+	 * 
 	 * @return リターンコード
 	 */
 	private Integer changePassword() {
@@ -79,6 +81,7 @@ public class ManageCommand implements Callable<Integer> {
 
 	/**
 	 * セキュアブート切り替えコマンド
+	 * 
 	 * @return リターンコード
 	 */
 	private Integer secureBoot() {
@@ -87,16 +90,22 @@ public class ManageCommand implements Callable<Integer> {
 				System.err.println("Secure Boot is already enabled.");
 				return Integer.valueOf(3);
 			}
-			Console console = System.console();
-			char[] newPassword = console.readPassword("password: ");
-			char[] confirmPassword = console.readPassword("Confirm password: ");
-			if (!Arrays.equals(newPassword, confirmPassword)) {
-				System.err.println("Passwords do not match.");
-				return Integer.valueOf(2);
+			String envValue;
+			char[] newPassword;
+			if ((envValue = EnvOption.KGPASSWORD.toEnvValue()) != null) {
+				newPassword = envValue.toCharArray();
+			} else {
+				Console console = System.console();
+				newPassword = console.readPassword("password: ");
+				char[] confirmPassword = console.readPassword("Confirm password: ");
+				if (!Arrays.equals(newPassword, confirmPassword)) {
+					System.err.println("Passwords do not match.");
+					return Integer.valueOf(2);
+				}
+				Arrays.fill(confirmPassword, '\0');
 			}
 			KagerowApplication.getInstance().changeToSecureBoot(new String(newPassword));
 			Arrays.fill(newPassword, '\0');
-			Arrays.fill(confirmPassword, '\0');
 		} catch (Exception e) {
 			KagerowLogger.newAppLogger().err(e);
 			return Integer.valueOf(1);
@@ -106,6 +115,7 @@ public class ManageCommand implements Callable<Integer> {
 
 	/**
 	 * データリセットコマンド
+	 * 
 	 * @return リターンコード
 	 */
 	private Integer resetApplication() {

@@ -1,5 +1,7 @@
 package com.sakulabo.core.Common;
 
+import java.util.Objects;
+
 /**
  * Kagerowアプリケーション専用文字列操作ユーティリティクラスです
  * 
@@ -102,10 +104,14 @@ public final class StringUtils {
 
 	/**
 	 * 対象インスタンスをクラス文字列表現に変換します
+	 * 
 	 * @param instance 変換対象
 	 * @return 変換後文字列
 	 */
 	public static final String toClassName(Object instance) {
+		if (Objects.isNull(instance)) {
+			return NULL_STR;
+		}
 		return instance.getClass().getCanonicalName();
 	}
 }

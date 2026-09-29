@@ -245,7 +245,9 @@ public class AgentCommand {
 		@Override
 		public Integer call() throws Exception {
 			try {
-				RpcServer.createCrtFile(crtPath, cn, dns.toArray(String[]::new), ip.toArray(String[]::new));
+				String[] dns = Objects.isNull(this.dns) ? null : this.dns.toArray(String[]::new);
+				String[] ip = Objects.isNull(this.ip) ? null : this.ip.toArray(String[]::new);
+				RpcServer.createCrtFile(crtPath, cn, dns, ip);
 				return Integer.valueOf(0);
 			} catch (Exception e) {
 				// 失敗ログ

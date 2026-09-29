@@ -70,6 +70,9 @@
 	// 必須パッケージ（サードパーティ）※ランタイム不要
 	requires static com.github.spotbugs.annotations;
 
+	// 必須パッケージ（テスト）※ランタイム不要
+	requires static jdk.unsupported;
+
 	// 必須パッケージ（サードパーティ）
 	requires com.h2database;
 

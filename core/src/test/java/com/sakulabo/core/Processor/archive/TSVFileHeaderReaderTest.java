@@ -20,7 +20,7 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
  * TSVファイルのヘッダー読み取り実装提供クラスのテストクラスです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class TSVFileHeaderReaderTest extends BaseTest<TSVFileHeaderReader> {
+public class TSVFileHeaderReaderTest extends BaseTest {
 
 	/** テスト対象 */
 	private TSVFileHeaderReader testTarget;

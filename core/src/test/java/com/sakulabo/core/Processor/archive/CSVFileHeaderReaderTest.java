@@ -18,7 +18,7 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
  * CSVファイルのヘッダー読み取り実装提供クラスのテストクラスです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class CSVFileHeaderReaderTest extends BaseTest<CSVFileHeaderReader> {
+public class CSVFileHeaderReaderTest extends BaseTest {
 
 	/** テスト対象 */
 	private CSVFileHeaderReader testTarget;

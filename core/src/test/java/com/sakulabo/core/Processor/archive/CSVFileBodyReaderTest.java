@@ -16,7 +16,7 @@ import com.sakulabo.BaseTest.KagerowContainerRunner;
  * CSVファイルのボディー読み取り実装提供クラスのテストクラスです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class CSVFileBodyReaderTest extends BaseTest<CSVFileBodyReaderTest> {
+public class CSVFileBodyReaderTest extends BaseTest {
 
 	/** テスト対象 */
 	private CSVFileBodyReader testTarget;
