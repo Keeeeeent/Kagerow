@@ -9,32 +9,25 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.sakulabo.BaseTest;
-import com.sakulabo.BaseTest.KagerowContainerRunner;
+import com.sakulabo.BaseTest.KagerowContainerRunner.KagerowSecureContainerRunner;
+import com.sakulabo.BaseTest.KagerowSchemaCreateRunner;
+import com.sakulabo.BaseTest.KagerowSchemaCreateRunner.NeedsKagerowSchema;
 import com.sakulabo.core.Common.AppPathUtils;
 import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowVirtualFileObject.BasicFileObject;
-import com.sakulabo.core.Kagerow.Context.KagerowVirtualFileContext;
 import com.sakulabo.core.Kagerow.Utilities.KagerowDBMode;
 import com.sakulabo.core.Kagerow.Utilities.KagerowTransaction;
-import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 import com.sakulabo.core.Processor.database.DDLConnectionHandler;
 
 /**
  * バイナリファイル読み取り実装提供クラスのテストクラスです
  */
-@ExtendWith(KagerowContainerRunner.class)
-public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
-
-	@BeforeAll
-	public static void initService() throws Exception {
-		// スキーマ作成
-		KagerowVirtualFileContext ctx = KagerowUtilities.getContext(KagerowVirtualFileContext._NAME);
-		ctx.createSubcontext("test");
-	}
+@ExtendWith(KagerowSecureContainerRunner.class)
+@ExtendWith(KagerowSchemaCreateRunner.class)
+public class BasicChunkLorderTest extends BaseTest {
 
 	/** テスト対象 */
 	private BasicChunkLorder testTarget;
@@ -44,6 +37,7 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
+	@NeedsKagerowSchema("test")
 	public void Test001() throws Throwable {
 
 		try (KagerowTransaction tran = KagerowTransaction.getTransactionFromSchemaName("test")) {
@@ -78,6 +72,7 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
+	@NeedsKagerowSchema("test")
 	public void Test002() throws Throwable {
 
 		try {
@@ -115,6 +110,7 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
+	@NeedsKagerowSchema("test")
 	public void Test003() throws Throwable {
 
 		try {
@@ -152,6 +148,7 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
+	@NeedsKagerowSchema("test")
 	public void Test004() throws Throwable {
 
 		try {
@@ -189,6 +186,7 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
+	@NeedsKagerowSchema("test")
 	public void Test005() throws Throwable {
 
 		try {
@@ -226,6 +224,7 @@ public class BasicChunkLorderTest extends BaseTest<BasicChunkLorder> {
 	 * [期待される結果] : 正常終了すること
 	 */
 	@Test
+	@NeedsKagerowSchema("test")
 	public void Test006() throws Throwable {
 
 		try {

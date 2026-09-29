@@ -18,7 +18,7 @@ import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowDataT
  * @author keeeeeent
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class DataTypeHandlerTest extends BaseTest<DataTypeHandlerTest> {
+public class DataTypeHandlerTest extends BaseTest {
 
 	/** テスト対象 */
 	private DataTypeHandler testTarget;

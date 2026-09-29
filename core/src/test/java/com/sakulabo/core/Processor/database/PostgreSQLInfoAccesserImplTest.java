@@ -21,7 +21,7 @@ import com.sakulabo.core.Processor.database.impl.PostgreSQLInfoAccesserImpl;
  * データベースオブジェクト実行情報生成テストです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class PostgreSQLInfoAccesserImplTest extends BaseTest<PostgreSQLInfoAccesserImpl> {
+public class PostgreSQLInfoAccesserImplTest extends BaseTest {
 
 	/**
 	 * [試験観点] : PostgreSQLモード

@@ -18,7 +18,7 @@ import com.sakulabo.core.Processor.database.impl.MySQLDDLCreater;
  * MySQLモード向けのDDLを生成テストです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class MySQLDDLCreaterTest extends BaseTest<MySQLDDLCreater> {
+public class MySQLDDLCreaterTest extends BaseTest {
 
 	/** テスト対象 */
 	private MySQLDDLCreater testTarget;

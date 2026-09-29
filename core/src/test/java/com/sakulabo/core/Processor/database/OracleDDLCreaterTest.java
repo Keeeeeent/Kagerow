@@ -18,7 +18,7 @@ import com.sakulabo.core.Processor.database.impl.OracleDDLCreater;
  * Oracleモード向けのDDLを生成テストです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class OracleDDLCreaterTest extends BaseTest<OracleDDLCreater> {
+public class OracleDDLCreaterTest extends BaseTest {
 
 	/** テスト対象 */
 	private OracleDDLCreater testTarget;

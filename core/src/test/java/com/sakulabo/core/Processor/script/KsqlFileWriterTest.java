@@ -22,7 +22,7 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowScriptAccessor;
  * Kagerowスクリプトファイル解析のテストクラスです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class KsqlFileWriterTest extends BaseTest<KagerowScriptAccessor> {
+public class KsqlFileWriterTest extends BaseTest {
 
 	/** テスト対象 */
 	private KagerowScriptAccessor testTarget;

@@ -27,14 +27,14 @@ public enum ApplicationWordDictionary {
 	/** DDLプラグイン名称 */
 	WCD_0006(StringUtils.EMPTY),
 	/** DDLプラグインパラメータ名称 */
-	WCD_0007(StringUtils.EMPTY)
-	;
+	WCD_0007(StringUtils.EMPTY);
 
 	/** エラーメッセージシノニム */
 	private String synonym;
 
 	/**
 	 * デフォルトコンストラクタ
+	 * 
 	 * @param synonym シノニム
 	 */
 	private ApplicationWordDictionary(String synonym) {
@@ -62,6 +62,7 @@ public enum ApplicationWordDictionary {
 
 	/**
 	 * メッセージを生成します
+	 * 
 	 * @param param パラメータ
 	 * @return メッセージ
 	 */
@@ -73,8 +74,9 @@ public enum ApplicationWordDictionary {
 
 	/**
 	 * メッセージを生成します
+	 * 
 	 * @param synonym シノニム
-	 * @param param パラメータ
+	 * @param param   パラメータ
 	 * @return メッセージ
 	 */
 	@SafeVarargs
@@ -95,6 +97,7 @@ public enum ApplicationWordDictionary {
 
 	/**
 	 * シノニムを返却します
+	 * 
 	 * @return シノニム文字列
 	 */
 	public final String tosynonym() {

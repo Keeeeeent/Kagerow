@@ -17,7 +17,7 @@ import com.sakulabo.BaseTest.KagerowContainerRunner;
  * KSQLに存在する置換文字列を処理するスクリプトのテストクラスです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class KsqlReplaceWordParserTest extends BaseTest<KsqlReplaceWordParser> {
+public class KsqlReplaceWordParserTest extends BaseTest {
 
 	/** テスト対象 */
 	private KsqlReplaceWordParser testTarget;

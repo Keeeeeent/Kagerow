@@ -23,6 +23,7 @@ public class BomHandler {
 
 	/**
 	 * デフォルトコンストラクタ
+	 * 
 	 * @param path
 	 * @throws IOException 読み込みファイル不正
 	 */
@@ -35,6 +36,7 @@ public class BomHandler {
 
 	/**
 	 * 文字コードの判定を行います
+	 * 
 	 * @return 文字コードインスタンス
 	 */
 	public Charset getCharset() {
@@ -63,6 +65,7 @@ public class BomHandler {
 
 	/**
 	 * 解析したBOMを元に、ストリームでスキップが必要なバイト数を算出します
+	 * 
 	 * @return スキップが必要なバイト数
 	 */
 	public int skipByte() {
@@ -71,18 +74,19 @@ public class BomHandler {
 		if (Objects.isNull(charset)) {
 			return result;
 		}
-		switch (charset.toString()) {
-		case "UTF-32BE":
-		case "UTF-32LE":
-			result = 4;
-			break;
-		case "UTF-16BE":
-		case "UTF-16LE":
-			result = 2;
-			break;
-		case "UTF-8":
-			result = 3;
-			break;
+		String charsetView = charset.toString();
+		switch (charsetView) {
+			case "UTF-32BE":
+			case "UTF-32LE":
+				result = 4;
+				break;
+			case "UTF-16BE":
+			case "UTF-16LE":
+				result = 2;
+				break;
+			case "UTF-8":
+				result = 3;
+				break;
 		}
 		return result;
 	}

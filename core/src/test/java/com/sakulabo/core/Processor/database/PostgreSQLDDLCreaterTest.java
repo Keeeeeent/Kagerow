@@ -18,7 +18,7 @@ import com.sakulabo.core.Processor.database.impl.PostgreSQLDDLCreater;
  * PostgreSQLモード向けのDDLを生成テストです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class PostgreSQLDDLCreaterTest extends BaseTest<PostgreSQLDDLCreater> {
+public class PostgreSQLDDLCreaterTest extends BaseTest {
 
 	/** テスト対象 */
 	private PostgreSQLDDLCreater testTarget;

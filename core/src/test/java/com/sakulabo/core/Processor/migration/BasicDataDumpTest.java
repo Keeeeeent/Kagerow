@@ -12,7 +12,7 @@ import com.sakulabo.core.Common.AppPathUtils;
  * @author keeeeeent
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class BasicDataDumpTest extends BaseTest<BasicDataDump> {
+public class BasicDataDumpTest extends BaseTest {
 
 	/** テスト対象 */
 	private BasicDataDump testTarget;

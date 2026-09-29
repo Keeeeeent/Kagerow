@@ -9,7 +9,7 @@
                 "-f",
                 "./pom.xml",
                 "clean",
-                "package",
+                "verify",
                 "-DrunApp=true"
             ],
             "options": {
@@ -41,7 +41,7 @@
                 "-f",
                 "./pom.xml",
                 "clean",
-                "package",
+                "verify",
             ],
             "options": {
                 "cwd": "${workspaceFolder}/manager",

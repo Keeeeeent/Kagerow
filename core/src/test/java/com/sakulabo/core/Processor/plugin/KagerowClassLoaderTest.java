@@ -23,7 +23,7 @@ import com.sakulabo.core.Kagerow.Exception.ApplicationError;
  * アプリケーション共通で使用されるプラグイン専用クラスローダーのテストクラスです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class KagerowClassLoaderTest extends BaseTest<KagerowClassLoader> {
+public class KagerowClassLoaderTest extends BaseTest {
 
 	/**
 	 * [試験観点] : karファイル読み込み

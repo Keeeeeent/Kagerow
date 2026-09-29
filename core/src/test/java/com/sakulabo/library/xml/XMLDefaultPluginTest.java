@@ -36,7 +36,7 @@ import com.sakulabo.regulation.spi.PluginAdapter.KagerowRowSet;
  * XML出力プラグインのテストクラスです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class XMLDefaultPluginTest extends BaseTest<XMLDefaultPlugin> {
+public class XMLDefaultPluginTest extends BaseTest {
 
 	/** テスト対象 */
 	@InjectMocks

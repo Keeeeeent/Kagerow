@@ -49,7 +49,7 @@ import com.sakulabo.regulation.spi.PluginAdapter.KagerowRowSet;
  * CSV出力プラグインのテストクラスです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class CSVDefaultPluginTest extends BaseTest<CSVDefaultPlugin> {
+public class CSVDefaultPluginTest extends BaseTest {
 
 	/** テスト対象 */
 	@InjectMocks

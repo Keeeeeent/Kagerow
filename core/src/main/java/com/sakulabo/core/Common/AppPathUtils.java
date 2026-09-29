@@ -37,6 +37,7 @@ public final class AppPathUtils {
 
 	/**
 	 * ベースパスを生成します
+	 * 
 	 * @return ベースパス文字列表現
 	 */
 	public static String getBasePath() {
@@ -47,6 +48,7 @@ public final class AppPathUtils {
 
 	/**
 	 * アプリケーションインストールディレクトリのフルパスを生成します
+	 * 
 	 * @return 生成されたパス
 	 */
 	public static Path createAppDirPath() {
@@ -72,6 +74,7 @@ public final class AppPathUtils {
 
 	/**
 	 * アプリケーションインストールディレクトリの設定ファイルパスを生成します
+	 * 
 	 * @return 生成されたパス
 	 */
 	public static Path createConfigDirPath() {
@@ -84,6 +87,7 @@ public final class AppPathUtils {
 
 	/**
 	 * アプリケーションインストールディレクトリのプラグインファイルパスを生成します
+	 * 
 	 * @return 生成されたパス
 	 */
 	public static Path createDefaultPluginDirPath() {
@@ -96,16 +100,20 @@ public final class AppPathUtils {
 
 	/**
 	 * アプリケーションのアーカイブファイルパスを生成します
+	 * 
 	 * @return 生成されたパス
 	 */
 	public static Path createArchiveDirPath() {
 		String archivePath = VMOption.APP_IO_ARCHIVEDATADIR.getVMoption();
 		String home = getBasePath();
-		return Paths.get(home, archivePath);
+		return Paths.get(home, archivePath)
+				.normalize()
+				.toAbsolutePath();
 	}
 
 	/**
 	 * アプリケーションのプラグインファイルパスを生成します
+	 * 
 	 * @return 生成されたパス
 	 */
 	public static Path createPluginDirPath() {
@@ -117,6 +125,7 @@ public final class AppPathUtils {
 
 	/**
 	 * アプリケーションのキャッシュファイルパスを生成します
+	 * 
 	 * @return 生成されたパス
 	 */
 	public static Path createCacheDirPath() {
@@ -128,6 +137,7 @@ public final class AppPathUtils {
 
 	/**
 	 * アプリケーションのログファイルパスを生成します
+	 * 
 	 * @return 生成されたパス
 	 */
 	public static Path createLogDirPath() {
@@ -140,16 +150,20 @@ public final class AppPathUtils {
 
 	/**
 	 * アプリケーションのテンポラリーファイルパスを生成します
+	 * 
 	 * @return 生成されたパス
 	 */
 	public static Path createTemporaryDirPath() {
 		String tmpPath = VMOption.APP_IO_TMPDIR.getVMoption();
 		String home = getBasePath();
-		return Paths.get(home, tmpPath);
+		return Paths.get(home, tmpPath)
+				.normalize()
+				.toAbsolutePath();
 	}
 
 	/**
 	 * アプリケーションのランタイムファイルパスを生成します
+	 * 
 	 * @return 生成されたパス
 	 */
 	public static Path createRuntimeDirPath() {
@@ -161,6 +175,7 @@ public final class AppPathUtils {
 
 	/**
 	 * アプリケーションに必要な設定ファイル向けのパスを生成します
+	 * 
 	 * @return 生成されたパス
 	 */
 	public static Path createSettingDirPath() {
@@ -172,6 +187,7 @@ public final class AppPathUtils {
 
 	/**
 	 * アプリケーションが管理しているホームディレクトリのパスを生成します
+	 * 
 	 * @return 生成されたパス
 	 */
 	public static Path createKagerowHomePath() {

@@ -41,11 +41,12 @@ public final class SecureChunkCreater extends AppChunkCreater<SecureFileObject>
 
 	/**
 	 * デフォルトコンストラクタ
-	 * @param schema スキーマ名称
-	 * @param path 入力ファイル
-	 * @param charset 読み込み文字コード
+	 * 
+	 * @param schema   スキーマ名称
+	 * @param path     入力ファイル
+	 * @param charset  読み込み文字コード
 	 * @param isHeader ヘッダー有無
-	 * @param factory ファイルreader抽象ファクトリ
+	 * @param factory  ファイルreader抽象ファクトリ
 	 * @throws AppLogicException 入力ファイルが存在しない場合
 	 */
 	public SecureChunkCreater(String schema, Path path, Charset charset, boolean isHeader,

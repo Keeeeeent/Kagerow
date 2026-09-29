@@ -21,7 +21,7 @@ import com.sakulabo.core.Processor.database.impl.OracleInfoAccesserImpl;
  * データベースオブジェクト実行情報生成テストです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class OracleInfoAccesserImplTest extends BaseTest<OracleInfoAccesserImpl> {
+public class OracleInfoAccesserImplTest extends BaseTest {
 
 	/**
 	 * [試験観点] : Oracleモード

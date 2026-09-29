@@ -6,23 +6,17 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Hashtable;
 import java.util.HexFormat;
 import java.util.Objects;
 import java.util.UUID;
 
 import javax.naming.CompositeName;
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.Name;
 import javax.naming.NameParser;
 import javax.naming.NamingException;
 import javax.naming.NoPermissionException;
 
-import com.sakulabo.core.Kagerow.Context.Impl.KagerowContextImpl;
 import com.sakulabo.core.Provides.ArchiveSystemProvider;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Kagerowコンテキスト名称生成ファクトリクラスです<br>
@@ -43,6 +37,7 @@ public final class URINameParser implements NameParser {
 
 	/**
 	 * デフォルトコンストラクタ
+	 * 
 	 * @param name スキーマ名称
 	 */
 	public URINameParser(String name) {
@@ -51,6 +46,7 @@ public final class URINameParser implements NameParser {
 
 	/**
 	 * デフォルトコンストラクタ
+	 * 
 	 * @param name スキーマ名称
 	 */
 	public URINameParser(Name name) {
@@ -58,24 +54,13 @@ public final class URINameParser implements NameParser {
 		this.name = Objects.toString(name);
 	}
 
-	/**
-	 * システムのデフォルト検索名称を返却します
-	 * @return 名称インスタンス
-	 * @throws NamingException コンテキスト生成失敗
-	 */
-	@SuppressFBWarnings({ "BC_IMPOSSIBLE_CAST" })
-	public Name getSystemName() throws NamingException {
-		// コンテキストインスタンス生成
-		Hashtable<String, String> env = new Hashtable<>();
-		env.put(Context.INITIAL_CONTEXT_FACTORY, KagerowContextImpl.FACTORY_SPI_NAME);
-		Context context = new InitialContext(env);
-		KagerowContextImpl impl = (KagerowContextImpl) context;
-		return (Name) impl.getName().clone();
-	}
-
 	/** {@inheritDoc} */
 	@Override
 	public Name parse(String name) throws NamingException {
+		// nullチェック
+		if (Objects.isNull(name)) {
+			throw new NoPermissionException(ErrorMessage.CODE_006.getMessage(name));
+		}
 		// 引数チェック
 		String[] line = name.split(StringUtils.SHARP_DELIMIT);
 		if (line.length != 2) {
@@ -91,32 +76,44 @@ public final class URINameParser implements NameParser {
 
 	/**
 	 * 指定された文字列形式のパスをKagerow仮想ファイルシステムに対応したURIに変換します
+	 * 
 	 * @param path 対象内部パス
 	 * @return URI
 	 * @throws URISyntaxException URI解析失敗
 	 */
 	public URI toURI(Name path) throws URISyntaxException {
+		if (Objects.isNull(path)) {
+			throw new IllegalArgumentException(ErrorMessage.CODE_006.getMessage(path));
+		}
 		return toURI(path.toString());
 	}
 
 	/**
 	 * 指定された文字列形式のパスをKagerow仮想ファイルシステムに対応したURIに変換します
+	 * 
 	 * @param path 対象内部パス
 	 * @return URI
 	 * @throws URISyntaxException URI解析失敗
 	 */
 	public URI toURI(String path) throws URISyntaxException {
+		if (Objects.isNull(path)) {
+			throw new IllegalArgumentException(ErrorMessage.CODE_006.getMessage(path));
+		}
 		return toURI(path, DEFAULT_HOST);
 	}
 
 	/**
 	 * 指定された文字列形式のパスをKagerow仮想ファイルシステムに対応したURIに変換します
-	 * @param path 対象内部パス
+	 * 
+	 * @param path      対象内部パス
 	 * @param subSystem サブシステム
 	 * @return URI
 	 * @throws URISyntaxException URI解析失敗
 	 */
 	public URI toURI(String path, String subSystem) throws URISyntaxException {
+		if (Objects.isNull(path)) {
+			throw new IllegalArgumentException(ErrorMessage.CODE_006.getMessage(path));
+		}
 		if (!path.startsWith(StringUtils.SLASH_DELIMIT)) {
 			path = StringUtils.SLASH_DELIMIT.concat(path);
 		}
@@ -129,31 +126,40 @@ public final class URINameParser implements NameParser {
 
 	/**
 	 * URIを形式を崩さずに結合します
-	 * @param uri 結合元
+	 * 
+	 * @param uri  結合元
 	 * @param path 結合パス
 	 * @return 結合結果URI
 	 * @throws URISyntaxException URI解析失敗
 	 */
 	public static URI joinURI(URI uri, String path) throws URISyntaxException {
+		if (Objects.isNull(uri) || Objects.isNull(path)) {
+			throw new IllegalArgumentException(ErrorMessage.CODE_006.getMessage((String) null));
+		}
 		// 基本情報を取得
-		String schome = uri.getScheme();
+		String schema = uri.getScheme();
 		String fragment = uri.getFragment();
 		String host = uri.getHost();
 		// パスを結合
 		String uriPath = uri.resolve(path).getPath();
 		// 新たなURIを生成
-		uri = new URI(schome, host, uriPath, fragment);
+		uri = new URI(schema, host, uriPath, fragment);
 		return uri;
 	}
 
 	/**
 	 * バイナリファイルパスを生成します
+	 * 
 	 * @param algorithm アルゴリズム
 	 * @param extension 拡張子
 	 * @return バイナリファイルパス
 	 * @throws NoSuchAlgorithmException アルゴリズム不正
 	 */
 	public String createBinaryPath(String algorithm, String extension) throws NoSuchAlgorithmException {
+		if (Objects.isNull(algorithm)) {
+			throw new IllegalArgumentException(ErrorMessage.CODE_003.getMessage());
+		}
+		Objects.requireNonNull(extension);
 		MessageDigest digest = MessageDigest.getInstance(algorithm);
 		digest.update(name.getBytes(StandardCharsets.UTF_8));
 		String hash = HexFormat.of().formatHex(digest.digest());
@@ -162,6 +168,7 @@ public final class URINameParser implements NameParser {
 
 	/**
 	 * 物理ヘッダー名称を論理ヘッダー名称に変換します
+	 * 
 	 * @return 論理ヘッダー名称
 	 * @throws NoSuchAlgorithmException アルゴリズム不正
 	 */
@@ -174,12 +181,16 @@ public final class URINameParser implements NameParser {
 
 	/**
 	 * 物理ヘッダー名称を論理ヘッダー名称に変換します
+	 * 
 	 * @param binaryHeader 物理ヘッダー名称
 	 * @return 論理ヘッダー名称
 	 */
 	public String createHeaderBinaryPath(String binaryHeader) {
-		String[] spliter = binaryHeader.split(StringUtils.SHARP_DELIMIT, 2);
-		return StringUtils.SLASH_DELIMIT.concat(spliter[0]);
+		if (Objects.isNull(binaryHeader)) {
+			throw new IllegalArgumentException(ErrorMessage.CODE_006.getMessage(binaryHeader));
+		}
+		String[] splitter = binaryHeader.split(StringUtils.SHARP_DELIMIT, 2);
+		return StringUtils.SLASH_DELIMIT.concat(splitter[0]);
 	}
 
 }

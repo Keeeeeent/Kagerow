@@ -21,7 +21,7 @@ import com.sakulabo.core.Processor.database.impl.H2InfoAccesserImpl;
  * データベースオブジェクト実行情報生成テストです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class H2InfoAccesserImplTest extends BaseTest<H2InfoAccesserImpl> {
+public class H2InfoAccesserImplTest extends BaseTest {
 
 	/**
 	 * [試験観点] : H2モード

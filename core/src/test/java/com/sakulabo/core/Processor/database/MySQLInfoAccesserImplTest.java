@@ -21,7 +21,7 @@ import com.sakulabo.core.Processor.database.impl.MySQLInfoAccesserImpl;
  * データベースオブジェクト実行情報生成テストです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class MySQLInfoAccesserImplTest extends BaseTest<MySQLInfoAccesserImpl> {
+public class MySQLInfoAccesserImplTest extends BaseTest {
 
 	/**
 	 * [試験観点] : MySQLモード

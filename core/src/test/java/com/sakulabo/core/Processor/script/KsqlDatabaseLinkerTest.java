@@ -32,7 +32,7 @@ import com.sakulabo.core.Kagerow.Context.Impl.KagerowVirtualFileContextImpl;
  * KSQLに存在するリンク可能文字列を処理するスクリプトのテストクラスです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class KsqlDatabaseLinkerTest extends BaseTest<KsqlDatabaseLinker> {
+public class KsqlDatabaseLinkerTest extends BaseTest {
 
 	/** テスト対象 */
 	private KsqlDatabaseLinker testTarget;
