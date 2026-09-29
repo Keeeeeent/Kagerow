@@ -1,6 +1,5 @@
 package com.sakulabo.core.Processor.plan;
 
-import java.net.URI;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,7 @@ import com.sakulabo.core.Kagerow.Utilities.KagerowExecutionPlanAccessor;
  */
 @ExtendWith(KagerowSecureContainerRunner.class)
 @ExtendWith(KagerowDBRunner.class)
-public class SecureExecutionPlanTest extends BaseTest<SecureExecutionPlan> {
+public class SecureExecutionPlanTest extends BaseTest {
 
 	/** テスト対象 */
 	@SuppressWarnings("unused")
@@ -32,7 +31,8 @@ public class SecureExecutionPlanTest extends BaseTest<SecureExecutionPlan> {
 	 * ・暗号化ファイルが含まれない
 	 */
 	@Test
-	public void Test001(@KDB(path = "test1.csv", schema = "test", synonym = "Test002") URI test1) throws Throwable {
+	@KDB(path = "test1.csv", schema = "test", synonym = "Test002")
+	public void Test001() throws Throwable {
 		// テストデータ準備
 		Path testScript = getTestDir().resolve("test1.ksql");
 		// スクリプト実行
@@ -48,8 +48,8 @@ public class SecureExecutionPlanTest extends BaseTest<SecureExecutionPlan> {
 	 * ・暗号化ファイルが含まれる
 	 */
 	@Test
-	public void Test002(@KDB(path = "test2.csv", schema = "test0x", synonym = "Test0x9", isSecure = true) URI test2)
-			throws Throwable {
+	@KDB(path = "test2.csv", schema = "test0x", synonym = "Test0x9", isSecure = true)
+	public void Test002() throws Throwable {
 		// テストデータ準備
 		Path testScript = getTestDir().resolve("test2.ksql");
 		// スクリプト実行

@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.UnaryOperator;
 
 import com.sakulabo.application.app.cli.converter.ExistingFilePathConverter;
@@ -112,11 +113,13 @@ public class ExecuteCommand extends AuthRemoteCommand
 	@Override
 	public KagerowScriptAccessor apply(KagerowScriptAccessor scriptAccessor) {
 		Map<String, String> env = scriptAccessor.getEnv();
-		for (String value : this.env) {
-			String[] pair = value.split("=", 2);
-			String key = pair[0];
-			String val = pair.length > 1 ? pair[1] : "";
-			env.put(key, val);
+		if (Objects.nonNull(this.env)) {
+			for (String value : this.env) {
+				String[] pair = value.split("=", 2);
+				String key = pair[0];
+				String val = pair.length > 1 ? pair[1] : "";
+				env.put(key, val);
+			}
 		}
 		KagerowScriptAccessor newScriptAccessor = scriptAccessor.setEnv(env);
 		return newScriptAccessor;

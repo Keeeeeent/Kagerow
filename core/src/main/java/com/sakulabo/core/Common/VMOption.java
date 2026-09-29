@@ -184,6 +184,8 @@ public enum VMOption {
 	public static final VMOption toVMOption(String vmoption) {
 		VMOption option = UNKNOWN;
 		for (VMOption opt : values()) {
+			if (VMOption.UNKNOWN.equals(opt))
+				continue;
 			if (opt.vmoption.equals(vmoption))
 				option = opt;
 		}
@@ -214,8 +216,10 @@ public enum VMOption {
 		VMOption option = UNKNOWN;
 		for (VMOption opt : values()) {
 			String v = opt.getVMoption();
-			if (value.equals(v))
+			if (value.equals(v)) {
 				option = opt;
+				break;
+			}
 		}
 		return option;
 	}

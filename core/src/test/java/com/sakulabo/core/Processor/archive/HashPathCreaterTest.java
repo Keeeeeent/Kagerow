@@ -24,7 +24,7 @@ import com.sakulabo.core.Kagerow.Contents.KagerowVirtualFileContent.KagerowDataT
  * ハッシュパスを生成するファクトリクラスのテストクラスです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class HashPathCreaterTest extends BaseTest<HashPathCreater> {
+public class HashPathCreaterTest extends BaseTest {
 
 	/** テスト対象 */
 	private HashPathCreater testTarget;

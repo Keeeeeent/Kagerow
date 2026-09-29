@@ -29,7 +29,7 @@ import com.sakulabo.core.Kagerow.KagerowApplication;
  * JDBCプラグインのテストクラスです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class JDBCDefaultPluginTest extends BaseTest<JDBCDefaultPlugin> {
+public class JDBCDefaultPluginTest extends BaseTest {
 
 	/** テスト対象 */
 	@InjectMocks

@@ -64,12 +64,13 @@ public abstract sealed class AppVirtualFileCreater permits BasicVirtualFileCreat
 
 	/**
 	 * 共通コンストラクタ
-	 * @param mode 実行モード
-	 * @param schema スキーマファイル名
-	 * @param path 入力ファイル
-	 * @param charset 入力ファイル文字コード
+	 * 
+	 * @param mode     実行モード
+	 * @param schema   スキーマファイル名
+	 * @param path     入力ファイル
+	 * @param charset  入力ファイル文字コード
 	 * @param isHeader ヘッダー有無
-	 * @param synonym テーブル名称のシノニム
+	 * @param synonym  テーブル名称のシノニム
 	 * @param observer 進捗更新オブザーバー
 	 * @throws IOException ファイル読み込み失敗、文字コード判定不可
 	 */
@@ -109,14 +110,16 @@ public abstract sealed class AppVirtualFileCreater permits BasicVirtualFileCreat
 
 	/**
 	 * 仮想ファイルオブジェクトを生成します
+	 * 
 	 * @return 仮想ファイルオブジェクト
-	 * @throws IOException データセット生成失敗、取得ファイル不正、初期化エラー
+	 * @throws IOException       データセット生成失敗、取得ファイル不正、初期化エラー
 	 * @throws AppLogicException コンテキスト取得失敗
 	 */
 	public abstract KagerowVirtualFileObject createVirtualFileObject() throws AppLogicException, IOException;
 
 	/**
 	 * 指定されたファイルパスから文字コードを判定します
+	 * 
 	 * @param path 判定対象
 	 * @return 判定結果文字コードインスタンス
 	 * @throws IOException ファイル読み込み失敗、文字コード判定不可
@@ -134,6 +137,7 @@ public abstract sealed class AppVirtualFileCreater permits BasicVirtualFileCreat
 
 	/**
 	 * Kagerowが管理する仮想ディレクトリコンテキストを取得します
+	 * 
 	 * @return 仮想ディレクトリコンテキスト
 	 * @throws NamingException コンテキストが見つからない場合
 	 */
@@ -150,8 +154,9 @@ public abstract sealed class AppVirtualFileCreater permits BasicVirtualFileCreat
 
 	/**
 	 * 仮想DB物理ファイルを生成、管理下に配置します
+	 * 
 	 * @return 物理ファイルURI
-	 * @throws NameAlreadyBoundException 既に同等の仮想DB物理ファイルが生成されている場合
+	 * @throws NameAlreadyBoundException            既に同等の仮想DB物理ファイルが生成されている場合
 	 * @throws VirtualFileConstructionFailException 仮想DB物理ファイル生成失敗
 	 */
 	public final URI construction() throws NameAlreadyBoundException, VirtualFileConstructionFailException {
@@ -214,14 +219,14 @@ public abstract sealed class AppVirtualFileCreater permits BasicVirtualFileCreat
 					{
 						// データファイル削除
 						String uri = data.datAddr();
-						Path paht = Paths.get(URI.create(uri));
-						Files.delete(paht);
+						Path path = Paths.get(URI.create(uri));
+						Files.delete(path);
 					}
 					{
 						// インデックスファイル削除
 						String uri = data.idxAddr();
-						Path paht = Paths.get(URI.create(uri));
-						Files.delete(paht);
+						Path path = Paths.get(URI.create(uri));
+						Files.delete(path);
 					}
 				} catch (IOException ioe) {
 					// ファイル削除で失敗した場合は制御された例外として追加

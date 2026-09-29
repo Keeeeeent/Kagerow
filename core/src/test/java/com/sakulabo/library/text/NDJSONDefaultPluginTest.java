@@ -43,7 +43,7 @@ import com.sakulabo.regulation.spi.PluginAdapter.KagerowRowSet;
  * NDJSON出力プラグインのテストクラスです
  */
 @ExtendWith(KagerowContainerRunner.class)
-public class NDJSONDefaultPluginTest extends BaseTest<NDJSONDefaultPlugin> {
+public class NDJSONDefaultPluginTest extends BaseTest {
 
 	/** テスト対象 */
 	@InjectMocks

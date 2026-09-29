@@ -23,10 +23,9 @@ import com.sakulabo.application.app.rpc.datatype.send.PathSendDataType;
 import com.sakulabo.application.app.rpc.datatype.send.StringSendDataType;
 import com.sakulabo.application.model.Data.DataImportModel;
 import com.sakulabo.application.service.Data.DataService;
-import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
-
 import com.sakulabo.core.Kagerow.Utilities.KagerowChunkCreater.ChunkCreateMode;
 import com.sakulabo.core.Kagerow.Utilities.KagerowLogger;
+import com.sakulabo.core.Kagerow.Utilities.KagerowUtilities;
 
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -58,7 +57,7 @@ public class ImportCommand extends AuthRemoteCommand {
 	/** インポートファイルヘッダーフラグ */
 	@Option(names = { "--header",
 			"-h" }, negatable = true, description = "The import file has a header. Default: ${DEFAULT-VALUE}")
-	public boolean isHeader = true;
+	public boolean isHeader = false;
 	/** インポートデータシノニム */
 	@Option(names = { "--synonym", "-n" }, required = true, description = "Import data synonym.")
 	public String synonym;
@@ -70,6 +69,7 @@ public class ImportCommand extends AuthRemoteCommand {
 
 		/**
 		 * デフォルトコンストラクタ
+		 * 
 		 * @throws UnsupportedEncodingException TUIメインフレーム作成失敗
 		 */
 		model() throws UnsupportedEncodingException {
@@ -164,13 +164,13 @@ public class ImportCommand extends AuthRemoteCommand {
 		}
 		// 結果処理
 		return switch (result) {
-		case Success _: {
-			yield Integer.valueOf(0);
-		}
-		case Fail res: {
-			System.err.println(String.format("StatusCode : %d ResponseText", res.statusCode(), res.response()));
-			yield Integer.valueOf(1);
-		}
+			case Success _: {
+				yield Integer.valueOf(0);
+			}
+			case Fail res: {
+				System.err.println(String.format("StatusCode : %d ResponseText", res.statusCode(), res.response()));
+				yield Integer.valueOf(1);
+			}
 		};
 	}
 
